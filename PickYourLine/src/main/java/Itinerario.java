@@ -1,6 +1,7 @@
 import java.time.LocalTime;
 import java.util.Set;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -60,7 +61,7 @@ public class Itinerario{
 
 
             if (indicePartenza != -1 && indiceArrivo != -1 && indicePartenza < indiceArrivo) {
-                return this.itinerario;
+                return this;
             }
         }
         
@@ -96,7 +97,7 @@ public class Itinerario{
             
             System.out.println("Fermate in " + citta.getNome() + ":");
             
-            for (Fermata fermata : citta.getFermate()) {
+            for (Fermata fermata : citta.getElencoFermate()) {
                 System.out.println(citta.getNome() + " - " +fermata.getNome());
             }
         }
@@ -106,10 +107,10 @@ public class Itinerario{
 
 
     public void loadPercorso(){
-        this.percorso.add(new Citta("Roma"));
-        this.percorso.add(new Citta("Firenze"));
-        this.percorso.add(new Citta("Bologna"));
-        this.percorso.add(new Citta("Milano"));
+        this.percorso.add(new Citta(1, "Catania"));
+        this.percorso.add(new Citta(9, "Belpasso"));
+        this.percorso.add(new Citta(10, "Giarre"));
+        this.percorso.add(new Citta(13, "San Giovanni la Punta"));
         
         
     }

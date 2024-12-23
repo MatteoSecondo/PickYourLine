@@ -1,0 +1,34 @@
+# Ignora file di sistema
+.DS_Store
+Thumbs.db
+
+# Ignora file generati da Maven
+target/
+*.log
+*.class
+*.jar
+*.war
+*.ear
+
+# Ignora configurazioni di Eclipse/STS
+.metadata/
+*.iml
+.project
+.classpath
+.settings/
+
+# Ignora file generati da IntelliJ IDEA
+.idea/
+*.iws
+*.ipr
+*.iml
+
+# Ignora file di configurazione di VSCode
+.vscode/
+
+# Ignora file di log generali
+*.log
+
+# Ignora file temporanei
+*.bak
+*.swp

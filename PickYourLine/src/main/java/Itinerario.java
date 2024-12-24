@@ -1,26 +1,22 @@
 import java.time.LocalTime;
-import java.util.Set;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-
-
-
+import java.util.Map;
 
 public class Itinerario{
 
     private String codice;
     private LocalTime orarioPartenza;
     private LocalTime orarioArrivo;
-
     private List<Citta> percorso;
 
-
-    public Itinerario(String codice, LocalTime orarioPartenza, LocalTime orarioArrivo){
+    public Itinerario(String codice, LocalTime orarioPartenza, LocalTime orarioArrivo, List<Citta> p){
         this.codice = codice;
         this.orarioPartenza = orarioPartenza;
         this.orarioArrivo = orarioArrivo;
         this.percorso = new ArrayList<Citta>();
+        loadPercorso(p);
     }
 
     // Metodi getter e setter
@@ -48,17 +44,15 @@ public class Itinerario{
         this.orarioArrivo = orario_arrivo;
     }
 
-
-
-
-    public Itinerario getSeDisponibile(String cittaPartenzaCorrente, String cittaDestinazione){
+    public Itinerario getSeDisponibile(Citta cittaDestinazione){
         
-        
+    	PickYourLine pickYourLine = PickYourLine.getInstance();
+    	Citta cittaPartenzaCorrente = pickYourLine.getCittaPartenzaCorrente();
+    	
         if (this.percorso.contains(cittaPartenzaCorrente) && this.percorso.contains(cittaDestinazione)) {
 
             int indicePartenza = this.percorso.indexOf(cittaPartenzaCorrente);
             int indiceArrivo = this.percorso.indexOf(cittaDestinazione);
-
 
             if (indicePartenza != -1 && indiceArrivo != -1 && indicePartenza < indiceArrivo) {
                 return this;
@@ -66,55 +60,40 @@ public class Itinerario{
         }
         
         return null;
-        
     }
 
+    public Map<Integer, Citta> getDestinazioniDisponibili(){
 
+    	PickYourLine pickYourLine = PickYourLine.getInstance();
+    	
+    	Map<Integer, Citta> destinazioniDisponibili = new HashMap<Integer, Citta>();
 
-    public Set<Citta> getDestinazioniDisponibili(String codiceCittaPartenza){
+        int indicePartenza = this.percorso.indexOf(pickYourLine.getCittaPartenzaCorrente());
 
-        Set<Citta> destinazioniDisponibili = new HashSet<>();
-
-        int indicePartenza = percorso.indexOf(codiceCittaPartenza);
-
-        if (indicePartenza != -1 && indicePartenza < percorso.size() - 1) {
+        if (indicePartenza != -1 && indicePartenza < this.percorso.size()) {
             // Aggiungi tutte le città dopo l'indice trovato al set delle destinazioni disponibili
-            for (int i = indicePartenza + 1; i < percorso.size(); i++) {
-                destinazioniDisponibili.add(percorso.get(i));
+            for (int i = indicePartenza + 1; i < this.percorso.size(); i++) {
+                destinazioniDisponibili.put(this.percorso.get(i).getCodice(), this.percorso.get(i));
             }
         }
 
         return destinazioniDisponibili;
     }
 
-
-
-
     public void visualizzaFermate(){
         
-        System.out.println("Fermate per l'itinerario: " + codice);
-        for (Citta citta : percorso) {
-            
-            System.out.println("Fermate in " + citta.getNome() + ":");
-            
+        System.out.println("\nFermate per l'itinerario: " + this.codice);
+        
+        for (Citta citta : this.percorso) {
             for (Fermata fermata : citta.getElencoFermate()) {
-                System.out.println(citta.getNome() + " - " +fermata.getNome());
+                System.out.println(citta.getNome() + " - " + fermata.getNome());
             }
         }
-        
     }
 
-
-
-    public void loadPercorso(){
-        this.percorso.add(new Citta(1, "Catania"));
-        this.percorso.add(new Citta(9, "Belpasso"));
-        this.percorso.add(new Citta(10, "Giarre"));
-        this.percorso.add(new Citta(13, "San Giovanni la Punta"));
-        
-        
+    public void loadPercorso(List<Citta> p){
+        this.percorso = p;
     }
-
 
     @Override
     public String toString() {

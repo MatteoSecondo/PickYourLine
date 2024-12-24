@@ -1,5 +1,3 @@
-package PickYourLine.src.main.java;
-
 public class Fermata {
     public String nome;
 

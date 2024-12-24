@@ -1,18 +1,16 @@
-package PickYourLine.src.main.java;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class Citta {
     private int codice;
     private String nome;
     private List<Fermata> elencoFermate;
 
-
-    public Citta(int codice, String nome) {
+    public Citta(int codice, String nome, List<Fermata> f) {
         this.codice = codice;
         this.nome = nome;
-        elencoFermate = new ArrayList<>();
+        this.elencoFermate = new ArrayList<>();
+        loadFermate(f);
     }
 
     public int getCodice() {
@@ -44,9 +42,10 @@ public class Citta {
     }
 
 
-    public  void LoadFermate() {
-        // Creazione Fermate
-        Fermata f1 = new Fermata("Stazione Randazzo FCE");
+    public  void loadFermate(List<Fermata> f) {
+    	this.elencoFermate = f;
+    	
+        /*Fermata f1 = new Fermata("Stazione Randazzo FCE");
         Fermata f2 = new Fermata("Stazione Maletto FCE");
         Fermata f3 = new Fermata("Stazione Bronte FCE");
         Fermata f4 = new Fermata("Adrano Nord");
@@ -71,8 +70,9 @@ public class Citta {
         Fermata f23 = new Fermata("Catania Borgo");
         this.elencoFermate.add(f1);
         this.elencoFermate.add(f2);
-        this.elencoFermate.add(f3);
+        this.elencoFermate.add(f3);*/
     }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -27,6 +27,10 @@ public class PickYourLine {
 		return elencoItinerari;
 	}
 
+	public void setElencoItinerari(Map<String, Itinerario> elencoItinerari) {
+		this.elencoItinerari = elencoItinerari;
+	}
+
 	public Map<Integer, Citta> getElencoCitta() {
 		return elencoCitta;
 	}

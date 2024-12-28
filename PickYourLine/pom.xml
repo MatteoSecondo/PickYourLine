@@ -4,4 +4,14 @@
   <artifactId>PickYourLine</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>PickYourLine</name>
+  
+  <dependencies>
+  	<!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
+	<dependency>
+	    <groupId>org.mockito</groupId>
+	    <artifactId>mockito-core</artifactId>
+	    <version>5.14.2</version>
+	    <scope>test</scope>
+	</dependency>
+  </dependencies>
 </project>

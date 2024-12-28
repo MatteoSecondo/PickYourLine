@@ -247,10 +247,6 @@ public class PickYourLine {
 			}
 		}
 		
-		if(itinerariDaVisualizare.isEmpty()) {
-			throw new Exception("Non ci sono itinerari che collegano direttamente le città di partenza e destinazione scelte.");
-		}
-		
 		return itinerariDaVisualizare;
 	}
 

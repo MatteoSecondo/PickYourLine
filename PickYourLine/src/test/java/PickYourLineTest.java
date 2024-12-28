@@ -4,7 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.*;
@@ -25,7 +28,7 @@ class PickYourLineTest {
     private Itinerario itinerarioMock2;
 
 	@BeforeAll
-	void setupBeforeAll(){
+	void setupAll(){
 		this.pickYourLine = PickYourLine.getInstance();
 		this.pickYourLine.loadCitta();
 	}
@@ -33,19 +36,36 @@ class PickYourLineTest {
 	@BeforeEach
 	void setup() throws Exception {
 		this.pickYourLine.loadItinerari();
-		MockitoAnnotations.openMocks(this); // Inizializza i mock
-
 		this.pickYourLine.setCittaPartenzaCorrente(this.pickYourLine.getElencoCitta().get(1));
+		MockitoAnnotations.openMocks(this);
 	}
 
-	@AfterEach
-	void tearDown() throws Exception {
+	@AfterAll
+	void tearDownAll() throws Exception {
 		this.pickYourLine.setCittaPartenzaCorrente(null);
-		this.elencoDestinazioniDisponibili.clear();
 	}
+	
 	@Test
 	@DisplayName("Test inserimento città di partenza")
 	void testInserisciCittaDiPartenza() throws Exception {
+		Map<String, Itinerario> elencoItinerari = new HashMap<String, Itinerario>();
+		
+		List<Citta> p = new ArrayList<Citta>();
+		p.add(pickYourLine.getElencoCitta().get(1)); //Catania
+		p.add(pickYourLine.getElencoCitta().get(3)); //Misterbianco
+		p.add(pickYourLine.getElencoCitta().get(4)); //Paterno
+		p.add(pickYourLine.getElencoCitta().get(36)); //Santa Maria di Licodia
+		p.add(pickYourLine.getElencoCitta().get(12)); //Biancavilla
+		p.add(pickYourLine.getElencoCitta().get(6)); //Adrano
+		p.add(pickYourLine.getElencoCitta().get(15)); //Bronte
+		p.add(pickYourLine.getElencoCitta().get(49)); //Maletto
+		p.add(pickYourLine.getElencoCitta().get(28)); //Randazzo
+		
+		elencoItinerari.put("Catania-Randazzo",
+				new Itinerario("Catania-Randazzo", LocalTime.of(9, 25), LocalTime.of(11, 35), p));
+		
+		this.pickYourLine.setElencoItinerari(elencoItinerari);
+		
 		Map<Integer,Citta> destinazioniDisponibili = pickYourLine.inserisciCittaPartenza(1);
 
 		Map<Integer,Citta> destinazioniAttese = new HashMap<Integer,Citta>();
@@ -53,22 +73,22 @@ class PickYourLineTest {
 		destinazioniAttese.put(3,pickYourLine.getElencoCitta().get(3));
 		destinazioniAttese.put(4,pickYourLine.getElencoCitta().get(4));
 		destinazioniAttese.put(36,pickYourLine.getElencoCitta().get(36));
-		destinazioniAttese.put(5,pickYourLine.getElencoCitta().get(5));
 		destinazioniAttese.put(6,pickYourLine.getElencoCitta().get(6));
-		destinazioniAttese.put(59,pickYourLine.getElencoCitta().get(59));
 		destinazioniAttese.put(12,pickYourLine.getElencoCitta().get(12));
 		destinazioniAttese.put(28,pickYourLine.getElencoCitta().get(28));
-		destinazioniAttese.put(60,pickYourLine.getElencoCitta().get(60));
 		destinazioniAttese.put(15,pickYourLine.getElencoCitta().get(15));
 
-		assertEquals(destinazioniAttese, destinazioniDisponibili,"Elenco delle città destinazione previste: ");
-
+		assertEquals(destinazioniAttese, destinazioniDisponibili,"Elenco delle città di destinazione non corretto");
 	}
+	
 	@Test
+	@DisplayName("Test inserimento città di destinazione corretto funzionamento")
 	void testInserisciCittaDestinazione_Successo() throws Exception {
-		pickYourLine.setElencoItinerari(new HashMap<String,Itinerario>());
+		this.pickYourLine.setElencoItinerari(new HashMap<String, Itinerario>());
+		
 		this.pickYourLine.getElencoItinerari().put("IT01", itinerarioMock1);
 		this.pickYourLine.getElencoItinerari().put("IT02", itinerarioMock2);
+		
 		this.elencoDestinazioniDisponibili = new HashMap<Integer, Citta>();
 		this.elencoDestinazioniDisponibili.put(5, this.pickYourLine.getElencoCitta().get(5));
 		
@@ -82,9 +102,12 @@ class PickYourLineTest {
         assertNotNull(result);
         assertEquals(1, result.size());
         assertTrue(result.containsKey("IT01"));
+        
+        this.elencoDestinazioniDisponibili.clear();
 	}
 	
 	@Test
+	@DisplayName("Test inserimento città di destinazione, citta partenza e destinazione uguali")
     void testInserisciCittaDestinazione_StessaCitta() {
 		this.elencoDestinazioniDisponibili = new HashMap<Integer, Citta>();
 		
@@ -95,6 +118,7 @@ class PickYourLineTest {
     }
 
     @Test
+    @DisplayName("Test inserimento città di destinazione, codice città non valido")
     void testInserisciCittaDestinazione_CodiceNonValido() {
     	this.elencoDestinazioniDisponibili = new HashMap<Integer, Citta>();
     	
@@ -103,6 +127,7 @@ class PickYourLineTest {
         });
         assertEquals("Codice città non non idoneo alla ricerca effettuata.", exception.getMessage());
     }
+    
 	@Test
 	@DisplayName("Test inserimento città di partenza inesistente")
 	void testInserisciCittaDiPartenzaInesistente() {
@@ -112,11 +137,11 @@ class PickYourLineTest {
 	}
 
 	@Test
-	@DisplayName("Test visualizzazione itinerario valido")
+	@DisplayName("Test visualizzazione itinerario, codice itinerario non idoneo")
 	void testVisualizzaItinerarioValido() throws Exception {
 		Map<String, Itinerario> itinerario = pickYourLine.getElencoItinerari();
 		Exception exception = assertThrows(Exception.class, () ->
-				pickYourLine.visualizzaItinerario("Catania-Salerno",itinerario));
+				pickYourLine.visualizzaItinerario("Catania-Salerno", itinerario));
 		assertEquals("Codice itinerario non idoneo alla ricerca effettuata.", exception.getMessage());
 	}
 

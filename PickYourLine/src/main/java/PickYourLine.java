@@ -228,7 +228,6 @@ public class PickYourLine {
 			elencoDestinazioniDisponibili.putAll(i.getDestinazioniDisponibili());
 		});
 		
-		elencoDestinazioniDisponibili.forEach((key, d) -> System.out.println(d));
 		return elencoDestinazioniDisponibili;
 	}
 

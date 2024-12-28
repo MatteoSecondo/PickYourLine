@@ -19,14 +19,14 @@ public class Main {
 			int scelta = sc.nextInt();
 
 			switch(scelta) {
-			case 0:
-				System.out.println("Arrivederci!");
-				sc.close();
-				System.exit(0);
-			case 1:
-				cercaItinerario(sc);
-				break;
-			}
+				case 0:
+					System.out.println("Arrivederci!");
+					sc.close();
+					System.exit(0);
+				case 1:
+					cercaItinerario(sc);
+					break;
+				}
 		}
 	}
 
@@ -49,6 +49,8 @@ public class Main {
 				System.out.println("\n" + e.getMessage());
 			}
 		} while(elencoDestinazioniDisponibili == null);
+		
+		elencoDestinazioniDisponibili.forEach((key, c) -> System.out.println(c));
 
 		Map<String, Itinerario> itinerariDisponibili = null;
 
@@ -69,7 +71,7 @@ public class Main {
 		String codiceItinerario;
 
 		while(true) {
-			System.out.println("\nInserisci il codice dell' itinerario, oppure 0 per tornare al menu principale");
+			System.out.println("\nInserisci il codice dell' itinerario per visualizzare i dettagli, oppure 0 per tornare al menu principale");
 			sc = new Scanner(System.in);
 			codiceItinerario = sc.nextLine();
 

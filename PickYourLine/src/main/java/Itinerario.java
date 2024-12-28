@@ -19,7 +19,6 @@ public class Itinerario{
         loadPercorso(p);
     }
 
-    // Metodi getter e setter
     public String getCodice() {
         return codice;
     }
@@ -71,7 +70,7 @@ public class Itinerario{
         int indicePartenza = this.percorso.indexOf(pickYourLine.getCittaPartenzaCorrente());
 
         if (indicePartenza != -1 && indicePartenza < this.percorso.size()) {
-            // Aggiungi tutte le città dopo l'indice trovato al set delle destinazioni disponibili
+            // Aggiungi tutte le città dopo l'indice trovato alla mappa delle destinazioni disponibili
             for (int i = indicePartenza + 1; i < this.percorso.size(); i++) {
                 destinazioniDisponibili.put(this.percorso.get(i).getCodice(), this.percorso.get(i));
             }
@@ -94,8 +93,6 @@ public class Itinerario{
     public void loadPercorso(List<Citta> p){
         this.percorso = p;
     }
-
-
 
     @Override
     public String toString() {

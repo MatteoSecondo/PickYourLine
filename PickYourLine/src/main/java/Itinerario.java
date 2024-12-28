@@ -95,6 +95,8 @@ public class Itinerario{
         this.percorso = p;
     }
 
+
+
     @Override
     public String toString() {
         return "Itinerario{" + "codice=" + codice + ", orarioPartenza=" + orarioPartenza + ", orarioArrivo=" + orarioArrivo + '}';

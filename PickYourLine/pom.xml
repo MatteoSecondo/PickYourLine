@@ -4,7 +4,7 @@
   <artifactId>PickYourLine</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>PickYourLine</name>
-  
+
   <dependencies>
   	<!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
 	<dependency>
@@ -13,5 +13,18 @@
 	    <version>5.14.2</version>
 	    <scope>test</scope>
 	</dependency>
+	<dependency>
+	    <groupId>org.junit.jupiter</groupId>
+	    <artifactId>junit-jupiter-api</artifactId>
+	    <version>5.10.2</version>
+	    <scope>test</scope>
+  	</dependency>
+  	<dependency>
+	    <groupId>org.junit.jupiter</groupId>
+	    <artifactId>junit-jupiter-engine</artifactId>
+	    <version>5.10.2</version>
+	    <scope>test</scope>
+  	</dependency>
   </dependencies>
+  
 </project>

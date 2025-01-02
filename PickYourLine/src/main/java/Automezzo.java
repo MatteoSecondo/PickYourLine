@@ -11,11 +11,11 @@ public class Automezzo {
     private StatoAutomezzo stato;
     private Map<String, Biglietto> elencoBiglietti;
     private Biglietto bigliettoCorrente;
+    private Fermata posizioneAttuale;
 
 
     public Automezzo(String codice, int posti) {
         elencoBiglietti = new HashMap<>();
-        bigliettoCorrente = null;
         this.codice = codice;
         this.posti = posti;
         this.stato = new NonInTransito();
@@ -46,6 +46,14 @@ public class Automezzo {
         this.orarioUltimaTimbratura = orarioUltimaTimbratura;
     }
 
+    public Fermata getPosizioneAttuale() {
+        return posizioneAttuale;
+    }
+
+    public void setPosizioneAttuale(Fermata posizioneAttuale) {
+        this.posizioneAttuale = posizioneAttuale;
+    }
+
     public void loadBiglietti(Map<String, Biglietto> elencoBiglietti){
         this.elencoBiglietti = elencoBiglietti;
     }
@@ -54,7 +62,7 @@ public class Automezzo {
         return posti - elencoBiglietti.size();
     }
 
-    public Biglietto creaBiglietto(String codice, int cittaPartenza, int cittaDestinazione){
+    public Biglietto creaBiglietto(String codice, Citta cittaPartenza, Citta cittaDestinazione){
         Biglietto nuovoBiglietto = new Biglietto(codice, cittaPartenza, cittaDestinazione);
         this.bigliettoCorrente = nuovoBiglietto;
         return nuovoBiglietto;

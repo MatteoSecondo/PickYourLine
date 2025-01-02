@@ -1,0 +1,89 @@
+import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
+
+
+public class Automezzo {
+
+    private String codice;
+    private int posti;
+    private LocalTime orarioUltimaTimbratura;
+    private StatoAutomezzo stato;
+    private Map<String, Biglietto> elencoBiglietti;
+    private Biglietto bigliettoCorrente;
+
+
+    public Automezzo(String codice, int posti) {
+        elencoBiglietti = new HashMap<>();
+        bigliettoCorrente = null;
+        this.codice = codice;
+        this.posti = posti;
+        this.stato = new NonInTransito();
+    }
+
+    public String getCodice() {
+        return codice;
+    }
+
+    public void setCodice(String codice) {
+        this.codice = codice;
+    }
+
+
+    public int getPosti() {
+        return posti;
+    }
+
+    public void setPosti(int posti) {
+        this.posti = posti;
+    }
+
+    public LocalTime getOrarioUltimaTimbratura() {
+        return orarioUltimaTimbratura;
+    }
+
+    public void setOrarioUltimaTimbratura(LocalTime orarioUltimaTimbratura) {
+        this.orarioUltimaTimbratura = orarioUltimaTimbratura;
+    }
+
+    public void loadBiglietti(Map<String, Biglietto> elencoBiglietti){
+        this.elencoBiglietti = elencoBiglietti;
+    }
+
+    public int getPostiDisponibili(){
+        return posti - elencoBiglietti.size();
+    }
+
+    public Biglietto creaBiglietto(String codice, int cittaPartenza, int cittaDestinazione){
+        Biglietto nuovoBiglietto = new Biglietto(codice, cittaPartenza, cittaDestinazione);
+        this.bigliettoCorrente = nuovoBiglietto;
+        return nuovoBiglietto;
+    }
+
+    public void inserisciBiglietto() {
+
+        elencoBiglietti.put(bigliettoCorrente.getCodice(), bigliettoCorrente);
+        setBigliettoCorrente(null);
+
+    }
+
+    public void setBigliettoCorrente(Biglietto biglietto) {
+        this.bigliettoCorrente = biglietto;
+    }
+
+    public void cambiaStato() {
+
+        this.stato.cambiaStato();
+    }
+
+    @Override
+    public String toString() {
+        return "Automezzo{" +
+                "codice='" + codice + '\'' +
+                ", posti=" + posti +
+                ", orarioUltimaTimbratura=" + orarioUltimaTimbratura +
+                ", stato=" + stato +
+                '}';
+    }
+
+}

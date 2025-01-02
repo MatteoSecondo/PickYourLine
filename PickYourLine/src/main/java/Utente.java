@@ -1,8 +1,12 @@
-
 public abstract class Utente {
-	private String codice;
+    public String codice;
 
-	public String getCodice() {
-		return codice;
-	}
+    public Utente(String codice) {
+        this.codice = codice;
+    }
+
+    public String getCodice() {
+        return codice;
+    }
+
 }

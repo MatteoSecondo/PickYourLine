@@ -14,7 +14,8 @@ public class Main {
 		while(true) {
 			System.out.println("\nScegli tra le operazioni disponibili.");
 			System.out.println("0- Esci\n"
-					+ "1- Cerca itinerario");
+					+ "1- Cerca itinerario\n"
+					+ "2- Timbra biglietto");
 
 			int scelta = sc.nextInt();
 
@@ -96,7 +97,7 @@ public class Main {
 		int scelta;
 		
 		do {
-			Biglietto b;
+			Biglietto b = null;
 			
 			do {
 				System.out.println("\nInserisci il codice del biglietto");
@@ -126,7 +127,7 @@ public class Main {
 		} while(scelta != 0);
 		
 		String nomeFermata;
-		boolean successo;
+		boolean successo = false;
 		
 		do {
 			System.out.println("Inserisci il nome della fermata in cui ti trovi");

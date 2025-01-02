@@ -33,17 +33,21 @@ public class Citta {
         return elencoFermate;
     }
 
-    @Override
-    public String toString() {
-        return "Citta{" +
-                "codice='" + codice + '\'' +
-                ", nome='" + nome + '\'' +
-                '}';
-    }
-
     public  void loadFermate(List<Fermata> f) {
     	this.elencoFermate = f;
     }
+    
+    public Fermata getFermata(String nomeFermata) {
+    	Fermata fermata = null;
+    	
+    	for (Fermata f : this.elencoFermate) {
+    		fermata = f.getFermata(nomeFermata);
+			
+			if(fermata != null) break;
+		}
+		
+		return fermata;
+	}
     
     @Override
     public boolean equals(Object o) {
@@ -51,6 +55,14 @@ public class Citta {
         if (o == null || getClass() != o.getClass()) return false;
         Citta citta = (Citta) o;
         return this.codice == citta.codice && this.nome.equals(citta.nome);
+    }
+    
+    @Override
+    public String toString() {
+        return "Citta{" +
+                "codice='" + codice + '\'' +
+                ", nome='" + nome + '\'' +
+                '}';
     }
 
 }

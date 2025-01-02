@@ -12,6 +12,14 @@ public class Fermata {
     public void setNome(String nome) {
         this.nome = nome;
     }
+    
+    public Fermata getFermata(String nomeFermata) {
+    	if(this.nome.equals(nomeFermata)) {
+    		return this;
+    	}
+    	
+    	return null;
+    }
 
     @Override
     public String toString() {

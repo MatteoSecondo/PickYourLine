@@ -326,14 +326,15 @@ public class PickYourLine {
 		co.confermaInserimento();
 	}
 	
-	public void terminaInserimento(String nomeFermata) {
+	public void terminaInserimento(String nomeFermata) throws Exception {
 		Controllore co = (Controllore) this.utenteCorrente;
 		
-		Fermata f;
-		this.elencoCitta.forEach((key, c) -> {
+		Fermata f = null;
+		
+		for (Citta c : this.elencoCitta.values()) {
 			f = c.getFermata(nomeFermata);
 			if(f != null) break;
-		});
+		}
 		
 		if(f == null) {
 			throw new Exception("Nome fermata non esistente.");

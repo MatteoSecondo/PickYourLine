@@ -1,58 +1,79 @@
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.Map;
 
+
 public class Automezzo {
+
     private String codice;
     private int posti;
     private LocalTime orarioUltimaTimbratura;
-    private Fermata posizioneAttuale;
-    private Map<String,Biglietto> elencoBiglietti;
+    private StatoAutomezzo stato;
+    private Map<String, Biglietto> elencoBiglietti;
     private Biglietto bigliettoCorrente;
 
+
     public Automezzo(String codice, int posti) {
+        elencoBiglietti = new HashMap<>();
+        bigliettoCorrente = null;
         this.codice = codice;
         this.posti = posti;
-        this.orarioUltimaTimbratura = null;
-        this.posizioneAttuale = null;
-        this.elencoBiglietti = null;
-        this.bigliettoCorrente = null;
+        this.stato = new NonInTransito();
     }
 
-    public void setPosizioneAttuale(Fermata posizioneAttuale) {
-        this.posizioneAttuale = posizioneAttuale;
+    public String getCodice() {
+        return codice;
+    }
+
+    public void setCodice(String codice) {
+        this.codice = codice;
+    }
+
+
+    public int getPosti() {
+        return posti;
+    }
+
+    public void setPosti(int posti) {
+        this.posti = posti;
+    }
+
+    public LocalTime getOrarioUltimaTimbratura() {
+        return orarioUltimaTimbratura;
     }
 
     public void setOrarioUltimaTimbratura(LocalTime orarioUltimaTimbratura) {
         this.orarioUltimaTimbratura = orarioUltimaTimbratura;
     }
 
-    public Biglietto getBigliettoCorrente() {
-        return bigliettoCorrente;
-    }
-
-    public void setBigliettoCorrente(Biglietto bigliettoCorrente) {
-        this.bigliettoCorrente = bigliettoCorrente;
-    }
-
-    public Map<String, Biglietto> getElencoBiglietti() {
-        return elencoBiglietti;
-    }
-
-    public void setElencoBiglietti(Map<String, Biglietto> elencoBiglietti) {
+    public void loadBiglietti(Map<String, Biglietto> elencoBiglietti){
         this.elencoBiglietti = elencoBiglietti;
     }
 
-    public int getPostiDisponibili() {
+    public int getPostiDisponibili(){
         return posti - elencoBiglietti.size();
     }
 
-    public Biglietto creaBiglietto(String codice,Citta cittaPartenza, Citta cittaDestinazione) {
-        return new Biglietto(codice,cittaPartenza,cittaDestinazione);
+    public Biglietto creaBiglietto(String codice, int cittaPartenza, int cittaDestinazione){
+        Biglietto nuovoBiglietto = new Biglietto(codice, cittaPartenza, cittaDestinazione);
+        this.bigliettoCorrente = nuovoBiglietto;
+        return nuovoBiglietto;
     }
 
     public void inserisciBiglietto() {
-        elencoBiglietti.put(bigliettoCorrente.getCodice(),bigliettoCorrente);
+
+        elencoBiglietti.put(bigliettoCorrente.getCodice(), bigliettoCorrente);
         setBigliettoCorrente(null);
+
+    }
+
+    public void setBigliettoCorrente(Biglietto biglietto) {
+        this.bigliettoCorrente = biglietto;
+    }
+
+    public void cambiaStato() {
+
+        this.stato.cambiaStato();
     }
 
     @Override
@@ -61,9 +82,8 @@ public class Automezzo {
                 "codice='" + codice + '\'' +
                 ", posti=" + posti +
                 ", orarioUltimaTimbratura=" + orarioUltimaTimbratura +
-                ", posizioneAttuale=" + posizioneAttuale +
-                ", elencoBiglietti=" + elencoBiglietti +
-                ", bigliettoCorrente=" + bigliettoCorrente +
+                ", stato=" + stato +
                 '}';
     }
+
 }

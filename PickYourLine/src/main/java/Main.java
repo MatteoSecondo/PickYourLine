@@ -26,6 +26,9 @@ public class Main {
 				case 1:
 					cercaItinerario(sc);
 					break;
+				case 2:
+					timbraBiglietto(sc);
+					break;
 				}
 		}
 	}
@@ -85,6 +88,57 @@ public class Main {
 		}
 		
 		pickYourLine.setCittaPartenzaCorrente(null);
+	}
+	
+	public static void timbraBiglietto(Scanner sc) {
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+		
+		int scelta;
+		
+		do {
+			Biglietto b;
+			
+			do {
+				System.out.println("\nInserisci il codice del biglietto");
+				sc = new Scanner(System.in);
+				String codiceBiglietto = sc.nextLine();
+				System.out.println("\nInserisci il codice della città di partenza");
+				int codiceCittaPartenza = sc.nextInt();
+				System.out.println("\nInserisci il codice della città di destinazione");
+				int codiceCittaDestinazione = sc.nextInt();
+	
+				try {
+					b = pickYourLine.timbraBiglietto(null, codiceCittaPartenza, codiceCittaPartenza);
+				} catch (Exception e) {
+					System.out.println("\n" + e.getMessage());
+				}
+			} while(b == null);
+			
+			System.out.println(b);
+			System.out.println("\nInserisci 0 per annullare l'inserimento, altrimenti qualsiasi per confermare");
+			
+			if(sc.nextInt() != 0) {
+				pickYourLine.confermaInserimento();
+			}
+			
+			System.out.println("Inserisci 0 per terminare l'inserimento, altrimenti qualsiasi per continuare");
+			scelta = sc.nextInt();
+		} while(scelta != 0);
+		
+		String nomeFermata;
+		boolean successo;
+		
+		do {
+			System.out.println("Inserisci il nome della fermata in cui ti trovi");
+			nomeFermata = sc.nextLine();
+			
+			try {
+				pickYourLine.terminaInserimento(nomeFermata);
+				successo = true;
+			} catch (Exception e) {
+				System.out.println("\n" + e.getMessage());
+			}
+		} while(!successo);
 	}
 
 }

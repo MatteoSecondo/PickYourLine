@@ -142,6 +142,42 @@ class PickYourLineTest {
 				pickYourLine.visualizzaItinerario("Catania-Salerno", itinerario));
 		assertEquals("Codice itinerario non idoneo alla ricerca effettuata.", exception.getMessage());
 	}
+	
+	@Test
+	@DisplayName("Test visualizzazione automezzi in transito")
+	void testVisualizzaAutomezziInTransito() {
+		Automezzo a = new Automezzo("H23", 25, this.pickYourLine.getElencoItinerari().get("Randazzo-Catania"), null);
+		this.pickYourLine.getElencoAutomezzi().put("H23", a);
+		
+		Controllore co = new Controllore("f5b3");
+		co.setAutomezzoSupervisionato(a);
+		this.pickYourLine.getElencoControllori().put("f5b3", co);
+		
+		this.pickYourLine.getElencoControllori().put("n7j5", new Controllore("n7j5"));
+		this.pickYourLine.getElencoControllori().put("h1ig", new Controllore("h1ig"));
+		this.pickYourLine.getElencoControllori().put("ba56", new Controllore("ba56"));
+		this.pickYourLine.getElencoControllori().put("zy31", new Controllore("zy31"));
+		
+		Map<String, Automezzo> elencoAutomezziInTransitoAtteso = new HashMap<String, Automezzo>();
+		
+		elencoAutomezziInTransitoAtteso.put(a.getCodice(), a);
+		
+		Map<String, Automezzo> elencoAutomezziInTransito = pickYourLine.visualizzaAutomezziInTransito();
+		
+		assertEquals(elencoAutomezziInTransitoAtteso, elencoAutomezziInTransito, "Elenco automezzi in transito non corretto");
+	}
+	
+	@Test
+	@DisplayName("Test visualizzazione automezzo, codice non valido")
+	void testVisualizzaAutomezzo() {
+		Map<String, Automezzo> elencoAutomezziInTransito = new HashMap<String, Automezzo>();
+		Automezzo a = new Automezzo("H23", 25, this.pickYourLine.getElencoItinerari().get("Randazzo-Catania"), null);
+		elencoAutomezziInTransito.put(a.getCodice(), a);
+		
+		Exception exception = assertThrows(Exception.class, () ->
+			pickYourLine.visualizzaAutomezzo("H24", elencoAutomezziInTransito));
+		assertEquals("Codice automezzo non valido.", exception.getMessage());
+	}
 
 
 }

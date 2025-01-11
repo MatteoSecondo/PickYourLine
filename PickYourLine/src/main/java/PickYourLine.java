@@ -16,6 +16,8 @@ public class PickYourLine {
 	private PickYourLine() {
 		this.elencoItinerari = new HashMap<String, Itinerario>();
 		this.elencoCitta = new HashMap<Integer, Citta>();
+		this.elencoControllori = new HashMap<String, Controllore>();
+		this.elencoAutomezzi = new HashMap<String, Automezzo>();
 	}
 	
 	public static PickYourLine getInstance() {
@@ -48,6 +50,10 @@ public class PickYourLine {
 	
 	public Map<String, Itinerario> getElencoItinerari() {
 		return elencoItinerari;
+	}
+
+	public void setElencoItinerari(Map<String, Itinerario> elencoItinerari) {
+		this.elencoItinerari = elencoItinerari;
 	}
 
 	public Map<String, Controllore> getElencoControllori() {
@@ -156,8 +162,8 @@ public class PickYourLine {
 		f15.add(new Fermata("Bronte Nord"));
 		this.elencoCitta.put(15, new Citta(15, "Bronte", f15));
 		
-		/*this.elencoCitta.put(16, new Citta(16, "Aci Castello"));
-		this.elencoCitta.put(17, new Citta(17, "Aci Sant'Antonio"));
+		this.elencoCitta.put(16, new Citta(16, "Aci Castello", new ArrayList<>()));
+		/*this.elencoCitta.put(17, new Citta(17, "Aci Sant'Antonio"));
 		this.elencoCitta.put(18, new Citta(18, "Scordia"));
 		this.elencoCitta.put(19, new Citta(19, "Palagonia"));
 		this.elencoCitta.put(20, new Citta(20, "Riposto"));
@@ -226,7 +232,10 @@ public class PickYourLine {
 	}
 
 	public void loadControllori() {
-		this.elencoControllori.put("f5b3", new Controllore("f5b3"));
+		Controllore co = new Controllore("f5b3");
+		this.elencoControllori.put("f5b3", co);
+		setUtenteCorrente(co);
+		
 		this.elencoControllori.put("n7j5", new Controllore("n7j5"));
 		this.elencoControllori.put("h1ig", new Controllore("h1ig"));
 		this.elencoControllori.put("ba56", new Controllore("ba56"));
@@ -238,11 +247,16 @@ public class PickYourLine {
 		b1.put("g7rbc8", new Biglietto("g7rbc8", elencoCitta.get(1), elencoCitta.get(3)));
 		b1.put("b8rbhc", new Biglietto("b8rbhc", elencoCitta.get(1), elencoCitta.get(5)));
 		b1.put("ypc8jf", new Biglietto("ypc8jf", elencoCitta.get(1), elencoCitta.get(4)));
-		this.elencoAutomezzi.put("H23", new Automezzo("H23", 25, b1));
+		
+		Automezzo a = new Automezzo("H23", 25, this.getElencoItinerari().get("Catania-Randazzo"),b1);
+		this.elencoAutomezzi.put("H23", a);
 		this.elencoAutomezzi.put("B51", new Automezzo("B51", 20));
 		this.elencoAutomezzi.put("Z22", new Automezzo("Z22", 25));
 		this.elencoAutomezzi.put("Y77", new Automezzo("Y77", 30));
 		this.elencoAutomezzi.put("C98", new Automezzo("C98", 25));
+		
+		Controllore co =(Controllore) utenteCorrente;
+		co.setAutomezzoSupervisionato(a);
 	}
 	
 	public void cercaItinerario() {
@@ -308,14 +322,31 @@ public class PickYourLine {
 		}
 		
 		Citta cittaPartenza = this.elencoCitta.get(codiceCittaPartenza);
-		Citta cittaDestinazione = this.elencoCitta.get(codiceCittaDestinazione);
 		
-		if(cittaPartenza == null) {
-			throw new Exception("Codice citta di partenza non esistente.");
+		Fermata posizioneAttuale = co.getAutomezzoSupervisionato().getPosizioneAttuale();
+		
+		List<Citta> percorsoItinerarioAssegnato = co.getAutomezzoSupervisionato().getItinerarioAssegnato().getPercorso();
+		Citta cittaAttuale = null;
+		
+		for (Citta c : percorsoItinerarioAssegnato) {
+			if(c.getElencoFermate().contains(posizioneAttuale)) {
+				cittaAttuale = c;
+				break;
+			}
 		}
 		
-		if(cittaDestinazione == null) {
-			throw new Exception("Codice citta di destinazione non esistente.");
+		if(cittaPartenza != cittaAttuale) {
+			throw new Exception("Non è possibile partire da una città diversa da quella attuale.");
+		}
+		
+		setCittaPartenzaCorrente(cittaPartenza);
+		
+		Citta cittaDestinazione = this.elencoCitta.get(codiceCittaDestinazione);
+		
+		Itinerario i = co.getAutomezzoSupervisionato().getItinerarioAssegnato().getSeDisponibile(cittaDestinazione);
+		
+		if(i == null) {
+			throw new Exception("Almeno una delle due citta non è presente nel percorso o l'ordine di percorrenza non è corretto.");
 		}
 		
 		return co.creaBiglietto(codice, cittaPartenza, cittaDestinazione);
@@ -326,21 +357,23 @@ public class PickYourLine {
 		co.confermaInserimento();
 	}
 	
+	//cambio nome e posizione nel main
 	public void terminaInserimento(String nomeFermata) throws Exception {
 		Controllore co = (Controllore) this.utenteCorrente;
 		
+		List<Citta> percorsoItinerarioAssegnato = co.getAutomezzoSupervisionato().getItinerarioAssegnato().getPercorso();
 		Fermata f = null;
 		
-		for (Citta c : this.elencoCitta.values()) {
+		for (Citta c : percorsoItinerarioAssegnato) {
 			f = c.getFermata(nomeFermata);
 			if(f != null) break;
 		}
 		
 		if(f == null) {
-			throw new Exception("Nome fermata non esistente.");
+			throw new Exception("Nome fermata non consentito.");
 		}
 		
 		co.aggiornaPosizione(f);
-		co.aggiornaOrarioUltimaTimbratura();
+		//co.aggiornaOrarioUltimaTimbratura();
 	}
 }

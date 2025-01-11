@@ -7,11 +7,12 @@ public class Automezzo {
 
     private String codice;
     private int posti;
-    private LocalTime orarioUltimaTimbratura;
     private StatoAutomezzo stato;
-    private Map<String, Biglietto> elencoBiglietti;
+    private LocalTime orarioUltimaTimbratura;
     private Biglietto bigliettoCorrente;
+    private Map<String, Biglietto> elencoBiglietti;
     private Fermata posizioneAttuale;
+    private Itinerario itinerarioAssegnato;
 
     public Automezzo(String codice, int posti) {
         this.elencoBiglietti = new HashMap<String, Biglietto>();
@@ -20,10 +21,11 @@ public class Automezzo {
         this.stato = new NonInTransito();
     }
     
-    public Automezzo(String codice, int posti, Map<String, Biglietto> elencoBiglietti) {
+    public Automezzo(String codice, int posti, Itinerario i, Map<String, Biglietto> elencoBiglietti) {
         this.elencoBiglietti = elencoBiglietti;
         this.codice = codice;
         this.posti = posti;
+        this.itinerarioAssegnato = i;
         this.stato = new InTransito();
     }
 
@@ -60,7 +62,11 @@ public class Automezzo {
         this.posizioneAttuale = posizioneAttuale;
     }
 
-    public void loadBiglietti(Map<String, Biglietto> elencoBiglietti){
+    public Itinerario getItinerarioAssegnato() {
+		return itinerarioAssegnato;
+	}
+
+	public void loadBiglietti(Map<String, Biglietto> elencoBiglietti){
         this.elencoBiglietti = elencoBiglietti;
     }
 
@@ -75,10 +81,8 @@ public class Automezzo {
     }
 
     public void inserisciBiglietto() {
-
         elencoBiglietti.put(bigliettoCorrente.getCodice(), bigliettoCorrente);
         setBigliettoCorrente(null);
-
     }
 
     public void setBigliettoCorrente(Biglietto biglietto) {

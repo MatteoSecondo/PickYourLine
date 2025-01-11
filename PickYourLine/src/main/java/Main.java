@@ -7,6 +7,8 @@ public class Main {
 		PickYourLine pickYourLine = PickYourLine.getInstance();
 		pickYourLine.loadCitta();
 		pickYourLine.loadItinerari();
+		pickYourLine.loadControllori();
+		pickYourLine.loadAutomezzi();
 
 		System.out.println("Benvenuto!");
 		Scanner sc = new Scanner(System.in);
@@ -96,6 +98,23 @@ public class Main {
 		
 		int scelta;
 		
+		//TODO: cambio metodo di input della fermata tramite menu
+		String nomeFermata;
+		boolean successo = false;
+		
+		do {
+			sc = new Scanner(System.in);
+			System.out.println("Inserisci il nome della fermata in cui ti trovi, altrimenti 0 per uscire");
+			nomeFermata = sc.nextLine();
+			
+			try {
+				pickYourLine.terminaInserimento(nomeFermata);
+				successo = true;
+			} catch (Exception e) {
+				System.out.println("\n" + e.getMessage());
+			}
+		} while(!successo);
+		
 		do {
 			Biglietto b = null;
 			
@@ -109,7 +128,7 @@ public class Main {
 				int codiceCittaDestinazione = sc.nextInt();
 	
 				try {
-					b = pickYourLine.timbraBiglietto(null, codiceCittaPartenza, codiceCittaPartenza);
+					b = pickYourLine.timbraBiglietto(codiceBiglietto, codiceCittaPartenza, codiceCittaDestinazione);
 				} catch (Exception e) {
 					System.out.println("\n" + e.getMessage());
 				}
@@ -126,20 +145,8 @@ public class Main {
 			scelta = sc.nextInt();
 		} while(scelta != 0);
 		
-		String nomeFermata;
-		boolean successo = false;
-		
-		do {
-			System.out.println("Inserisci il nome della fermata in cui ti trovi");
-			nomeFermata = sc.nextLine();
-			
-			try {
-				pickYourLine.terminaInserimento(nomeFermata);
-				successo = true;
-			} catch (Exception e) {
-				System.out.println("\n" + e.getMessage());
-			}
-		} while(!successo);
+		Controllore co = (Controllore) pickYourLine.getUtenteCorrente();
+		co.aggiornaOrarioUltimaTimbratura();
 	}
 
 }

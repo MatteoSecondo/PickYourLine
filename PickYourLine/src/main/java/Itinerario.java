@@ -43,7 +43,11 @@ public class Itinerario{
         this.orarioArrivo = orario_arrivo;
     }
 
-    public Itinerario getSeDisponibile(Citta cittaDestinazione){
+    public List<Citta> getPercorso() {
+		return percorso;
+	}
+
+	public Itinerario getSeDisponibile(Citta cittaDestinazione){
         
     	PickYourLine pickYourLine = PickYourLine.getInstance();
     	Citta cittaPartenzaCorrente = pickYourLine.getCittaPartenzaCorrente();

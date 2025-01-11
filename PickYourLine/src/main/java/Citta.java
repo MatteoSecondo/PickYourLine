@@ -6,11 +6,10 @@ public class Citta {
     private String nome;
     private List<Fermata> elencoFermate;
 
-    public Citta(int codice, String nome, List<Fermata> f) {
+    public Citta(int codice, String nome) {
         this.codice = codice;
         this.nome = nome;
         this.elencoFermate = new ArrayList<>();
-        loadFermate(f);
     }
 
     public int getCodice() {

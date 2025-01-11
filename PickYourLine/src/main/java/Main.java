@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -40,7 +41,7 @@ public class Main {
 	public static void cercaItinerario(Scanner sc) {
 		PickYourLine pickYourLine = PickYourLine.getInstance();
 
-		pickYourLine.cercaItinerario();
+		pickYourLine.visualizzaElencoCittaPartenza();
 		
 		Map<Integer, Citta> elencoDestinazioniDisponibili = null;
 		int codiceCittaPartenza;
@@ -94,20 +95,35 @@ public class Main {
 	
 	public static void timbraBiglietto(Scanner sc) {
 		PickYourLine pickYourLine = PickYourLine.getInstance();
+		Controllore co = (Controllore) pickYourLine.getUtenteCorrente();
 		
 		int scelta;
-		
-		//TODO: cambio metodo di input della fermata tramite menu
+	
 		String nomeFermata;
 		boolean successo = false;
 		
 		do {
+			Citta cittaAttuale = co.getAutomezzoSupervisionato().getPosizioneAttuale().getCittaDiAppartenenza();
+			
+			System.out.println("\nFermate di " + cittaAttuale.getNome() + "(Citta Attuale):");
+			cittaAttuale.getElencoFermate().forEach(f -> System.out.println(f.getNome()));
+			
+			List<Citta> percorso = co.getAutomezzoSupervisionato().getItinerarioAssegnato().getPercorso();
+			
+			int indexProssimaCitta = percorso.indexOf(cittaAttuale) + 1;
+			Citta prossimaCitta = percorso.get(indexProssimaCitta);
+			
+			System.out.println("\nFermate di " + prossimaCitta.getNome() + "(Prossima Citta):");
+			prossimaCitta.getElencoFermate().forEach(f -> System.out.println(f.getNome()));
+			
 			sc = new Scanner(System.in);
-			System.out.println("Inserisci il nome della fermata in cui ti trovi, altrimenti 0 per uscire");
+			System.out.println("\nInserisci il nome della fermata in cui ti trovi, altrimenti 0 per uscire");
 			nomeFermata = sc.nextLine();
 			
+			if(nomeFermata.equals("0")) return;
+			
 			try {
-				pickYourLine.terminaInserimento(nomeFermata);
+				pickYourLine.aggiornaPosizioneAutomezzo(nomeFermata);
 				successo = true;
 			} catch (Exception e) {
 				System.out.println("\n" + e.getMessage());
@@ -144,8 +160,7 @@ public class Main {
 			scelta = sc.nextInt();
 		} while(scelta != 0);
 		
-		Controllore co = (Controllore) pickYourLine.getUtenteCorrente();
-		co.aggiornaOrarioUltimaTimbratura();
+		pickYourLine.terminaInserimento();
 	}
 
 }

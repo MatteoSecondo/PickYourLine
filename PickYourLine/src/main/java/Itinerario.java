@@ -48,8 +48,6 @@ public class Itinerario{
 	}
 
 	public Itinerario getSeDisponibile(Citta cittaPartenza, Citta cittaDestinazione){
-        
-    	PickYourLine pickYourLine = PickYourLine.getInstance();
     	
         if (this.percorso.contains(cittaPartenza) && this.percorso.contains(cittaDestinazione)) {
 

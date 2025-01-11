@@ -26,6 +26,7 @@ public class Automezzo {
         this.codice = codice;
         this.posti = posti;
         this.itinerarioAssegnato = i;
+        this.posizioneAttuale = this.itinerarioAssegnato.getPercorso().getFirst().getElencoFermate().getFirst();
         this.stato = new InTransito();
     }
 

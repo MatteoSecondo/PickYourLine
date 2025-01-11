@@ -1,8 +1,11 @@
 public class Fermata {
-    public String nome;
+	
+    private String nome;
+    private Citta cittaDiAppartenenza;
 
-    public Fermata(String nome) {
+    public Fermata(String nome, Citta c) {
         this.nome = nome;
+        this.cittaDiAppartenenza = c;
     }
 
     public String getNome() {
@@ -13,7 +16,15 @@ public class Fermata {
         this.nome = nome;
     }
     
-    public Fermata getFermata(String nomeFermata) {
+    public Citta getCittaDiAppartenenza() {
+		return cittaDiAppartenenza;
+	}
+
+	public void setCittaDiAppartenenza(Citta cittaDiAppartenenza) {
+		this.cittaDiAppartenenza = cittaDiAppartenenza;
+	}
+
+	public Fermata getFermata(String nomeFermata) {
     	if(this.nome.equals(nomeFermata)) {
     		return this;
     	}
@@ -21,10 +32,8 @@ public class Fermata {
     	return null;
     }
 
-    @Override
-    public String toString() {
-        return "Fermata{" +
-                "nome='" + nome + '\'' +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "Fermata [nome=" + nome + ", cittaDiAppartenenza=" + cittaDiAppartenenza + "]";
+	}
 }

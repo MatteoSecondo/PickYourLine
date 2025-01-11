@@ -25,9 +25,9 @@ class ItinerarioTest {
 
     @BeforeAll
     void setUpAll() {
-        milano = new Citta(1, "Milano", null);
-        roma = new Citta(2, "Roma", null);
-        napoli = new Citta(3, "Napoli", null);
+        milano = new Citta(1, "Milano");
+        roma = new Citta(2, "Roma");
+        napoli = new Citta(3, "Napoli");
 
         List<Citta> percorso = new ArrayList<>();
         percorso.add(milano);
@@ -60,7 +60,7 @@ class ItinerarioTest {
     @DisplayName("Test eccezione di città non appartenente al percorso")
     void testGetSeDisponibile_CittaNonNelPercorso() {
         // Test città non nel percorso
-        Citta torino = new Citta(4, "Torino", null);
+        Citta torino = new Citta(4, "Torino");
         Itinerario result = itinerario.getSeDisponibile(milano, torino);
         assertNull(result, "Il risultato dovrebbe essere null per una città che non è nel percorso.");
     }
@@ -100,7 +100,7 @@ class ItinerarioTest {
     @DisplayName("Test eccezione di città non appartenente al percorso")
     void testGetDestinazioniDisponibili_CittaNonInPercorso() {
         // Test partendo da una città non nel percorso (Torino)
-        Citta torino = new Citta(4, "Torino", null);
+        Citta torino = new Citta(4, "Torino");
         Map<Integer, Citta> destinazioni = itinerario.getDestinazioniDisponibili(torino);
 
         assertTrue(destinazioni.isEmpty(), "Non ci dovrebbero essere destinazioni disponibili per una città non nel percorso.");

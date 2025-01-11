@@ -44,8 +44,7 @@ class ItinerarioTest {
     @DisplayName("Test funzionamento corretto di disponibilità")
     void testGetSeDisponibile_Positivo() {
         // Test caso positivo: Milano -> Roma
-        PickYourLine.getInstance().setCittaPartenzaCorrente(milano);
-        Itinerario result = itinerario.getSeDisponibile(roma);
+        Itinerario result = itinerario.getSeDisponibile(milano, roma);
         assertNotNull(result, "Il risultato non dovrebbe essere null per una direzione valida.");
     }
 
@@ -53,8 +52,7 @@ class ItinerarioTest {
     @DisplayName("Test funzionamento corretto di disponibilità, direzione inversa")
     void testGetSeDisponibile_Negativo() {
         // Test caso negativo: Roma -> Milano (direzione inversa)
-        PickYourLine.getInstance().setCittaPartenzaCorrente(roma);
-        Itinerario result = itinerario.getSeDisponibile(milano);
+        Itinerario result = itinerario.getSeDisponibile(roma, milano);
         assertNull(result, "Il risultato dovrebbe essere null per la direzione inversa.");
     }
 
@@ -63,7 +61,7 @@ class ItinerarioTest {
     void testGetSeDisponibile_CittaNonNelPercorso() {
         // Test città non nel percorso
         Citta torino = new Citta(4, "Torino", null);
-        Itinerario result = itinerario.getSeDisponibile(torino);
+        Itinerario result = itinerario.getSeDisponibile(milano, torino);
         assertNull(result, "Il risultato dovrebbe essere null per una città che non è nel percorso.");
     }
 
@@ -71,8 +69,7 @@ class ItinerarioTest {
     @DisplayName("Test funzionamento corretto di disponibilità, più destinazioni")
     void testGetDestinazioniDisponibili_ContienePiuDestinazioni() {
         // Test partendo da Milano (deve ritornare Roma e Napoli)
-        PickYourLine.getInstance().setCittaPartenzaCorrente(milano);
-        Map<Integer, Citta> destinazioni = itinerario.getDestinazioniDisponibili();
+        Map<Integer, Citta> destinazioni = itinerario.getDestinazioniDisponibili(milano);
 
         assertEquals(2, destinazioni.size(), "Dovrebbero esserci 2 destinazioni disponibili.");
         assertTrue(destinazioni.containsValue(roma), "Roma dovrebbe essere disponibile.");
@@ -83,8 +80,7 @@ class ItinerarioTest {
     @DisplayName("Test funzionamento corretto di disponibilità, una destinazione")
     void testGetDestinazioniDisponibili_ContieneUnaDestinazioni() {
         // Test partendo da Roma (deve ritornare solo Napoli)
-        PickYourLine.getInstance().setCittaPartenzaCorrente(roma);
-        Map<Integer, Citta> destinazioni = itinerario.getDestinazioniDisponibili();
+        Map<Integer, Citta> destinazioni = itinerario.getDestinazioniDisponibili(roma);
 
         assertEquals(1, destinazioni.size(), "Dovrebbe esserci 1 destinazione disponibile.");
         assertTrue(destinazioni.containsValue(napoli), "Napoli dovrebbe essere disponibile.");
@@ -95,8 +91,7 @@ class ItinerarioTest {
     @DisplayName("Test funzionamento corretto di disponibilità, nessuna destinazione")
     void testGetDestinazioniDisponibili_ContieneNessunaDestinazione() {
         // Test partendo da Napoli (nessuna destinazione disponibile)
-        PickYourLine.getInstance().setCittaPartenzaCorrente(napoli);
-        Map<Integer, Citta> destinazioni = itinerario.getDestinazioniDisponibili();
+        Map<Integer, Citta> destinazioni = itinerario.getDestinazioniDisponibili(napoli);
 
         assertTrue(destinazioni.isEmpty(), "Non ci dovrebbero essere destinazioni disponibili.");
     }
@@ -106,8 +101,7 @@ class ItinerarioTest {
     void testGetDestinazioniDisponibili_CittaNonInPercorso() {
         // Test partendo da una città non nel percorso (Torino)
         Citta torino = new Citta(4, "Torino", null);
-        PickYourLine.getInstance().setCittaPartenzaCorrente(torino);
-        Map<Integer, Citta> destinazioni = itinerario.getDestinazioniDisponibili();
+        Map<Integer, Citta> destinazioni = itinerario.getDestinazioniDisponibili(torino);
 
         assertTrue(destinazioni.isEmpty(), "Non ci dovrebbero essere destinazioni disponibili per una città non nel percorso.");
     }

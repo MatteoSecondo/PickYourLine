@@ -7,7 +7,6 @@ import java.util.Map;
 public class PickYourLine {
 	private static PickYourLine pickYourLine;
 	private Utente utenteCorrente;
-	private Citta cittaPartenzaCorrente;
 	private Map<Integer, Citta> elencoCitta;
 	private Map<String, Itinerario> elencoItinerari;
 	private Map<String, Controllore> elencoControllori;
@@ -34,14 +33,6 @@ public class PickYourLine {
 
 	public void setUtenteCorrente(Utente utenteCorrente) {
 		this.utenteCorrente = utenteCorrente;
-	}
-	
-	public Citta getCittaPartenzaCorrente() {
-		return cittaPartenzaCorrente;
-	}
-
-	public void setCittaPartenzaCorrente(Citta cittaPartenzaCorrente) {
-		this.cittaPartenzaCorrente = cittaPartenzaCorrente;
 	}
 	
 	public Map<Integer, Citta> getElencoCitta() {
@@ -270,20 +261,19 @@ public class PickYourLine {
 			throw new Exception("Codice città non esistente.");
 		}
 		
-		setCittaPartenzaCorrente(cittaPartenza);
 		Map<Integer, Citta> elencoDestinazioniDisponibili = new HashMap<Integer, Citta>();
 		
 		this.elencoItinerari.forEach((key, i) -> {
-			elencoDestinazioniDisponibili.putAll(i.getDestinazioniDisponibili());
+			elencoDestinazioniDisponibili.putAll(i.getDestinazioniDisponibili(cittaPartenza));
 		});
 		
 		return elencoDestinazioniDisponibili;
 	}
 
-	public Map<String, Itinerario> inserisciCittaDestinazione(int codiceCittaDestinazione, Map<Integer, Citta> elencoDestinazioniDisponibili) throws Exception{
+	public Map<String, Itinerario> inserisciCittaDestinazione(int codiceCittaPartenza, int codiceCittaDestinazione, Map<Integer, Citta> elencoDestinazioniDisponibili) throws Exception{
 		Citta cittaDestinazione = elencoDestinazioniDisponibili.get(codiceCittaDestinazione);
 		
-		if(this.cittaPartenzaCorrente.equals(this.getElencoCitta().get(codiceCittaDestinazione))) {
+		if(this.getElencoCitta().get(codiceCittaPartenza).equals(this.getElencoCitta().get(codiceCittaDestinazione))) {
 			throw new Exception("La città di partenza e quella di destinazione sono la stessa città.");
 		} else if(cittaDestinazione == null) {
 			throw new Exception("Codice città non non idoneo alla ricerca effettuata.");
@@ -292,7 +282,7 @@ public class PickYourLine {
 		Map<String, Itinerario> itinerariDaVisualizare = new HashMap<String, Itinerario>();
 		
 		for (Itinerario itinerario : this.elencoItinerari.values()) {
-			Itinerario i = itinerario.getSeDisponibile(cittaDestinazione);
+			Itinerario i = itinerario.getSeDisponibile(this.getElencoCitta().get(codiceCittaPartenza), cittaDestinazione);
 			
 			if(i != null) {
 				itinerariDaVisualizare.put(i.getCodice(), i);
@@ -339,11 +329,11 @@ public class PickYourLine {
 			throw new Exception("Non è possibile partire da una città diversa da quella attuale.");
 		}
 		
-		setCittaPartenzaCorrente(cittaPartenza);
+		//setCittaPartenzaCorrente(cittaPartenza);
 		
 		Citta cittaDestinazione = this.elencoCitta.get(codiceCittaDestinazione);
 		
-		Itinerario i = co.getAutomezzoSupervisionato().getItinerarioAssegnato().getSeDisponibile(cittaDestinazione);
+		Itinerario i = co.getAutomezzoSupervisionato().getItinerarioAssegnato().getSeDisponibile(this.getElencoCitta().get(codiceCittaPartenza), cittaDestinazione);
 		
 		if(i == null) {
 			throw new Exception("Almeno una delle due citta non è presente nel percorso o l'ordine di percorrenza non è corretto.");
@@ -374,6 +364,5 @@ public class PickYourLine {
 		}
 		
 		co.aggiornaPosizione(f);
-		//co.aggiornaOrarioUltimaTimbratura();
 	}
 }

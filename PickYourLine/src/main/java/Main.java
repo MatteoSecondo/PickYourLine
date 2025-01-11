@@ -43,11 +43,12 @@ public class Main {
 		pickYourLine.cercaItinerario();
 		
 		Map<Integer, Citta> elencoDestinazioniDisponibili = null;
+		int codiceCittaPartenza;
 
 		do {
 			System.out.println("\nInserisci il codice della città di partenza");
 			sc = new Scanner(System.in);
-			int codiceCittaPartenza = sc.nextInt();
+			codiceCittaPartenza = sc.nextInt();
 
 			try {
 				elencoDestinazioniDisponibili = pickYourLine.inserisciCittaPartenza(codiceCittaPartenza);
@@ -66,7 +67,7 @@ public class Main {
 			int codiceCittaDestinazione = sc.nextInt();
 
 			try {
-				itinerariDisponibili = pickYourLine.inserisciCittaDestinazione(codiceCittaDestinazione, elencoDestinazioniDisponibili);
+				itinerariDisponibili = pickYourLine.inserisciCittaDestinazione(codiceCittaPartenza, codiceCittaDestinazione, elencoDestinazioniDisponibili);
 			} catch (Exception e) {
 				System.out.println("\n" + e.getMessage());
 			}
@@ -89,8 +90,6 @@ public class Main {
 				System.out.println("\n" + e.getMessage());
 			}
 		}
-		
-		pickYourLine.setCittaPartenzaCorrente(null);
 	}
 	
 	public static void timbraBiglietto(Scanner sc) {

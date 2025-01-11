@@ -36,13 +36,11 @@ class PickYourLineTest {
 	@BeforeEach
 	void setup() throws Exception {
 		this.pickYourLine.loadItinerari();
-		this.pickYourLine.setCittaPartenzaCorrente(this.pickYourLine.getElencoCitta().get(1));
 		MockitoAnnotations.openMocks(this);
 	}
 
 	@AfterAll
 	void tearDownAll() throws Exception {
-		this.pickYourLine.setCittaPartenzaCorrente(null);
 	}
 	
 	@Test
@@ -92,13 +90,13 @@ class PickYourLineTest {
 		this.elencoDestinazioniDisponibili = new HashMap<Integer, Citta>();
 		this.elencoDestinazioniDisponibili.put(5, this.pickYourLine.getElencoCitta().get(5));
 		
-		when(itinerarioMock1.getSeDisponibile(this.pickYourLine.getElencoCitta().get(5))).thenReturn(itinerarioMock1);
+		when(itinerarioMock1.getSeDisponibile(this.pickYourLine.getElencoCitta().get(1) ,this.pickYourLine.getElencoCitta().get(5))).thenReturn(itinerarioMock1);
 		when(itinerarioMock1.getCodice()).thenReturn("IT01");
 		
-		when(itinerarioMock2.getSeDisponibile(this.pickYourLine.getElencoCitta().get(5))).thenReturn(null);
+		when(itinerarioMock2.getSeDisponibile(this.pickYourLine.getElencoCitta().get(1), this.pickYourLine.getElencoCitta().get(5))).thenReturn(null);
 		when(itinerarioMock2.getCodice()).thenReturn("IT02");
 		
-		Map<String, Itinerario> result = this.pickYourLine.inserisciCittaDestinazione(5, this.elencoDestinazioniDisponibili);
+		Map<String, Itinerario> result = this.pickYourLine.inserisciCittaDestinazione(1, 5, this.elencoDestinazioniDisponibili);
         assertNotNull(result);
         assertEquals(1, result.size());
         assertTrue(result.containsKey("IT01"));
@@ -112,7 +110,7 @@ class PickYourLineTest {
 		this.elencoDestinazioniDisponibili = new HashMap<Integer, Citta>();
 		
         Exception exception = assertThrows(Exception.class, () -> {
-        	this.pickYourLine.inserisciCittaDestinazione(1, this.elencoDestinazioniDisponibili);
+        	this.pickYourLine.inserisciCittaDestinazione(1, 1, this.elencoDestinazioniDisponibili);
         });
         assertEquals("La città di partenza e quella di destinazione sono la stessa città.", exception.getMessage());
     }
@@ -123,7 +121,7 @@ class PickYourLineTest {
     	this.elencoDestinazioniDisponibili = new HashMap<Integer, Citta>();
     	
         Exception exception = assertThrows(Exception.class, () -> {
-            this.pickYourLine.inserisciCittaDestinazione(3, this.elencoDestinazioniDisponibili);
+            this.pickYourLine.inserisciCittaDestinazione(1, 3, this.elencoDestinazioniDisponibili);
         });
         assertEquals("Codice città non non idoneo alla ricerca effettuata.", exception.getMessage());
     }

@@ -55,6 +55,10 @@ public class Automezzo {
         this.orarioUltimaTimbratura = orarioUltimaTimbratura;
     }
 
+    public Map<String, Biglietto> getElencoBiglietti() {
+        return elencoBiglietti;
+    }
+
     public Fermata getPosizioneAttuale() {
         return posizioneAttuale;
     }
@@ -67,7 +71,7 @@ public class Automezzo {
 		return itinerarioAssegnato;
 	}
 
-	public void loadBiglietti(Map<String, Biglietto> elencoBiglietti){
+    public void loadBiglietti(Map<String, Biglietto> elencoBiglietti){
         this.elencoBiglietti = elencoBiglietti;
     }
 

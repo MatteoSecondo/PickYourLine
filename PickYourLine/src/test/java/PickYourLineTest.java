@@ -2,6 +2,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalTime;
@@ -23,9 +24,11 @@ class PickYourLineTest {
 	
 	@Mock
     private Itinerario itinerarioMock1;
-	
+
 	@Mock
     private Itinerario itinerarioMock2;
+
+
 
 	@BeforeAll
 	void setupAll(){
@@ -141,6 +144,104 @@ class PickYourLineTest {
 		Exception exception = assertThrows(Exception.class, () ->
 				pickYourLine.visualizzaItinerario("Catania-Salerno", itinerario));
 		assertEquals("Codice itinerario non idoneo alla ricerca effettuata.", exception.getMessage());
+	}
+
+	@Test
+	@DisplayName("Test timbratura del biglietto con successo")
+	void testTimbraBigliettoPostiConSuccesso() throws Exception{
+		Map<String, Biglietto> elencoBiglietti = new HashMap<String, Biglietto>();
+		elencoBiglietti.put("aeiou",new Biglietto("H1357",pickYourLine.getElencoCitta().get(1),
+				pickYourLine.getElencoCitta().get(4))); // Catania -> Paterno
+		elencoBiglietti.put("bcdef",new Biglietto("H1358",pickYourLine.getElencoCitta().get(1),
+				pickYourLine.getElencoCitta().get(6)));
+		elencoBiglietti.put("bcdeg",new Biglietto("H1358",pickYourLine.getElencoCitta().get(3),
+				pickYourLine.getElencoCitta().get(15)));
+
+		Automezzo automezzo = new Automezzo("H123",10,pickYourLine.getElencoItinerari().get("Catania-Randazzo")
+				,elencoBiglietti);
+
+		Controllore controllore = new Controllore("C2343");
+		controllore.setAutomezzoSupervisionato(automezzo);
+		pickYourLine.setUtenteCorrente(controllore);
+
+		Biglietto bigliettoVerifica = pickYourLine.timbraBiglietto("albero",1,3);
+		assertNotNull(bigliettoVerifica);
+	}
+
+	@Test
+	@DisplayName("Test timbra biglietto: posti non disponibili")
+	void testTimbraBigliettoPostiNonDisponibili() throws Exception {
+		Map<String, Biglietto> elencoBiglietti = new HashMap<String, Biglietto>();
+		elencoBiglietti.put("aeiou",new Biglietto("H1357",pickYourLine.getElencoCitta().get(1),
+				pickYourLine.getElencoCitta().get(4))); // Catania -> Paterno
+		elencoBiglietti.put("bcdef",new Biglietto("H1358",pickYourLine.getElencoCitta().get(1),
+				pickYourLine.getElencoCitta().get(6)));
+		elencoBiglietti.put("bcdeg",new Biglietto("H1358",pickYourLine.getElencoCitta().get(3),
+				pickYourLine.getElencoCitta().get(15)));
+
+		Automezzo automezzo = new Automezzo("H123",3,pickYourLine.getElencoItinerari().get("Catania-Randazzo")
+				,elencoBiglietti);
+
+		Controllore controllore = new Controllore("C2343");
+		controllore.setAutomezzoSupervisionato(automezzo);
+		pickYourLine.setUtenteCorrente(controllore);
+
+
+		Exception exception = assertThrows(Exception.class, () ->
+				pickYourLine.timbraBiglietto("albero",1,3));
+		assertEquals("Non ci sono posti disponibili.", exception.getMessage());
+	}
+	@Test
+	@DisplayName("Test timbra biglietto: citta di partenza diversa rispetto a quella attuale")
+	void testTimbraBigliettoCittaPartenzaDiversaDaCittaAttuale() throws Exception {
+		Map<String, Biglietto> elencoBiglietti = new HashMap<String, Biglietto>();
+		elencoBiglietti.put("aeiou",new Biglietto("H1357",pickYourLine.getElencoCitta().get(1),
+				pickYourLine.getElencoCitta().get(4))); // Catania -> Paterno
+		elencoBiglietti.put("bcdef",new Biglietto("H1358",pickYourLine.getElencoCitta().get(1),
+				pickYourLine.getElencoCitta().get(6)));
+		elencoBiglietti.put("bcdeg",new Biglietto("H1358",pickYourLine.getElencoCitta().get(3),
+				pickYourLine.getElencoCitta().get(15)));
+		Automezzo automezzo = new Automezzo("H123",10,pickYourLine.getElencoItinerari().get("Catania-Randazzo")
+				,elencoBiglietti);
+
+		automezzo.setPosizioneAttuale(pickYourLine.getElencoCitta().get(6).getFermata("Adrano Nord"));
+
+		Controllore controllore = new Controllore("C2343");
+		controllore.setAutomezzoSupervisionato(automezzo);
+		pickYourLine.setUtenteCorrente(controllore);
+
+
+		Exception exception = assertThrows(Exception.class, () ->
+				pickYourLine.timbraBiglietto("asjaf",1,6));
+		assertEquals("Non è possibile partire da una città diversa da quella attuale.", exception.getMessage());
+	}
+	@Test
+	@DisplayName("Test timbra biglietto: citta non appartiene all'itinerario ")
+	void testTimbraBigliettoCittaCittaNonItinerario() throws Exception {
+		List<Citta> elencoCitta = new ArrayList<>();
+		elencoCitta.add(new Citta(99,"Genova"));
+		Map<String, Biglietto> elencoBiglietti = new HashMap<String, Biglietto>();
+		elencoBiglietti.put("aeiou",new Biglietto("H1357",pickYourLine.getElencoCitta().get(1),
+				pickYourLine.getElencoCitta().get(4))); // Catania -> Paterno
+		elencoBiglietti.put("bcdef",new Biglietto("H1358",pickYourLine.getElencoCitta().get(1),
+				pickYourLine.getElencoCitta().get(6)));
+		elencoBiglietti.put("bcdeg",new Biglietto("H1358",pickYourLine.getElencoCitta().get(3),
+				pickYourLine.getElencoCitta().get(15)));
+		Automezzo automezzo = new Automezzo("H123",10,pickYourLine.getElencoItinerari().get("Catania-Randazzo"),
+				elencoBiglietti);
+
+		automezzo.setPosizioneAttuale(pickYourLine.getElencoCitta().get(1).getFermata("Catania Borgo"));
+
+		Citta cittaDestianzione = pickYourLine.getElencoCitta().get(5); // Caltagirone
+		Controllore controllore = new Controllore("C2343");
+		controllore.setAutomezzoSupervisionato(automezzo);
+		pickYourLine.setUtenteCorrente(controllore);
+
+
+		Exception exception = assertThrows(Exception.class, () ->
+				pickYourLine.timbraBiglietto("asjaf",1,5));
+		assertEquals("Almeno una delle due citta non è presente nel percorso o l'ordine di " +
+						"percorrenza non è corretto.", exception.getMessage());
 	}
 
 

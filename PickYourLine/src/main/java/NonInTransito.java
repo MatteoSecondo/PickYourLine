@@ -1,6 +1,12 @@
-public class NonInTransito implements StatoAutomezzo {
-    @Override
-    public void cambiaStato() {
-
-    }
+public class NonInTransito extends StatoAutomezzo {
+	
+	public NonInTransito() {
+		this.setMalfunzionamento(Malfunzionamento.NessunMalfunzionamento);
+	}
+	
+	@Override
+	void cambiaStato() {
+		super.cambiaStato();
+	}
+	
 }

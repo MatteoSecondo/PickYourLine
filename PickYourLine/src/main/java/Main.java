@@ -18,7 +18,8 @@ public class Main {
 			System.out.println("\nScegli tra le operazioni disponibili.");
 			System.out.println("0- Esci\n"
 					+ "1- Cerca itinerario\n"
-					+ "2- Timbra biglietto");
+					+ "2- Timbra biglietto\n"
+					+ "3- Monitora automezzo");
 
 			int scelta = sc.nextInt();
 
@@ -32,6 +33,9 @@ public class Main {
 					break;
 				case 2:
 					timbraBiglietto(sc);
+					break;
+				case 3:
+					monitoraAutomezzo(sc);
 					break;
 				}
 		}
@@ -93,6 +97,7 @@ public class Main {
 		}
 	}
 	
+	@SuppressWarnings({ "resource" })
 	public static void timbraBiglietto(Scanner sc) {
 		PickYourLine pickYourLine = PickYourLine.getInstance();
 		Controllore co = (Controllore) pickYourLine.getUtenteCorrente();
@@ -161,6 +166,34 @@ public class Main {
 		} while(scelta != 0);
 		
 		pickYourLine.terminaInserimento();
+	}
+	
+	@SuppressWarnings("resource")
+	public static void monitoraAutomezzo(Scanner sc) {
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+		sc = new Scanner(System.in);
+		
+		System.out.println("Automezzi in transito:");
+		Map<String, Automezzo> elencoAutomezziInTransito = pickYourLine.visualizzaAutomezziInTransito();
+		
+		String codiceAutomezzo;
+		boolean successo = false;
+		
+		while(true) {
+			do {
+				System.out.println("\nInserisci il codice dell'automezzo da visualizzare in dettaglio, altrimenti 0 per uscire:");
+				codiceAutomezzo = sc.nextLine();
+				
+				if(codiceAutomezzo.equals("0")) return;
+				
+				try {
+					pickYourLine.visualizzaAutomezzo(codiceAutomezzo, elencoAutomezziInTransito);
+					successo = true;
+				} catch (Exception e) {
+					System.out.println("\n" + e.getMessage());
+				}
+			}while(!successo);
+		}	
 	}
 
 }

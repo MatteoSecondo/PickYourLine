@@ -1,12 +1,14 @@
-public class InTransito extends StatoAutomezzo {
-	
-	public InTransito() {
-		this.setMalfunzionamento(Malfunzionamento.NessunMalfunzionamento);
-	}
-	
+public class InTransito implements StatoAutomezzo {
+
 	@Override
-	void action(Automezzo a) {
-		
+	public void inSupervisione(Automezzo a) {
+		System.out.println("L'automezzo " + a.getCodice() + " è già in transito.");
 	}
-	
+
+	@Override
+	public void nonInSupervisione(Automezzo a) {
+		System.out.println("L'automezzo " + a.getCodice() + " si ferma.");
+		a.setStato(new NonInTransito());
+	}
+    
 }

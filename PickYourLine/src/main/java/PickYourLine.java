@@ -359,7 +359,7 @@ public class PickYourLine {
 		co.confermaInserimento();
 	}
 	
-	public void aggiornaPosizioneAutomezzo(String nomeFermata) throws Exception {
+	public boolean aggiornaPosizioneAutomezzo(String nomeFermata) throws Exception {
 		Controllore co = (Controllore) this.utenteCorrente;
 		
 		List<Citta> percorsoItinerarioAssegnato = co.getAutomezzoSupervisionato().getItinerarioAssegnato().getPercorso();
@@ -370,11 +370,11 @@ public class PickYourLine {
 			if(f != null) break;
 		}
 		
-		if(f == null) {
+		if(f == null || f.getCittaDiAppartenenza().equals(percorsoItinerarioAssegnato.getLast())) {
 			throw new Exception("Nome fermata non consentito.");
 		}
 		
-		co.aggiornaPosizione(f);
+		return co.aggiornaPosizione(f);
 	}
 	
 	public void terminaInserimento() {

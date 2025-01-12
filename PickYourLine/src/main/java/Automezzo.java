@@ -1,5 +1,6 @@
 import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -37,6 +38,14 @@ public class Automezzo {
 
 	public void setStato(StatoAutomezzo stato) {
 		this.stato = stato;
+	}
+	
+	public void inSupervisione() {
+		this.stato.inSupervisione(this);
+	}
+	
+	public void nonInSupervisione() {
+		this.stato.nonInSupervisione(this);
 	}
 
 	public String getCodice() {
@@ -102,30 +111,32 @@ public class Automezzo {
     public void setBigliettoCorrente(Biglietto biglietto) {
         this.bigliettoCorrente = biglietto;
     }
-
-    public void action() {
-        this.stato.action(this);
-    }
     
     public void aggiornaElencoBiglietti() {
     	int previousPostiDisponibili = getPostiDisponibili();
     	
+    	List<Citta> percorso = this.itinerarioAssegnato.getPercorso();
+    	
     	this.elencoBiglietti.values().removeIf(
-    		    b -> b.getCittaDestinazione().equals(this.posizioneAttuale.getCittaDiAppartenenza())
+    		    b -> percorso.indexOf(b.getCittaDestinazione()) < percorso.indexOf(this.posizioneAttuale.getCittaDiAppartenenza())
     	);
 
     	System.out.println("Posti liberati:" + (getPostiDisponibili() - previousPostiDisponibili));
     }
     
-    public void controlloFineItinerario() {
+    public boolean consentiTimbratura() {
     	Citta cittaAttuale = this.posizioneAttuale.getCittaDiAppartenenza();
-    	Citta cittaDestinazione = this.itinerarioAssegnato.getPercorso().getLast();
-    	
-    	if(cittaAttuale.equals(cittaDestinazione) && this.posizioneAttuale.equals(cittaDestinazione.getElencoFermate().getLast())) {
-    		System.out.println("Hai terminato il tuo turno.");
-    		PickYourLine.getInstance().setUtenteCorrente(null);
-    		action();
+    	Citta penultimaCitta = this.itinerarioAssegnato.getPercorso().get(this.itinerarioAssegnato.getPercorso().size() - 2);
+    
+    	if(cittaAttuale.equals(penultimaCitta)) {
+    		/*System.out.println("Hai terminato il tuo turno.");
+    		Controllore co = (Controllore) PickYourLine.getInstance().getUtenteCorrente();
+    		co.setAutomezzoSupervisionato(null);
+    		nonInSupervisione();*/
+    		
+    		return true;
     	}
+    	return false;
     }
     
     public String getDettagliAutomezzo() {

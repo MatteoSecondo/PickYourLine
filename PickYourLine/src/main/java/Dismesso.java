@@ -1,12 +1,12 @@
-public class Dismesso extends StatoAutomezzo {
+public class Dismesso implements StatoAutomezzo {
 
-	public Dismesso() {
-		this.setMalfunzionamento(Malfunzionamento.MalfunzionamentoNonRisolvibile);
+	public void inSupervisione(Automezzo a) {
+		System.out.println("L'automezzo " + a.getCodice() + " è dismesso e non effettuerà più nessuna corsa.");
 	}
-	
+
 	@Override
-	void action(Automezzo a) {
-		
+	public void nonInSupervisione(Automezzo a) {
+		System.out.println("L'automezzo " + a.getCodice() + " è dismesso e non effettuerà più nessuna corsa.");
 	}
     
 }

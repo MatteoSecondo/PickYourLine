@@ -265,6 +265,7 @@ public class PickYourLine {
 		
 		Automezzo a = new Automezzo("H23", 25, this.getElencoItinerari().get("Randazzo-Catania"), b1);
 		this.elencoAutomezzi.put("H23", a);
+		
 		this.elencoAutomezzi.put("B51", new Automezzo("B51", 20));
 		this.elencoAutomezzi.put("Z22", new Automezzo("Z22", 25));
 		this.elencoAutomezzi.put("Y77", new Automezzo("Y77", 30));
@@ -380,5 +381,31 @@ public class PickYourLine {
 	public void terminaInserimento() {
 		Controllore co = (Controllore) this.utenteCorrente;
 		co.aggiornaOrarioUltimaTimbratura();
+	}
+	
+	public Map<String, Automezzo> visualizzaAutomezziInTransito(){
+		Map<String, Automezzo> elencoAutomezziInTransito = new HashMap<String, Automezzo>();
+		Automezzo a;
+		
+		for (Controllore co : this.elencoControllori.values()) {
+			a = co.getAutomezzoSupervisionato();
+			
+			if(a != null) {
+				elencoAutomezziInTransito.put(a.getCodice(), a);
+				System.out.println(a);
+			}
+		}
+		
+		return elencoAutomezziInTransito;
+	}
+	
+	public void visualizzaAutomezzo(String codiceAutomezzo, Map<String, Automezzo> elencoAutomezziInTransito) throws Exception {
+		Automezzo a = elencoAutomezziInTransito.get(codiceAutomezzo);
+		
+		if(a == null) {
+			throw new Exception("Codice automezzo non valido.");
+		}
+		
+		System.out.println(a.getDettagliAutomezzo());
 	}
 }

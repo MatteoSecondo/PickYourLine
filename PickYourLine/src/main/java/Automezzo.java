@@ -27,6 +27,7 @@ public class Automezzo {
         this.posti = posti;
         this.itinerarioAssegnato = i;
         this.posizioneAttuale = this.itinerarioAssegnato.getPercorso().getFirst().getElencoFermate().getFirst();
+        this.orarioUltimaTimbratura = LocalTime.now();
         this.stato = new InTransito();
     }
 
@@ -71,7 +72,7 @@ public class Automezzo {
 		return itinerarioAssegnato;
 	}
 
-	public void loadBiglietti(Map<String, Biglietto> elencoBiglietti){
+    public void loadBiglietti(Map<String, Biglietto> elencoBiglietti){
         this.elencoBiglietti = elencoBiglietti;
     }
 
@@ -95,18 +96,26 @@ public class Automezzo {
     }
 
     public void cambiaStato() {
-
         this.stato.cambiaStato();
     }
-
-    @Override
-    public String toString() {
-        return "Automezzo{" +
-                "codice='" + codice + '\'' +
-                ", posti=" + posti +
-                ", orarioUltimaTimbratura=" + orarioUltimaTimbratura +
-                ", stato=" + stato +
-                '}';
+    
+    public String getDettagliAutomezzo() {
+    	String percorso = "";
+    	
+    	for (Citta c : this.itinerarioAssegnato.getPercorso()) {
+			percorso = percorso.concat(" " + c.getNome() + " ->");
+		}
+    	
+    	return "\nAutomezzo codice=" + codice + ", Posti=" + posti + ", Stato=" + stato
+    			+ "\nOrarioUltimaTimbratura=" + orarioUltimaTimbratura
+    			+ ", PosizioneAttuale= " + posizioneAttuale.getCittaDiAppartenenza().getNome() + ": " + posizioneAttuale.getNome()
+				+ "\nItinerarioAssegnato=" + itinerarioAssegnato
+    			+ "\nPercorsoItinerario=" + percorso;
     }
-
+    
+    @Override
+	public String toString() {
+		return "Automezzo [codice=" + codice + ", posti=" + posti + ", stato=" + stato + "]";
+	}
+    
 }

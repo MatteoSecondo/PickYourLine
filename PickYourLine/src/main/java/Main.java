@@ -93,6 +93,7 @@ public class Main {
 		}
 	}
 	
+	@SuppressWarnings({ "resource" })
 	public static void timbraBiglietto(Scanner sc) {
 		PickYourLine pickYourLine = PickYourLine.getInstance();
 		Controllore co = (Controllore) pickYourLine.getUtenteCorrente();
@@ -127,6 +128,7 @@ public class Main {
 				successo = true;
 			} catch (Exception e) {
 				System.out.println("\n" + e.getMessage());
+				e.printStackTrace();
 			}
 		} while(!successo);
 		

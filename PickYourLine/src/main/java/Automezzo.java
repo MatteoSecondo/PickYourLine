@@ -91,8 +91,28 @@ public class Automezzo {
     }
 
     public void cambiaStato() {
+        this.stato.action();
+    }
+    
+    public void aggiornaElencoBiglietti() {
+    	int previousPostiDisponibili = getPostiDisponibili();
+    	
+    	this.elencoBiglietti.values().removeIf(
+    		    b -> b.getCittaDestinazione().equals(this.posizioneAttuale.getCittaDiAppartenenza())
+    	);
 
-        this.stato.cambiaStato();
+    	System.out.println("Posti liberati:" + (getPostiDisponibili() - previousPostiDisponibili));
+    }
+    
+    public void controlloFineItinerario() {
+    	Citta cittaAttuale = this.posizioneAttuale.getCittaDiAppartenenza();
+    	Citta cittaDestinazione = this.itinerarioAssegnato.getPercorso().getLast();
+    	
+    	if(cittaAttuale.equals(cittaDestinazione) && this.posizioneAttuale.equals(cittaDestinazione.getElencoFermate().getLast())) {
+    		System.out.println("Hai terminato il tuo turno.");
+    		PickYourLine.getInstance().setUtenteCorrente(null);
+    		cambiaStato();
+    	}
     }
 
     @Override

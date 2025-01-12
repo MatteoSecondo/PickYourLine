@@ -1,5 +1,6 @@
 public interface StatoAutomezzo {
-    void cambiaStato();
+    void action();
+    void setState(StatoAutomezzo s);
 }
 
 

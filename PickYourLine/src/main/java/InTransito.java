@@ -1,6 +1,11 @@
 public class InTransito implements StatoAutomezzo {
     @Override
-    public void cambiaStato() {
+    public void action() {
 
     }
+
+	@Override
+	public void setState(StatoAutomezzo s) {
+		
+	}
 }

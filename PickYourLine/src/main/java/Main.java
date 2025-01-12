@@ -13,6 +13,7 @@ public class Main {
 
 		System.out.println("Benvenuto!");
 		Scanner sc = new Scanner(System.in);
+		boolean ultimaCitta = false;
 
 		while(true) {
 			System.out.println("\nScegli tra le operazioni disponibili.");
@@ -21,7 +22,7 @@ public class Main {
 					+ "2- Timbra biglietto");
 
 			int scelta = sc.nextInt();
-
+			
 			switch(scelta) {
 				case 0:
 					System.out.println("Arrivederci!");
@@ -31,9 +32,9 @@ public class Main {
 					cercaItinerario(sc);
 					break;
 				case 2:
-					timbraBiglietto(sc);
+					ultimaCitta = timbraBiglietto(sc, ultimaCitta);
 					break;
-				}
+			}
 		}
 	}
 
@@ -94,7 +95,7 @@ public class Main {
 	}
 	
 	@SuppressWarnings({ "resource" })
-	public static void timbraBiglietto(Scanner sc) {
+	public static boolean timbraBiglietto(Scanner sc, boolean ultimaCitta) {
 		PickYourLine pickYourLine = PickYourLine.getInstance();
 		Controllore co = (Controllore) pickYourLine.getUtenteCorrente();
 		
@@ -104,6 +105,11 @@ public class Main {
 		boolean successo = false;
 		
 		do {
+			if(ultimaCitta) {
+				System.out.println("Non è più possibile timbrare biglietti.");
+				return true;
+			}
+			
 			Citta cittaAttuale = co.getAutomezzoSupervisionato().getPosizioneAttuale().getCittaDiAppartenenza();
 			
 			System.out.println("\nFermate di " + cittaAttuale.getNome() + "(Citta Attuale):");
@@ -121,14 +127,13 @@ public class Main {
 			System.out.println("\nInserisci il nome della fermata in cui ti trovi, altrimenti 0 per uscire");
 			nomeFermata = sc.nextLine();
 			
-			if(nomeFermata.equals("0")) return;
+			if(nomeFermata.equals("0")) return false;
 			
 			try {
-				pickYourLine.aggiornaPosizioneAutomezzo(nomeFermata);
+				ultimaCitta = pickYourLine.aggiornaPosizioneAutomezzo(nomeFermata);
 				successo = true;
 			} catch (Exception e) {
 				System.out.println("\n" + e.getMessage());
-				e.printStackTrace();
 			}
 		} while(!successo);
 		
@@ -163,6 +168,7 @@ public class Main {
 		} while(scelta != 0);
 		
 		pickYourLine.terminaInserimento();
+		return ultimaCitta;
 	}
 
 }

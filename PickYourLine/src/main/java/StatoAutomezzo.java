@@ -1,6 +1,6 @@
-public interface StatoAutomezzo {
-    void action();
-    void setState(StatoAutomezzo s);
+public interface StatoAutomezzo {  
+	void inSupervisione(Automezzo a);
+	void nonInSupervisione(Automezzo a);
 }
 
 

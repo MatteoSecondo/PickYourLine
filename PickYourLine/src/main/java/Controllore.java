@@ -35,9 +35,13 @@ public class Controllore extends Utente {
         System.out.println("Biglietto inserito nell'elenco biglietti");
     }
 
-    public void aggiornaPosizione(Fermata fermata) {
+    public boolean aggiornaPosizione(Fermata fermata) {
         automezzoSupervisionato.setPosizioneAttuale(fermata);
+        automezzoSupervisionato.aggiornaElencoBiglietti();
+        
         System.out.println("Aggiornata la posizione dell'automezzo a: " + fermata);
+        
+        return automezzoSupervisionato.consentiTimbratura();
     }
 
     public void aggiornaOrarioUltimaTimbratura() {

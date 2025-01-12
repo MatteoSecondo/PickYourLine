@@ -54,7 +54,7 @@ public class Itinerario{
             int indicePartenza = this.percorso.indexOf(cittaPartenza);
             int indiceArrivo = this.percorso.indexOf(cittaDestinazione);
 
-            if (indicePartenza != -1 && indiceArrivo != -1 && indicePartenza < indiceArrivo) {
+            if (indicePartenza < indiceArrivo) {
                 return this;
             }
         }

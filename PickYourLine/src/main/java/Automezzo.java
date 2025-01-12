@@ -1,5 +1,6 @@
 import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -31,7 +32,23 @@ public class Automezzo {
         this.stato = new InTransito();
     }
 
-    public String getCodice() {
+    public StatoAutomezzo getStato() {
+		return stato;
+	}
+
+	public void setStato(StatoAutomezzo stato) {
+		this.stato = stato;
+	}
+	
+	public void inSupervisione() {
+		this.stato.inSupervisione(this);
+	}
+	
+	public void nonInSupervisione() {
+		this.stato.nonInSupervisione(this);
+	}
+
+	public String getCodice() {
         return codice;
     }
 
@@ -90,9 +107,32 @@ public class Automezzo {
     public void setBigliettoCorrente(Biglietto biglietto) {
         this.bigliettoCorrente = biglietto;
     }
+    
+    public void aggiornaElencoBiglietti() {
+    	int previousPostiDisponibili = getPostiDisponibili();
+    	
+    	List<Citta> percorso = this.itinerarioAssegnato.getPercorso();
+    	
+    	this.elencoBiglietti.values().removeIf(
+    		    b -> percorso.indexOf(b.getCittaDestinazione()) < percorso.indexOf(this.posizioneAttuale.getCittaDiAppartenenza())
+    	);
 
-    public void cambiaStato() {
-        this.stato.cambiaStato();
+    	System.out.println("Posti liberati:" + (getPostiDisponibili() - previousPostiDisponibili));
+    }
+    
+    public boolean consentiTimbratura() {
+    	Citta cittaAttuale = this.posizioneAttuale.getCittaDiAppartenenza();
+    	Citta penultimaCitta = this.itinerarioAssegnato.getPercorso().get(this.itinerarioAssegnato.getPercorso().size() - 2);
+    	
+    	if(cittaAttuale.equals(penultimaCitta)) {
+    		/*System.out.println("Hai terminato il tuo turno.");
+    		Controllore co = (Controllore) PickYourLine.getInstance().getUtenteCorrente();
+    		co.setAutomezzoSupervisionato(null);
+    		nonInSupervisione();*/
+    		
+    		return true;
+    	}
+    	return false;
     }
     
     public String getDettagliAutomezzo() {

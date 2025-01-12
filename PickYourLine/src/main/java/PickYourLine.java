@@ -260,10 +260,9 @@ public class PickYourLine {
 	public void loadAutomezzi() {
 		Map<String, Biglietto> b1 = new HashMap<String, Biglietto>();
 		b1.put("g7rbc8", new Biglietto("g7rbc8", elencoCitta.get(1), elencoCitta.get(3)));
-		b1.put("b8rbhc", new Biglietto("b8rbhc", elencoCitta.get(1), elencoCitta.get(5)));
 		b1.put("ypc8jf", new Biglietto("ypc8jf", elencoCitta.get(1), elencoCitta.get(4)));
 		
-		Automezzo a = new Automezzo("H23", 25, this.getElencoItinerari().get("Randazzo-Catania"), b1);
+		Automezzo a = new Automezzo("H23", 25, this.getElencoItinerari().get("Catania-Randazzo"), b1);
 		this.elencoAutomezzi.put("H23", a);
 		
 		this.elencoAutomezzi.put("B51", new Automezzo("B51", 20));

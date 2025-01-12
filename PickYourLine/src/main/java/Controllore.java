@@ -37,6 +37,7 @@ public class Controllore extends Utente {
 
     public void aggiornaPosizione(Fermata fermata) {
         automezzoSupervisionato.setPosizioneAttuale(fermata);
+        automezzoSupervisionato.aggiornaElencoBiglietti();
         System.out.println("Aggiornata la posizione dell'automezzo a: " + fermata);
     }
 

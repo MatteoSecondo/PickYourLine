@@ -5,8 +5,8 @@ public class Dismesso extends StatoAutomezzo {
 	}
 	
 	@Override
-	void cambiaStato() {
-		super.cambiaStato();
+	void action(Automezzo a) {
+		
 	}
     
 }

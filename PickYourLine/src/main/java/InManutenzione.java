@@ -5,8 +5,8 @@ public class InManutenzione extends StatoAutomezzo {
 	}
 	
 	@Override
-	void cambiaStato() {
-		super.cambiaStato();
+	void action(Automezzo a) {
+		
 	}
 	
 }

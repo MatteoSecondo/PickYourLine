@@ -30,8 +30,16 @@ public class Automezzo {
         this.orarioUltimaTimbratura = LocalTime.now();
         this.stato = new InTransito();
     }
+    
+    public StatoAutomezzo getStato() {
+		return stato;
+	}
 
-    public String getCodice() {
+	public void setStato(StatoAutomezzo stato) {
+		this.stato = stato;
+	}
+
+	public String getCodice() {
         return codice;
     }
 
@@ -95,8 +103,29 @@ public class Automezzo {
         this.bigliettoCorrente = biglietto;
     }
 
-    public void cambiaStato() {
-        this.stato.cambiaStato();
+    public void action() {
+        this.stato.action(this);
+    }
+    
+    public void aggiornaElencoBiglietti() {
+    	int previousPostiDisponibili = getPostiDisponibili();
+    	
+    	this.elencoBiglietti.values().removeIf(
+    		    b -> b.getCittaDestinazione().equals(this.posizioneAttuale.getCittaDiAppartenenza())
+    	);
+
+    	System.out.println("Posti liberati:" + (getPostiDisponibili() - previousPostiDisponibili));
+    }
+    
+    public void controlloFineItinerario() {
+    	Citta cittaAttuale = this.posizioneAttuale.getCittaDiAppartenenza();
+    	Citta cittaDestinazione = this.itinerarioAssegnato.getPercorso().getLast();
+    	
+    	if(cittaAttuale.equals(cittaDestinazione) && this.posizioneAttuale.equals(cittaDestinazione.getElencoFermate().getLast())) {
+    		System.out.println("Hai terminato il tuo turno.");
+    		PickYourLine.getInstance().setUtenteCorrente(null);
+    		action();
+    	}
     }
     
     public String getDettagliAutomezzo() {
@@ -106,7 +135,8 @@ public class Automezzo {
 			percorso = percorso.concat(" " + c.getNome() + " ->");
 		}
     	
-    	return "\nAutomezzo codice=" + codice + ", Posti=" + posti + ", Stato=" + stato
+    	return "\nAutomezzo codice=" + codice + ", Posti=" + posti + ", PostiDisponibili=" + getPostiDisponibili()
+    			+ ", Stato=" + stato
     			+ "\nOrarioUltimaTimbratura=" + orarioUltimaTimbratura
     			+ ", PosizioneAttuale= " + posizioneAttuale.getCittaDiAppartenenza().getNome() + ": " + posizioneAttuale.getNome()
 				+ "\nItinerarioAssegnato=" + itinerarioAssegnato

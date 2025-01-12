@@ -8,13 +8,13 @@ public abstract class StatoAutomezzo {
 	public void setMalfunzionamento(Malfunzionamento malfunzionamento) {
 		this.malfunzionamento = malfunzionamento;
 	}
+	
+	void action(Automezzo a) {}
 
 	@Override
 	public String toString() {
 		return "StatoAutomezzo [stato=" + getClass().getSimpleName() + " malfunzionamento=" + malfunzionamento + "]";
 	}
-
-	void cambiaStato() {};
 }
 
 

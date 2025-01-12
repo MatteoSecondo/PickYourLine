@@ -132,6 +132,7 @@ public class Main {
 				successo = true;
 			} catch (Exception e) {
 				System.out.println("\n" + e.getMessage());
+				e.printStackTrace();
 			}
 		} while(!successo);
 		

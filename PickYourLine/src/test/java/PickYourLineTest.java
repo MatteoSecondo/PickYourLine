@@ -1,7 +1,5 @@
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalTime;
@@ -26,6 +24,21 @@ class PickYourLineTest {
 	
 	@Mock
     private Itinerario itinerarioMock2;
+
+	@Mock
+	private Controllore controlloreMock;
+
+	@Mock
+	private Automezzo automezzoMock;
+
+	@Mock
+	private Itinerario itinerarioMock;
+
+	@Mock
+	private Citta cittaMock;
+
+	@Mock
+	private Fermata fermataMock;
 
 	@BeforeAll
 	void setupAll(){
@@ -142,6 +155,76 @@ class PickYourLineTest {
 				pickYourLine.visualizzaItinerario("Catania-Salerno", itinerario));
 		assertEquals("Codice itinerario non idoneo alla ricerca effettuata.", exception.getMessage());
 	}
+
+
+
+	@Test
+	@DisplayName("Test per verificare successo di ConfermaInserimento")
+	void testConfermaInserimentoCambiaStatoBigliettoCorrente() {
+
+
+		Citta Catania = new Citta(1, "Catania");
+		Catania.getElencoFermate().add(new Fermata("Fermata Catania", Catania));
+
+		Citta Misterbianco = new Citta(3, "Misterbianco");
+		Misterbianco.getElencoFermate().add(new Fermata("Fermata Misterbianco", Misterbianco));
+
+		List<Citta> percorso = new ArrayList<>();
+		percorso.add(Catania);
+		percorso.add(Misterbianco);
+
+		Itinerario itinerarioFake = new Itinerario("as", LocalTime.of(12, 12), LocalTime.of(12, 12), percorso);
+
+		Automezzo automezzo = new Automezzo("as", 1, itinerarioFake, new HashMap<>());
+		Controllore controllore = new Controllore("as");
+		controllore.setAutomezzoSupervisionato(automezzo);
+
+		Biglietto bigliettoFake = new Biglietto("12345", Catania, Misterbianco);
+		automezzo.setBigliettoCorrente(bigliettoFake);
+
+
+		controllore.confermaInserimento();
+
+		assertTrue(automezzo.getElencoBiglietti().containsKey("12345"));
+	}
+
+
+
+	@Test
+	@DisplayName("Test della funzione aggiornaPosizioneAutomezzo nel caso in cui la posizione non sia buona")
+	public void testAggiornaPosizioneAutomezzoFermataNonTrovata() throws Exception {
+		// Setup
+		when(controlloreMock.getAutomezzoSupervisionato()).thenReturn(automezzoMock);
+		when(automezzoMock.getItinerarioAssegnato()).thenReturn(itinerarioMock);
+		when(itinerarioMock.getPercorso()).thenReturn(List.of(cittaMock));
+		when(cittaMock.getFermata("inventata")).thenReturn(null);
+		pickYourLine.setUtenteCorrente(controlloreMock);
+
+		// Act & Assert
+		Exception exception = assertThrows(Exception.class, () ->
+						pickYourLine.aggiornaPosizioneAutomezzo("inventata"),
+				"Dovrebbe lanciare un'eccezione quando la fermata non è trovata."
+		);
+
+		assertEquals("Nome fermata non consentito.", exception.getMessage());
+	}
+
+
+
+	@Test
+	@DisplayName("Test della funzione aggiornaPosizioneAutomezzo nel caso in cui la posizione vada bene")
+	public void testAggiornaPosizioneAutomezzoFermataTrovata() throws Exception {
+		// Setup
+		when(controlloreMock.getAutomezzoSupervisionato()).thenReturn(automezzoMock);
+		when(automezzoMock.getItinerarioAssegnato()).thenReturn(itinerarioMock);
+		when(itinerarioMock.getPercorso()).thenReturn(List.of(cittaMock));
+		when(cittaMock.getFermata("valida")).thenReturn(fermataMock);
+		pickYourLine.setUtenteCorrente(controlloreMock);
+
+		assertDoesNotThrow(() -> pickYourLine.aggiornaPosizioneAutomezzo("valida"),
+				"Non dovrebbe lanciare eccezioni quando la fermata è trovata.");
+	}
+
 
 
 }

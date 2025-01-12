@@ -51,6 +51,10 @@ public class Automezzo {
         return orarioUltimaTimbratura;
     }
 
+    public Map<String, Biglietto> getElencoBiglietti() {
+        return elencoBiglietti;
+    }
+
     public void setOrarioUltimaTimbratura(LocalTime orarioUltimaTimbratura) {
         this.orarioUltimaTimbratura = orarioUltimaTimbratura;
     }

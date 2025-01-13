@@ -158,6 +158,7 @@ public class Main {
 					b = pickYourLine.timbraBiglietto(codiceBiglietto, codiceCittaPartenza, codiceCittaDestinazione);
 				} catch (Exception e) {
 					System.out.println("\n" + e.getMessage());
+					if(e.getMessage().equals("Non ci sono posti disponibili, operazione terminata.")) return false;
 				}
 			} while(b == null);
 			

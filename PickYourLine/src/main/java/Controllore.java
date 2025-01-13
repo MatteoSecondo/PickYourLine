@@ -1,4 +1,6 @@
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 public class Controllore extends Utente {
     private Automezzo automezzoSupervisionato;
@@ -35,7 +37,28 @@ public class Controllore extends Utente {
         System.out.println("Biglietto inserito nell'elenco biglietti");
     }
 
-    public boolean aggiornaPosizione(Fermata fermata) {
+    public boolean aggiornaPosizione(Fermata fermata) throws Exception {
+    	
+    	List<Citta> percorso = automezzoSupervisionato.getItinerarioAssegnato().getPercorso();
+    	Citta cittaAttuale = automezzoSupervisionato.getPosizioneAttuale().getCittaDiAppartenenza();
+    	Citta prossimaCitta = fermata.getCittaDiAppartenenza();
+    	
+    	if(percorso.indexOf(cittaAttuale) > percorso.indexOf(prossimaCitta)) {
+    		throw new Exception("Non è possibile tornare alle citta precedenti.");
+    	}
+    	
+    	if(cittaAttuale.equals(prossimaCitta)) {
+    		Fermata fermataAttuale = automezzoSupervisionato.getPosizioneAttuale();
+    		
+    		if(fermataAttuale.equals(fermata)) {
+    			throw new Exception("Hai già timbrato biglietti per questa fermata.");
+    		}
+    		
+    		if(cittaAttuale.getElencoFermate().indexOf(fermataAttuale) > cittaAttuale.getElencoFermate().indexOf(fermata)) {
+    			throw new Exception("Non è possibile tornare alle fermate precedenti.");
+    		}
+    	}
+    	
         automezzoSupervisionato.setPosizioneAttuale(fermata);
         automezzoSupervisionato.aggiornaElencoBiglietti();
         
@@ -45,7 +68,7 @@ public class Controllore extends Utente {
     }
 
     public void aggiornaOrarioUltimaTimbratura() {
-        automezzoSupervisionato.setOrarioUltimaTimbratura(LocalTime.now());
-        System.out.println("Aggiornato l'orario di ultima timbratura a: " + LocalTime.now());
+        automezzoSupervisionato.setOrarioUltimaTimbratura(LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
+        System.out.println("Aggiornato l'orario di ultima timbratura a: " + LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
     }
 }

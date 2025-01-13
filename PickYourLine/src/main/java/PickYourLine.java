@@ -332,7 +332,7 @@ public class PickYourLine {
 		int postiDisponibili = co.verificaDisponibilitaPosti();
 		
 		if(postiDisponibili <= 0) {
-			throw new Exception("Non ci sono posti disponibili.");
+			throw new Exception("Non ci sono posti disponibili, operazione terminata.");
 		}
 		
 		Citta cittaPartenza = this.elencoCitta.get(codiceCittaPartenza);
@@ -348,7 +348,7 @@ public class PickYourLine {
 		Itinerario i = co.getAutomezzoSupervisionato().getItinerarioAssegnato().getSeDisponibile(this.getElencoCitta().get(codiceCittaPartenza), cittaDestinazione);
 		
 		if(i == null) {
-			throw new Exception("Almeno una delle due citta non è presente nel percorso o l'ordine di percorrenza non è corretto.");
+			throw new Exception("Città di destinazione non presente nel percorso.");
 		}
 		
 		return co.creaBiglietto(codice, cittaPartenza, cittaDestinazione);

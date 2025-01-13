@@ -1,4 +1,5 @@
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class Automezzo {
         this.posti = posti;
         this.itinerarioAssegnato = i;
         this.posizioneAttuale = this.itinerarioAssegnato.getPercorso().getFirst().getElencoFermate().getFirst();
-        this.orarioUltimaTimbratura = LocalTime.now();
+        this.orarioUltimaTimbratura = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
         this.stato = new InTransito();
     }
     
@@ -116,6 +117,11 @@ public class Automezzo {
     	int previousPostiDisponibili = getPostiDisponibili();
     	
     	List<Citta> percorso = this.itinerarioAssegnato.getPercorso();
+    	
+    	this.elencoBiglietti.values().removeIf(
+    		    b -> (b.getCittaDestinazione().equals(this.posizioneAttuale.getCittaDiAppartenenza()))
+    		    		&& this.posizioneAttuale.equals(b.getCittaDestinazione().getElencoFermate().getLast())
+    	);
     	
     	this.elencoBiglietti.values().removeIf(
     		    b -> percorso.indexOf(b.getCittaDestinazione()) < percorso.indexOf(this.posizioneAttuale.getCittaDiAppartenenza())

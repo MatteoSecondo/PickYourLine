@@ -1,6 +1,5 @@
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.mock;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -39,6 +38,9 @@ class PickYourLineTest {
 
 	@Mock
 	private Fermata fermataMock;
+	
+	@Mock
+	private List<Citta> percorsoMock;
 
 	@BeforeAll
 	void setupAll(){
@@ -235,8 +237,9 @@ class PickYourLineTest {
 
 		Exception exception = assertThrows(Exception.class, () ->
 				pickYourLine.timbraBiglietto("albero",1,3));
-		assertEquals("Non ci sono posti disponibili.", exception.getMessage());
+		assertEquals("Non ci sono posti disponibili, operazione terminata.", exception.getMessage());
 	}
+	
 	@Test
 	@DisplayName("Test timbra biglietto: citta di partenza diversa rispetto a quella attuale")
 	void testTimbraBigliettoCittaPartenzaDiversaDaCittaAttuale() throws Exception {
@@ -261,6 +264,7 @@ class PickYourLineTest {
 				pickYourLine.timbraBiglietto("asjaf",1,6));
 		assertEquals("Non è possibile partire da una città diversa da quella attuale.", exception.getMessage());
 	}
+	
 	@Test
 	@DisplayName("Test timbra biglietto: citta non appartiene all'itinerario ")
 	void testTimbraBigliettoCittaCittaNonItinerario() throws Exception {
@@ -278,7 +282,6 @@ class PickYourLineTest {
 
 		automezzo.setPosizioneAttuale(pickYourLine.getElencoCitta().get(1).getFermata("Catania Borgo"));
 
-		Citta cittaDestianzione = pickYourLine.getElencoCitta().get(5); // Caltagirone
 		Controllore controllore = new Controllore("C2343");
 		controllore.setAutomezzoSupervisionato(automezzo);
 		pickYourLine.setUtenteCorrente(controllore);
@@ -286,16 +289,12 @@ class PickYourLineTest {
 
 		Exception exception = assertThrows(Exception.class, () ->
 				pickYourLine.timbraBiglietto("asjaf",1,5));
-		assertEquals("Almeno una delle due citta non è presente nel percorso o l'ordine di " +
-						"percorrenza non è corretto.", exception.getMessage());
+		assertEquals("Città di destinazione non presente nel percorso.", exception.getMessage());
 	}
-
-
 
 	@Test
 	@DisplayName("Test per verificare successo di ConfermaInserimento")
 	void testConfermaInserimentoCambiaStatoBigliettoCorrente() {
-
 
 		Citta Catania = new Citta(1, "Catania");
 		Catania.getElencoFermate().add(new Fermata("Fermata Catania", Catania));
@@ -316,13 +315,10 @@ class PickYourLineTest {
 		Biglietto bigliettoFake = new Biglietto("12345", Catania, Misterbianco);
 		automezzo.setBigliettoCorrente(bigliettoFake);
 
-
 		controllore.confermaInserimento();
 
 		assertTrue(automezzo.getElencoBiglietti().containsKey("12345"));
 	}
-
-
 
 	@Test
 	@DisplayName("Test della funzione aggiornaPosizioneAutomezzo nel caso in cui la posizione non sia buona")
@@ -343,8 +339,6 @@ class PickYourLineTest {
 		assertEquals("Nome fermata non consentito.", exception.getMessage());
 	}
 
-
-
 	@Test
 	@DisplayName("Test della funzione aggiornaPosizioneAutomezzo nel caso in cui la posizione vada bene")
 	public void testAggiornaPosizioneAutomezzoFermataTrovata() throws Exception {
@@ -353,12 +347,12 @@ class PickYourLineTest {
 		when(automezzoMock.getItinerarioAssegnato()).thenReturn(itinerarioMock);
 		when(itinerarioMock.getPercorso()).thenReturn(List.of(cittaMock));
 		when(cittaMock.getFermata("valida")).thenReturn(fermataMock);
+		when(fermataMock.getCittaDiAppartenenza()).thenReturn(new Citta(98, "vbsd"));
+		when(percorsoMock.getLast()).thenReturn(new Citta(99, "vbsdui"));
 		pickYourLine.setUtenteCorrente(controlloreMock);
 
 		assertDoesNotThrow(() -> pickYourLine.aggiornaPosizioneAutomezzo("valida"),
-				"Non dovrebbe lanciare eccezioni quando la fermata è trovata.");
+				"Non dovrebbe lanciare eccezioni quando la fermata è trovata e le citta sono diverse.");
 	}
-
-
 
 }

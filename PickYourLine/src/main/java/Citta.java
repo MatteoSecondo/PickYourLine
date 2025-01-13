@@ -6,11 +6,10 @@ public class Citta {
     private String nome;
     private List<Fermata> elencoFermate;
 
-    public Citta(int codice, String nome, List<Fermata> f) {
+    public Citta(int codice, String nome) {
         this.codice = codice;
         this.nome = nome;
         this.elencoFermate = new ArrayList<>();
-        loadFermate(f);
     }
 
     public int getCodice() {
@@ -33,17 +32,21 @@ public class Citta {
         return elencoFermate;
     }
 
-    @Override
-    public String toString() {
-        return "Citta{" +
-                "codice='" + codice + '\'' +
-                ", nome='" + nome + '\'' +
-                '}';
-    }
-
     public  void loadFermate(List<Fermata> f) {
     	this.elencoFermate = f;
     }
+    
+    public Fermata getFermata(String nomeFermata) {
+    	Fermata fermata = null;
+    	
+    	for (Fermata f : this.elencoFermate) {
+    		fermata = f.getFermata(nomeFermata);
+			
+			if(fermata != null) break;
+		}
+		
+		return fermata;
+	}
     
     @Override
     public boolean equals(Object o) {
@@ -51,6 +54,14 @@ public class Citta {
         if (o == null || getClass() != o.getClass()) return false;
         Citta citta = (Citta) o;
         return this.codice == citta.codice && this.nome.equals(citta.nome);
+    }
+    
+    @Override
+    public String toString() {
+        return "Citta{" +
+                "codice='" + codice + '\'' +
+                ", nome='" + nome + '\'' +
+                '}';
     }
 
 }

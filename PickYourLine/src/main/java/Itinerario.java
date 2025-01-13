@@ -43,17 +43,18 @@ public class Itinerario{
         this.orarioArrivo = orario_arrivo;
     }
 
-    public Itinerario getSeDisponibile(Citta cittaDestinazione){
-        
-    	PickYourLine pickYourLine = PickYourLine.getInstance();
-    	Citta cittaPartenzaCorrente = pickYourLine.getCittaPartenzaCorrente();
-    	
-        if (this.percorso.contains(cittaPartenzaCorrente) && this.percorso.contains(cittaDestinazione)) {
+    public List<Citta> getPercorso() {
+		return percorso;
+	}
 
-            int indicePartenza = this.percorso.indexOf(cittaPartenzaCorrente);
+	public Itinerario getSeDisponibile(Citta cittaPartenza, Citta cittaDestinazione){
+    	
+        if (this.percorso.contains(cittaPartenza) && this.percorso.contains(cittaDestinazione)) {
+
+            int indicePartenza = this.percorso.indexOf(cittaPartenza);
             int indiceArrivo = this.percorso.indexOf(cittaDestinazione);
 
-            if (indicePartenza != -1 && indiceArrivo != -1 && indicePartenza < indiceArrivo) {
+            if (indicePartenza < indiceArrivo) {
                 return this;
             }
         }
@@ -61,13 +62,11 @@ public class Itinerario{
         return null;
     }
 
-    public Map<Integer, Citta> getDestinazioniDisponibili(){
+    public Map<Integer, Citta> getDestinazioniDisponibili(Citta cittaPartenza){
 
-    	PickYourLine pickYourLine = PickYourLine.getInstance();
-    	
     	Map<Integer, Citta> destinazioniDisponibili = new HashMap<Integer, Citta>();
 
-        int indicePartenza = this.percorso.indexOf(pickYourLine.getCittaPartenzaCorrente());
+        int indicePartenza = this.percorso.indexOf(cittaPartenza);
 
         if (indicePartenza != -1 && indicePartenza < this.percorso.size()) {
             // Aggiungi tutte le città dopo l'indice trovato alla mappa delle destinazioni disponibili

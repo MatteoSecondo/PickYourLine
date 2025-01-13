@@ -6,13 +6,17 @@ import java.util.Map;
 
 public class PickYourLine {
 	private static PickYourLine pickYourLine;
-	private Map<String, Itinerario> elencoItinerari;
+	private Utente utenteCorrente;
 	private Map<Integer, Citta> elencoCitta;
-	private Citta cittaPartenzaCorrente;
+	private Map<String, Itinerario> elencoItinerari;
+	private Map<String, Controllore> elencoControllori;
+	private Map<String, Automezzo> elencoAutomezzi;
 	
 	private PickYourLine() {
 		this.elencoItinerari = new HashMap<String, Itinerario>();
 		this.elencoCitta = new HashMap<Integer, Citta>();
+		this.elencoControllori = new HashMap<String, Controllore>();
+		this.elencoAutomezzi = new HashMap<String, Automezzo>();
 	}
 	
 	public static PickYourLine getInstance() {
@@ -23,6 +27,18 @@ public class PickYourLine {
 		return pickYourLine;
 	}
 	
+	public Utente getUtenteCorrente() {
+		return utenteCorrente;
+	}
+
+	public void setUtenteCorrente(Utente utenteCorrente) {
+		this.utenteCorrente = utenteCorrente;
+	}
+	
+	public Map<Integer, Citta> getElencoCitta() {
+		return elencoCitta;
+	}
+	
 	public Map<String, Itinerario> getElencoItinerari() {
 		return elencoItinerari;
 	}
@@ -31,18 +47,14 @@ public class PickYourLine {
 		this.elencoItinerari = elencoItinerari;
 	}
 
-	public Map<Integer, Citta> getElencoCitta() {
-		return elencoCitta;
+	public Map<String, Controllore> getElencoControllori() {
+		return elencoControllori;
 	}
 
-	public Citta getCittaPartenzaCorrente() {
-		return cittaPartenzaCorrente;
+	public Map<String, Automezzo> getElencoAutomezzi() {
+		return elencoAutomezzi;
 	}
 
-	public void setCittaPartenzaCorrente(Citta cittaPartenzaCorrente) {
-		this.cittaPartenzaCorrente = cittaPartenzaCorrente;
-	}
-	
 	public void loadItinerari() {
 		List<Citta> p = new ArrayList<Citta>();
 		p.add(elencoCitta.get(1)); //Catania
@@ -91,36 +103,46 @@ public class PickYourLine {
 	}
 	
 	public void loadCitta() {
+		Citta c1 = new Citta(1, "Catania");
 		List<Fermata> f = new ArrayList<Fermata>();
-		f.add(new Fermata("Catania Borgo"));
-		f.add(new Fermata("Catania Nesima"));
-		f.add(new Fermata("Catania Ospedale Cannizzaro"));
-		this.elencoCitta.put(1, new Citta(1, "Catania", f));
+		f.add(new Fermata("Catania Borgo", c1));
+		f.add(new Fermata("Catania Nesima", c1));
+		f.add(new Fermata("Catania Ospedale Cannizzaro", c1));
+		c1.loadFermate(f);
+		this.elencoCitta.put(1, c1);
 		
 		//this.elencoCitta.put(2, new Citta(2, "Acireale"));
 		
+		Citta c3 = new Citta(3, "Misterbianco");
 		List<Fermata> f3 = new ArrayList<Fermata>();
-		f3.add(new Fermata("Misterbianco Nord"));
-		f3.add(new Fermata("Misterbianco Centro"));
-		f3.add(new Fermata("Misterbianco Sud"));
-		this.elencoCitta.put(3, new Citta(3, "Misterbianco", f3));
+		f3.add(new Fermata("Misterbianco Nord", c3));
+		f3.add(new Fermata("Misterbianco Centro", c3));
+		f3.add(new Fermata("Misterbianco Sud", c3));
+		c3.loadFermate(f3);
+		this.elencoCitta.put(3, c3);
 		
+		Citta c4 = new Citta(4, "Paterno");
 		List<Fermata> f4 = new ArrayList<Fermata>();
-		f4.add(new Fermata("Paterno Stazione"));
-		f4.add(new Fermata("Paterno Nord"));
-		this.elencoCitta.put(4, new Citta(4, "Paterno", f4));
+		f4.add(new Fermata("Paterno Stazione", c4));
+		f4.add(new Fermata("Paterno Nord", c4));
+		c4.loadFermate(f4);
+		this.elencoCitta.put(4, c4);
 		
+		Citta c5 = new Citta(5, "Caltagirone");
 		List<Fermata> f5 = new ArrayList<Fermata>();
-		f5.add(new Fermata("Caltagirone Stazione"));
-		f5.add(new Fermata("Caltagirone Ospedale"));
-		this.elencoCitta.put(5, new Citta(5, "Caltagirone", f5));
+		f5.add(new Fermata("Caltagirone Stazione", c5));
+		f5.add(new Fermata("Caltagirone Ospedale",c5));
+		c5.loadFermate(f5);
+		this.elencoCitta.put(5, c5);
 		
+		Citta c6 = new Citta(6, "Adrano");
 		List<Fermata> f6 = new ArrayList<Fermata>();
-		f6.add(new Fermata("Adrano Sant'Agostino"));
-		f6.add(new Fermata("Adrano Centro"));
-		f6.add(new Fermata("Adrano Navicchia"));
-		f6.add(new Fermata("Adrano Nord"));
-		this.elencoCitta.put(6, new Citta(6, "Adrano", f6));
+		f6.add(new Fermata("Adrano Sant'Agostino", c6));
+		f6.add(new Fermata("Adrano Centro", c6));
+		f6.add(new Fermata("Adrano Navicchia", c6));
+		f6.add(new Fermata("Adrano Nord", c6));
+		c6.loadFermate(f6);
+		this.elencoCitta.put(6, c6);
 		
 		/*this.elencoCitta.put(7, new Citta(7, "Mascalucia"));
 		this.elencoCitta.put(8, new Citta(8, "Aci Catena"));
@@ -128,21 +150,25 @@ public class PickYourLine {
 		this.elencoCitta.put(10, new Citta(10, "Giarre"));
 		this.elencoCitta.put(11, new Citta(11, "Gravina di Catania"));*/
 		
+		Citta c12 = new Citta(12, "Biancavilla");
 		List<Fermata> f12 = new ArrayList<Fermata>();
-		f12.add(new Fermata("Biancavilla Stazione"));
-		f12.add(new Fermata("Biancavilla Nord"));
-		this.elencoCitta.put(12, new Citta(12, "Biancavilla", f12));
+		f12.add(new Fermata("Biancavilla Stazione", c12));
+		f12.add(new Fermata("Biancavilla Nord", c12));
+		c12.loadFermate(f12);
+		this.elencoCitta.put(12, c12);
 		
 		/*this.elencoCitta.put(13, new Citta(13, "San Giovanni la Punta"));
 		this.elencoCitta.put(14, new Citta(14, "Tremestieri Etneo"));*/
 		
+		Citta c15 = new Citta(15, "Bronte");
 		List<Fermata> f15 = new ArrayList<Fermata>();
-		f15.add(new Fermata("Bronte Stazione"));
-		f15.add(new Fermata("Bronte Nord"));
-		this.elencoCitta.put(15, new Citta(15, "Bronte", f15));
+		f15.add(new Fermata("Bronte Stazione", c15));
+		f15.add(new Fermata("Bronte Nord", c15));
+		c15.loadFermate(f15);
+		this.elencoCitta.put(15, c15);
 		
-		/*this.elencoCitta.put(16, new Citta(16, "Aci Castello"));
-		this.elencoCitta.put(17, new Citta(17, "Aci Sant'Antonio"));
+		//this.elencoCitta.put(16, new Citta(16, "Aci Castello", new ArrayList<>()));
+		/*this.elencoCitta.put(17, new Citta(17, "Aci Sant'Antonio"));
 		this.elencoCitta.put(18, new Citta(18, "Scordia"));
 		this.elencoCitta.put(19, new Citta(19, "Palagonia"));
 		this.elencoCitta.put(20, new Citta(20, "Riposto"));
@@ -154,10 +180,12 @@ public class PickYourLine {
 		this.elencoCitta.put(26, new Citta(26, "Trecastagni"));
 		this.elencoCitta.put(27, new Citta(27, "Ramacca"));*/
 		
+		Citta c28 = new Citta(28, "Randazzo");
 		List<Fermata> f28 = new ArrayList<Fermata>();
-		f28.add(new Fermata("Randazzo Stazione"));
-		f28.add(new Fermata("Randazzo Nord"));
-		this.elencoCitta.put(28, new Citta(28, "Randazzo", f28));
+		f28.add(new Fermata("Randazzo Stazione", c28));
+		f28.add(new Fermata("Randazzo Nord", c28));
+		c28.loadFermate(f28);
+		this.elencoCitta.put(28, c28);
 		
 		/*this.elencoCitta.put(29, new Citta(29, "Zafferana Etnea"));
 		this.elencoCitta.put(30, new Citta(30, "Fiumefreddo di Sicilia"));
@@ -167,10 +195,12 @@ public class PickYourLine {
 		this.elencoCitta.put(34, new Citta(34, "San Pietro Clarenza"));
 		this.elencoCitta.put(35, new Citta(35, "Valverde"));*/
 		
+		Citta c36 = new Citta(36, "Santa Maria di Licodia");
 		List<Fermata> f36 = new ArrayList<Fermata>();
-		f36.add(new Fermata("Santa Maria di Licodia Stazione"));
-		f36.add(new Fermata("Santa Maria di Licodia Nord"));
-		this.elencoCitta.put(36, new Citta(36, "Santa Maria di Licodia", f36));
+		f36.add(new Fermata("Santa Maria di Licodia Stazione", c36));
+		f36.add(new Fermata("Santa Maria di Licodia Nord", c36));
+		c36.loadFermate(f36);
+		this.elencoCitta.put(36, c36);
 		
 		/*this.elencoCitta.put(37, new Citta(37, "Nicolosi"));
 		this.elencoCitta.put(38, new Citta(38, "Militello in Val di Catania"));
@@ -185,10 +215,12 @@ public class PickYourLine {
 		this.elencoCitta.put(47, new Citta(47, "Ragalna"));
 		this.elencoCitta.put(48, new Citta(48, "Piedimonte Etneo"));*/
 		
+		Citta c49 = new Citta(49, "Maletto");
 		List<Fermata> f49 = new ArrayList<Fermata>();
-		f49.add(new Fermata("Maletto Stazione"));
-		f49.add(new Fermata("Maletto Nord"));
-		this.elencoCitta.put(49, new Citta(49, "Maletto", f49));
+		f49.add(new Fermata("Maletto Stazione", c49));
+		f49.add(new Fermata("Maletto Nord", c49));
+		c49.loadFermate(f49);
+		this.elencoCitta.put(49, c49);
 		
 		/*this.elencoCitta.put(50, new Citta(50, "Maniace"));
 		this.elencoCitta.put(51, new Citta(51, "Aci Bonaccorsi"));
@@ -200,17 +232,49 @@ public class PickYourLine {
 		this.elencoCitta.put(57, new Citta(57, "Sant'Alfio"));
 		this.elencoCitta.put(58, new Citta(58, "Milo"));*/
 		
+		Citta c59 = new Citta(59, "Valcorrente");
 		List<Fermata> f59 = new ArrayList<Fermata>();
-		f59.add(new Fermata("Valcorrente Stazione"));
-		f59.add(new Fermata("Valcorrente Etnapolis"));
-		this.elencoCitta.put(59, new Citta(59, "Valcorrente", f59));
+		f59.add(new Fermata("Valcorrente Stazione", c59));
+		f59.add(new Fermata("Valcorrente Etnapolis", c59));
+		c59.loadFermate(f59);
+		this.elencoCitta.put(59, c59);
 		
+		Citta c60 = new Citta(60, "Piano Tavola");
 		List<Fermata> f60 = new ArrayList<Fermata>();
-		f60.add(new Fermata("Piano Tavola Via Nazionale"));
-		this.elencoCitta.put(60, new Citta(60, "Piano Tavola", f60));
+		f60.add(new Fermata("Piano Tavola Via Nazionale", c60));
+		c60.loadFermate(f60);
+		this.elencoCitta.put(60, c60);
 	}
 
-	public void cercaItinerario() {
+	public void loadControllori() {
+		Controllore co = new Controllore("f5b3");
+		this.elencoControllori.put("f5b3", co);
+		setUtenteCorrente(co);
+		
+		this.elencoControllori.put("n7j5", new Controllore("n7j5"));
+		this.elencoControllori.put("h1ig", new Controllore("h1ig"));
+		this.elencoControllori.put("ba56", new Controllore("ba56"));
+		this.elencoControllori.put("zy31", new Controllore("zy31"));
+	}
+
+	public void loadAutomezzi() {
+		Map<String, Biglietto> b1 = new HashMap<String, Biglietto>();
+		b1.put("g7rbc8", new Biglietto("g7rbc8", elencoCitta.get(1), elencoCitta.get(3)));
+		b1.put("ypc8jf", new Biglietto("ypc8jf", elencoCitta.get(1), elencoCitta.get(4)));
+		
+		Automezzo a = new Automezzo("H23", 25, this.getElencoItinerari().get("Catania-Randazzo"), b1);
+		this.elencoAutomezzi.put("H23", a);
+		
+		this.elencoAutomezzi.put("B51", new Automezzo("B51", 20));
+		this.elencoAutomezzi.put("Z22", new Automezzo("Z22", 25));
+		this.elencoAutomezzi.put("Y77", new Automezzo("Y77", 30));
+		this.elencoAutomezzi.put("C98", new Automezzo("C98", 25));
+		
+		Controllore co =(Controllore) utenteCorrente;
+		co.setAutomezzoSupervisionato(a);
+	}
+	
+	public void visualizzaElencoCittaPartenza() {
 		elencoCitta.forEach((key, c) -> {System.out.println(c);});
 	}
 	
@@ -221,20 +285,19 @@ public class PickYourLine {
 			throw new Exception("Codice città non esistente.");
 		}
 		
-		setCittaPartenzaCorrente(cittaPartenza);
 		Map<Integer, Citta> elencoDestinazioniDisponibili = new HashMap<Integer, Citta>();
 		
 		this.elencoItinerari.forEach((key, i) -> {
-			elencoDestinazioniDisponibili.putAll(i.getDestinazioniDisponibili());
+			elencoDestinazioniDisponibili.putAll(i.getDestinazioniDisponibili(cittaPartenza));
 		});
 		
 		return elencoDestinazioniDisponibili;
 	}
 
-	public Map<String, Itinerario> inserisciCittaDestinazione(int codiceCittaDestinazione, Map<Integer, Citta> elencoDestinazioniDisponibili) throws Exception{
+	public Map<String, Itinerario> inserisciCittaDestinazione(int codiceCittaPartenza, int codiceCittaDestinazione, Map<Integer, Citta> elencoDestinazioniDisponibili) throws Exception{
 		Citta cittaDestinazione = elencoDestinazioniDisponibili.get(codiceCittaDestinazione);
 		
-		if(this.cittaPartenzaCorrente.equals(this.getElencoCitta().get(codiceCittaDestinazione))) {
+		if(this.getElencoCitta().get(codiceCittaPartenza).equals(this.getElencoCitta().get(codiceCittaDestinazione))) {
 			throw new Exception("La città di partenza e quella di destinazione sono la stessa città.");
 		} else if(cittaDestinazione == null) {
 			throw new Exception("Codice città non non idoneo alla ricerca effettuata.");
@@ -243,7 +306,7 @@ public class PickYourLine {
 		Map<String, Itinerario> itinerariDaVisualizare = new HashMap<String, Itinerario>();
 		
 		for (Itinerario itinerario : this.elencoItinerari.values()) {
-			Itinerario i = itinerario.getSeDisponibile(cittaDestinazione);
+			Itinerario i = itinerario.getSeDisponibile(this.getElencoCitta().get(codiceCittaPartenza), cittaDestinazione);
 			
 			if(i != null) {
 				itinerariDaVisualizare.put(i.getCodice(), i);
@@ -261,5 +324,87 @@ public class PickYourLine {
 		}
 		
 		i.visualizzaFermate();
+	}
+	
+	public Biglietto timbraBiglietto(String codice, int codiceCittaPartenza, int codiceCittaDestinazione) throws Exception {
+		Controllore co = (Controllore) this.utenteCorrente;
+		
+		int postiDisponibili = co.verificaDisponibilitaPosti();
+		
+		if(postiDisponibili <= 0) {
+			throw new Exception("Non ci sono posti disponibili, operazione terminata.");
+		}
+		
+		Citta cittaPartenza = this.elencoCitta.get(codiceCittaPartenza);
+		
+		Citta cittaAttuale = co.getAutomezzoSupervisionato().getPosizioneAttuale().getCittaDiAppartenenza();
+		
+		if(cittaPartenza != cittaAttuale) {
+			throw new Exception("Non è possibile partire da una città diversa da quella attuale.");
+		}
+		
+		Citta cittaDestinazione = this.elencoCitta.get(codiceCittaDestinazione);
+		
+		Itinerario i = co.getAutomezzoSupervisionato().getItinerarioAssegnato().getSeDisponibile(this.getElencoCitta().get(codiceCittaPartenza), cittaDestinazione);
+		
+		if(i == null) {
+			throw new Exception("Città di destinazione non presente nel percorso.");
+		}
+		
+		return co.creaBiglietto(codice, cittaPartenza, cittaDestinazione);
+	}
+	
+	public void confermaInserimento() {
+		Controllore co = (Controllore) this.utenteCorrente;
+		co.confermaInserimento();
+	}
+	
+	public boolean aggiornaPosizioneAutomezzo(String nomeFermata) throws Exception {
+		Controllore co = (Controllore) this.utenteCorrente;
+		
+		List<Citta> percorsoItinerarioAssegnato = co.getAutomezzoSupervisionato().getItinerarioAssegnato().getPercorso();
+		Fermata f = null;
+		
+		for (Citta c : percorsoItinerarioAssegnato) {
+			f = c.getFermata(nomeFermata);
+			if(f != null) break;
+		}
+		
+		if(f == null || f.getCittaDiAppartenenza().equals(percorsoItinerarioAssegnato.getLast())) {
+			throw new Exception("Nome fermata non consentito.");
+		}
+		
+		return co.aggiornaPosizione(f);
+	}
+	
+	public void terminaInserimento() {
+		Controllore co = (Controllore) this.utenteCorrente;
+		co.aggiornaOrarioUltimaTimbratura();
+	}
+	
+	public Map<String, Automezzo> visualizzaAutomezziInTransito(){
+		Map<String, Automezzo> elencoAutomezziInTransito = new HashMap<String, Automezzo>();
+		Automezzo a;
+		
+		for (Controllore co : this.elencoControllori.values()) {
+			a = co.getAutomezzoSupervisionato();
+			
+			if(a != null) {
+				elencoAutomezziInTransito.put(a.getCodice(), a);
+				System.out.println(a);
+			}
+		}
+		
+		return elencoAutomezziInTransito;
+	}
+	
+	public void visualizzaAutomezzo(String codiceAutomezzo, Map<String, Automezzo> elencoAutomezziInTransito) throws Exception {
+		Automezzo a = elencoAutomezziInTransito.get(codiceAutomezzo);
+		
+		if(a == null) {
+			throw new Exception("Codice automezzo non valido.");
+		}
+		
+		System.out.println(a.getDettagliAutomezzo());
 	}
 }

@@ -1,8 +1,10 @@
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
 
 public class PickYourLine {
 	private static PickYourLine pickYourLine;
@@ -11,12 +13,14 @@ public class PickYourLine {
 	private Map<String, Itinerario> elencoItinerari;
 	private Map<String, Controllore> elencoControllori;
 	private Map<String, Automezzo> elencoAutomezzi;
+	private Map<String,Segnalazione> elencoSegnalazioni;
 	
 	private PickYourLine() {
 		this.elencoItinerari = new HashMap<String, Itinerario>();
 		this.elencoCitta = new HashMap<Integer, Citta>();
 		this.elencoControllori = new HashMap<String, Controllore>();
 		this.elencoAutomezzi = new HashMap<String, Automezzo>();
+		this.elencoSegnalazioni = new HashMap<String,Segnalazione>();
 	}
 	
 	public static PickYourLine getInstance() {
@@ -53,6 +57,10 @@ public class PickYourLine {
 
 	public Map<String, Automezzo> getElencoAutomezzi() {
 		return elencoAutomezzi;
+	}
+
+	public Map<String, Segnalazione> getElencoSegnalazioni() {
+		return elencoSegnalazioni;
 	}
 
 	public void loadItinerari() {
@@ -275,7 +283,8 @@ public class PickYourLine {
 	}
 	
 	public void visualizzaElencoCittaPartenza() {
-		elencoCitta.forEach((key, c) -> {System.out.println(c);});
+		elencoCitta.forEach((key, c) -> {System.out.println(c
+				.getCodice() + " - " + c.getNome());});
 	}
 	
 	public Map<Integer, Citta> inserisciCittaPartenza(int codiceCittaPartenza) throws Exception {
@@ -406,5 +415,25 @@ public class PickYourLine {
 		}
 		
 		System.out.println(a.getDettagliAutomezzo());
+	}
+
+	public void visualizzaFermate(int codiceCitta) throws Exception{
+		Citta c = elencoCitta.get(codiceCitta);
+
+		if (c == null) {
+			throw new Exception("Codice città non non valido");
+		}
+
+		c.visualizzaElencoFermate();
+	}
+
+	public Segnalazione creaSegnalazione(String oggettoSegnalazione,String contenutoSegnalazione) {
+		LocalDateTime now = LocalDateTime.now();
+		Segnalazione s = new Segnalazione(oggettoSegnalazione,contenutoSegnalazione,now);
+		return s;
+	}
+
+	public void invioSegnalazione(Segnalazione segnalazione) {
+		this.elencoSegnalazioni.put(segnalazione.getCodice(),segnalazione);
 	}
 }

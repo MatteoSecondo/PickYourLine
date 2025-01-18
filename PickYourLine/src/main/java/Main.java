@@ -20,7 +20,9 @@ public class Main {
 			System.out.println("0- Esci\n"
 					+ "1- Cerca itinerario\n"
 					+ "2- Timbra biglietto\n"
-					+ "3- Monitora automezzo");
+					+ "3- Monitora automezzo\n"
+					+ "6- Visualizza fermate\n"
+					+ "9- Invio segnalazione\n");
 
 			int scelta = sc.nextInt();
 
@@ -37,6 +39,11 @@ public class Main {
 					break;
 				case 3:
 					monitoraAutomezzo(sc);
+				case 6:
+					visualizzaFermate(sc);
+					break;
+				case 9:
+					invioSegnalazione(sc);
 					break;
 			}
 
@@ -204,5 +211,74 @@ public class Main {
 			}while(!successo);
 		}	
 	}
+
+	@SuppressWarnings("resource")
+	public static void visualizzaFermate(Scanner sc) {
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+		sc = new Scanner(System.in);
+
+		boolean successo = false;
+		int codiceCitta;
+		System.out.println("Elenco Città:");
+		pickYourLine.visualizzaElencoCittaPartenza();
+
+		while (true) {
+			do {
+				System.out.println("\nInserisci il codice della città di cui vuoi conoscere le fermate, altrimenti 0 per uscire");
+				codiceCitta = sc.nextInt();
+
+				if (codiceCitta == 0)
+					return;
+				try {
+					pickYourLine.visualizzaFermate(codiceCitta);
+					successo = true;
+				}catch (Exception e) {
+					System.out.println("\n" + e.getMessage());
+				}
+			}while (!successo);
+		}
+	}
+
+	@SuppressWarnings("resource")
+	public static void invioSegnalazione(Scanner sc) {
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+
+		int scelta;
+		String oggettoSegnalazione;
+		String contenutoSegnalazione;
+
+		do {
+			Segnalazione segnalazione = null;
+			do {
+				System.out.println("Inserisci oggetto della segnalazione:");
+				sc = new Scanner(System.in);
+				oggettoSegnalazione = sc.nextLine();
+				System.out.println("\nInserisci contenuto della segnalazione: ");
+				sc = new Scanner(System.in);
+				contenutoSegnalazione = sc.nextLine();
+
+				try {
+					segnalazione = pickYourLine.creaSegnalazione(oggettoSegnalazione,contenutoSegnalazione);
+				}catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+
+				System.out.println(segnalazione);
+
+				System.out.println("\nInserisci 0 per annullare l'invio della segnalazione, altrimenti qualsiasi per confermare l'invio");
+
+				if(sc.nextInt() != 0) {
+					pickYourLine.invioSegnalazione(segnalazione);
+				}
+			}while (segnalazione == null);
+
+			System.out.println("Inserisci 0 per terminare l'operazione, altrimenti qualsiasi per continuare");
+			scelta = sc.nextInt();
+		}while (scelta!=0);
+
+
+
+	}
+
 
 }

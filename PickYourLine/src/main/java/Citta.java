@@ -47,6 +47,10 @@ public class Citta {
 		
 		return fermata;
 	}
+
+    public void visualizzaElencoFermate() {
+        elencoFermate.forEach(f -> System.out.println(f.getNome()));
+    }
     
     @Override
     public boolean equals(Object o) {

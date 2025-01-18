@@ -1,8 +1,5 @@
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PickYourLine {
 	private static PickYourLine pickYourLine;
@@ -11,12 +8,18 @@ public class PickYourLine {
 	private Map<String, Itinerario> elencoItinerari;
 	private Map<String, Controllore> elencoControllori;
 	private Map<String, Automezzo> elencoAutomezzi;
-	
+	private Map<String, Segnalazione> elencoSegnalazioni;
+	private Map<String, Amministratore> elencoAmministratori;
+	private Map<String, Cliente> elencoClienti;
+
 	private PickYourLine() {
 		this.elencoItinerari = new HashMap<String, Itinerario>();
 		this.elencoCitta = new HashMap<Integer, Citta>();
 		this.elencoControllori = new HashMap<String, Controllore>();
 		this.elencoAutomezzi = new HashMap<String, Automezzo>();
+		this.elencoSegnalazioni = new HashMap<String, Segnalazione>();
+		this.elencoAmministratori = new HashMap<String, Amministratore>();
+		this.elencoClienti = new HashMap<String,Cliente>();
 	}
 	
 	public static PickYourLine getInstance() {
@@ -54,6 +57,18 @@ public class PickYourLine {
 	public Map<String, Automezzo> getElencoAutomezzi() {
 		return elencoAutomezzi;
 	}
+
+	public Map<String,Segnalazione> getElencoSegnalazioni() {
+		return elencoSegnalazioni;
+	}
+
+	public Map<String, Amministratore> getElencoAmministratori() {
+		return elencoAmministratori;
+	}
+	public Map<String, Cliente> getElencoClienti() {
+		return elencoClienti;
+	}
+
 
 	public void loadItinerari() {
 		List<Citta> p = new ArrayList<Citta>();
@@ -257,6 +272,28 @@ public class PickYourLine {
 		this.elencoControllori.put("zy31", new Controllore("zy31"));
 	}
 
+	public void loadAmministratori() {
+		Amministratore a = new Amministratore("a7b7");
+		this.elencoAmministratori.put("a7b7", a);
+		setUtenteCorrente(a);
+
+		this.elencoAmministratori.put("a34j", new Amministratore("a34j"));
+		this.elencoAmministratori.put("a35j", new Amministratore("a35j"));
+		this.elencoAmministratori.put("a36j", new Amministratore("a36j"));
+		this.elencoAmministratori.put("a37j", new Amministratore("a37j"));
+	}
+
+	public void laodClienti(){
+		Cliente c = new Cliente("c74i", "Franco", "Tredita");
+		this .elencoClienti.put("c74i", c);
+		setUtenteCorrente(c);
+
+		this.elencoClienti.put("c2312", new Cliente("c2312", "Franco", "Bianchi"));
+		this.elencoClienti.put("c34rf", new Cliente("c34rf", "Giorgio", "Bianchi"));
+		this.elencoClienti.put("21dd", new Cliente("21dd", "Franco", "Rossi"));
+		this.elencoClienti.put("asda", new Cliente("asda", "Franco", "Marroni"));
+	}
+
 	public void loadAutomezzi() {
 		Map<String, Biglietto> b1 = new HashMap<String, Biglietto>();
 		b1.put("g7rbc8", new Biglietto("g7rbc8", elencoCitta.get(1), elencoCitta.get(3)));
@@ -272,6 +309,14 @@ public class PickYourLine {
 		
 		Controllore co =(Controllore) utenteCorrente;
 		co.setAutomezzoSupervisionato(a);
+	}
+
+	public void loadElencoSegnalazioni(){
+		Date now = new Date();
+		this.elencoSegnalazioni.put("s001",new Segnalazione("s001", "Ritardo sulla linea Catania-Randazzo", "Salve volevo segnalere che l'autobus che doveva passare a Bronte ha subito 40 minuti di ritardo", now, elencoClienti.get(1)));
+		this.elencoSegnalazioni.put("s002",new Segnalazione("s002", "Ritardo autobus per Maletto", "L'autobus per Maletto è in ritardooo", now, elencoClienti.get(2)));
+		this.elencoSegnalazioni.put("s003",new Segnalazione("s003", "Strada di Misterbianco chiusa", "Ora che la strada di Misterbianco è chiusa, dove si ferma l'autobus??", now, elencoClienti.get(3)));
+
 	}
 	
 	public void visualizzaElencoCittaPartenza() {
@@ -406,5 +451,25 @@ public class PickYourLine {
 		}
 		
 		System.out.println(a.getDettagliAutomezzo());
+	}
+
+	public void visualizzaElencoSegnalazioni(){
+
+		System.out.println("-------------- Elenco segnalazioni --------------");
+		for (Map.Entry<String, Segnalazione> entry : elencoSegnalazioni.entrySet()) {
+			Segnalazione s = entry.getValue();
+			System.out.println("Codice: " +s.getCodice() + " - Oggetto: " + s.getOggetto() + " - Data: " + s.getTimestamp());
+			System.out.println("Chiave effettiva: " + entry.getKey());
+		}
+	}
+
+	public void visualizzaDettaglioSegnalazione(String codiceSegnalazione) throws Exception {
+		Segnalazione s = elencoSegnalazioni.get(codiceSegnalazione);
+
+		if(s == null) {
+			throw new Exception("Codice segnalazione non valido.");
+		}
+
+		s.visualizzaDettaglio();
 	}
 }

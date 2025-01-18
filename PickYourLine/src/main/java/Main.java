@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Main {
@@ -10,6 +11,9 @@ public class Main {
 		pickYourLine.loadItinerari();
 		pickYourLine.loadControllori();
 		pickYourLine.loadAutomezzi();
+		pickYourLine.laodClienti();
+		pickYourLine.loadAmministratori();
+		pickYourLine.loadElencoSegnalazioni();
 
 		System.out.println("Benvenuto!");
 		Scanner sc = new Scanner(System.in);
@@ -20,7 +24,8 @@ public class Main {
 			System.out.println("0- Esci\n"
 					+ "1- Cerca itinerario\n"
 					+ "2- Timbra biglietto\n"
-					+ "3- Monitora automezzo");
+					+ "3- Monitora automezzo\n"
+					+ "10- Visualizza Segnalazioni\n");
 
 			int scelta = sc.nextInt();
 
@@ -37,6 +42,9 @@ public class Main {
 					break;
 				case 3:
 					monitoraAutomezzo(sc);
+					break;
+				case 10:
+					VisualizzaSegnalazioni(sc);
 					break;
 			}
 
@@ -203,6 +211,35 @@ public class Main {
 				}
 			}while(!successo);
 		}	
+	}
+
+	public static void VisualizzaSegnalazioni(Scanner sc){
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+		Amministratore a = (Amministratore) pickYourLine.getUtenteCorrente();
+
+		String codiceSegnalazione;
+		sc = new Scanner(System.in);
+
+		pickYourLine.visualizzaElencoSegnalazioni();
+
+		do {
+			System.out.println("\n Inserisci il codice di una segnalazione per vedere il dettaglio(0 per uscire):");
+			codiceSegnalazione = sc.nextLine().trim();
+
+
+			if (pickYourLine.getElencoSegnalazioni().containsKey(codiceSegnalazione)) {
+				try{
+					pickYourLine.visualizzaDettaglioSegnalazione(codiceSegnalazione);
+				}
+				catch(Exception e){
+					System.out.println("\n" + e.getMessage());
+				}
+			}
+			else {
+				System.out.println("\n Nessuna segnalazione trovata");
+			}
+		} while(!Objects.equals(codiceSegnalazione, "0"));
+
 	}
 
 }

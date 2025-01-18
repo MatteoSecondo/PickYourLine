@@ -313,11 +313,9 @@ public class PickYourLine {
 	}
 
 	public void loadElencoSegnalazioni(){
-		Date now = new Date();
-		this.elencoSegnalazioni.put("s001",new Segnalazione("s001", "Ritardo sulla linea Catania-Randazzo", "Salve volevo segnalere che l'autobus che doveva passare a Bronte ha subito 40 minuti di ritardo", now, elencoClienti.get(1)));
-		this.elencoSegnalazioni.put("s002",new Segnalazione("s002", "Ritardo autobus per Maletto", "L'autobus per Maletto è in ritardooo", now, elencoClienti.get(2)));
-		this.elencoSegnalazioni.put("s003",new Segnalazione("s003", "Strada di Misterbianco chiusa", "Ora che la strada di Misterbianco è chiusa, dove si ferma l'autobus??", now, elencoClienti.get(3)));
-
+		this.elencoSegnalazioni.put("s001", new Segnalazione("s001","Critica Personale", "Insulto verbale", new Cliente("0001","Tizio", "Bello")));
+		this.elencoSegnalazioni.put("s002", new Segnalazione("s002","Critica Servizio", "Servizio in ritardo nella mattina", new Cliente("0002","Mara","Meo")));
+		this.elencoSegnalazioni.put("s003", new Segnalazione("s003","Critica Automezzo", "Sedili senza cintura di sicurezza",new Cliente("0003","Ponzio","Pelato")));
 	}
 
 	public void visualizzaElencoCittaPartenza() {
@@ -467,7 +465,7 @@ public class PickYourLine {
 
 	public Segnalazione creaSegnalazione(String oggettoSegnalazione,String contenutoSegnalazione) {
 		LocalDateTime now = LocalDateTime.now();
-		Segnalazione s = new Segnalazione(oggettoSegnalazione,contenutoSegnalazione,now);
+		Segnalazione s = new Segnalazione(oggettoSegnalazione,contenutoSegnalazione);
 		return s;
 	}
 
@@ -480,8 +478,7 @@ public class PickYourLine {
 		System.out.println("-------------- Elenco segnalazioni --------------");
 		for (Map.Entry<String, Segnalazione> entry : elencoSegnalazioni.entrySet()) {
 			Segnalazione s = entry.getValue();
-			System.out.println("Codice: " +s.getCodice() + " - Oggetto: " + s.getOggetto() + " - Data: " + s.getTimestamp());
-			System.out.println("Chiave effettiva: " + entry.getKey());
+			System.out.println(s);;
 		}
 	}
 

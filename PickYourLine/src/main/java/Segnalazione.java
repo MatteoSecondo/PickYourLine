@@ -10,12 +10,20 @@ public class Segnalazione {
     private LocalDateTime timeStamp;
     private Cliente cliente;
 
-    public Segnalazione(String oggetto, String contenuto, LocalDateTime timeStamp) {
+    public Segnalazione(String oggetto, String contenuto) {
         this.codice = generaCodice();
         this.oggetto = oggetto;
         this.contenuto = contenuto;
-        this.timeStamp = timeStamp;
+        this.timeStamp = LocalDateTime.now();
         this.cliente = (Cliente) PickYourLine.getInstance().getUtenteCorrente();
+    }
+
+    public Segnalazione(String codice, String oggetto, String contenuto, Cliente cliente) {
+        this.codice = codice;
+        this.oggetto = oggetto;
+        this.contenuto = contenuto;
+        this.timeStamp = LocalDateTime.now();
+        this.cliente = cliente;
     }
 
     private String generaCodice() {
@@ -25,7 +33,7 @@ public class Segnalazione {
         StringBuilder codice = new StringBuilder();
 
         for (int i = 0; i < l; i++) {
-            int indiceValore= random.nextInt(valori.length());
+            int indiceValore = random.nextInt(valori.length());
             codice.append(valori.charAt(indiceValore));
         }
 
@@ -76,9 +84,19 @@ public class Segnalazione {
         return "Segnalazione{" +
                 "codice='" + codice + '\'' +
                 ", oggetto='" + oggetto + '\'' +
-                ", contenuto='" + contenuto + '\'' +
-                ", timeStamp=" + formattaData(timeStamp) +
-                ", cliente=" + cliente +
+                ", data='" + formattaData(timeStamp) + '\'' +
                 '}';
     }
+
+    public void visualizzaDettaglio() {
+        System.out.println("Segnalazione{" +
+                "codice='" + codice + '\'' +
+                ", oggetto='" + oggetto + '\'' +
+                ", data='" + formattaData(timeStamp) + '\'' +
+                ", \ncontenuto='" + contenuto + '\'' +
+                ", \ncliente='" + cliente + '\'' +
+                '}');
+    }
+
+
 }

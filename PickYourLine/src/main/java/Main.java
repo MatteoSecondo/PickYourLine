@@ -13,7 +13,6 @@ public class Main {
 		pickYourLine.laodClienti();
 		pickYourLine.loadAmministratori();
 		pickYourLine.loadElencoSegnalazioni();
-
 		System.out.println("Benvenuto!");
 		Scanner sc = new Scanner(System.in);
 		boolean ultimaCitta = false;

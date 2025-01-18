@@ -15,7 +15,7 @@ public class Cliente extends Utente{
                 ", cognome='" + cognome + '\'' +
                 ", codice='" + codice + '\'' +
                 '}';
-
+    }
     public String getNome() {
         return nome;
     }

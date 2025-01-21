@@ -46,6 +46,7 @@ class PickYourLineTest {
 	void setupAll(){
 		this.pickYourLine = PickYourLine.getInstance();
 		this.pickYourLine.loadCitta();
+		this.pickYourLine.loadElencoSegnalazioni();
 	}
 
 	@BeforeEach
@@ -355,4 +356,24 @@ class PickYourLineTest {
 				"Non dovrebbe lanciare eccezioni quando la fermata è trovata e le citta sono diverse.");
 	}
 
+
+	@Test
+	@DisplayName("Test per verificare visualizzaDettaglioSegnalazione in caso in cui il codice sia valido")
+	void testVisualizzaDettaglioSegnalazioneConCodiceValido() throws Exception {
+
+
+		String codiceValido = "s001";
+		assertDoesNotThrow(() -> pickYourLine.visualizzaDettaglioSegnalazione(codiceValido));
+	}
+
+	@Test
+	@DisplayName("Test per verificare visualizzaDettaglioSegnalazione in caso in cui il codice non sia valido")
+	void testVisualizzaDettaglioSegnalazioneConCodiceNonValido() {
+		String codiceNonValido = "s004";
+		Exception exception = assertThrows(Exception.class, () -> {
+			pickYourLine.visualizzaDettaglioSegnalazione(codiceNonValido);
+		});
+
+		assertEquals("Codice segnalazione non valido.", exception.getMessage());
+	}
 }

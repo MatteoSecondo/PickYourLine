@@ -354,5 +354,178 @@ class PickYourLineTest {
 		assertDoesNotThrow(() -> pickYourLine.aggiornaPosizioneAutomezzo("valida"),
 				"Non dovrebbe lanciare eccezioni quando la fermata è trovata e le citta sono diverse.");
 	}
+	
+	@Test
+	@DisplayName("Test della funzione inserisciItinerario nel caso in cui vada a buon fine")
+	public void testInserisciItinerario_Successo() throws Exception {
+		List<Citta> percorso = new ArrayList<Citta>();
+		percorso.add(pickYourLine.getElencoCitta().get(1));
+		percorso.add(pickYourLine.getElencoCitta().get(5));
+		
+		pickYourLine.inserisciItinerario("prova", LocalTime.of(12, 0), LocalTime.of(13, 0), percorso);
 
+		assertTrue(pickYourLine.getElencoItinerari().containsKey("prova"));
+	}
+	
+	@Test
+	@DisplayName("Test della funzione inserisciItinerario nel caso in cui il codice sia già esistente")
+	public void testInserisciItinerario_CodiceItinerarioEsistente() {
+		List<Citta> percorso = new ArrayList<Citta>();
+		percorso.add(pickYourLine.getElencoCitta().get(1));
+		percorso.add(pickYourLine.getElencoCitta().get(5));
+		
+		Exception exception = assertThrows(Exception.class, () ->
+			pickYourLine.inserisciItinerario("Catania-Caltagirone", LocalTime.of(12, 0), LocalTime.of(13, 0), percorso),
+			"Codice itinerario già esistente."
+		);
+		
+		assertEquals("Codice itinerario già esistente.", exception.getMessage());
+	}
+	
+	@Test
+	@DisplayName("Test della funzione inserisciItinerario nel caso in cui gli orari non siano validi")
+	public void testInserisciItinerario_OrariNonValidi() {
+		List<Citta> percorso = new ArrayList<Citta>();
+		percorso.add(pickYourLine.getElencoCitta().get(1));
+		percorso.add(pickYourLine.getElencoCitta().get(5));
+		
+		Exception exception = assertThrows(Exception.class, () ->
+			pickYourLine.inserisciItinerario("prova", LocalTime.of(12, 0), LocalTime.of(11, 0), percorso),
+			"L'orario di arrivo deve essere successivo a quello di partenza."
+		);
+		
+		assertEquals("L'orario di arrivo deve essere successivo a quello di partenza.", exception.getMessage());
+	}
+	
+	@Test
+	@DisplayName("Test della funzione inserisciItinerario nel caso in cui il percorso ha meno di due città")
+	public void testInserisciItinerario_PercorsoTroppoCorto() {
+		List<Citta> percorso = new ArrayList<Citta>();
+		percorso.add(pickYourLine.getElencoCitta().get(1));
+		
+		Exception exception = assertThrows(Exception.class, () ->
+			pickYourLine.inserisciItinerario("prova", LocalTime.of(12, 0), LocalTime.of(13, 0), percorso),
+			"Il percorso deve essere composto da almeno due città."
+		);
+		
+		assertEquals("Il percorso deve essere composto da almeno due città.", exception.getMessage());
+	}
+	
+	@Test
+	@DisplayName("Test della funzione inserisciItinerario nel caso in cui ci siano città inserite piu volte nel percorso")
+	public void testInserisciItinerario_CittaDuplicateNelPercorso() {
+		List<Citta> percorso = new ArrayList<Citta>();
+		percorso.add(pickYourLine.getElencoCitta().get(1));
+		percorso.add(pickYourLine.getElencoCitta().get(1));
+		percorso.add(pickYourLine.getElencoCitta().get(5));
+		
+		Exception exception = assertThrows(Exception.class, () ->
+			pickYourLine.inserisciItinerario("prova", LocalTime.of(12, 0), LocalTime.of(13, 0), percorso),
+			"Il percorso non può contenere città duplicate."
+		);
+		
+		assertEquals("Il percorso non può contenere città duplicate.", exception.getMessage());
+	}
+	
+	@Test
+	@DisplayName("Test della funzione modificaItinerario nel caso in cui vada a buon fine")
+	public void testModificaItinerario_Successo() throws Exception {
+		List<Citta> percorso = new ArrayList<Citta>();
+		percorso.add(pickYourLine.getElencoCitta().get(1));
+		percorso.add(pickYourLine.getElencoCitta().get(3));
+		percorso.add(pickYourLine.getElencoCitta().get(5));
+		
+		Itinerario i = pickYourLine.getElencoItinerari().get("Caltagirone-Catania");
+		LocalTime oldOrarioPartenza = i.getOrarioPartenza();
+		LocalTime oldOrarioArrivo = i.getOrarioArrivo();
+		List<Citta> oldPercorso = i.getPercorso();
+		
+		pickYourLine.modificaItinerario("Caltagirone-Catania", LocalTime.of(12, 30), LocalTime.of(13, 0), percorso);
+		
+		assertFalse(oldOrarioPartenza.equals(LocalTime.of(12, 30)));
+		assertFalse(oldOrarioArrivo.equals(LocalTime.of(13, 0)));
+		assertNotEquals(oldPercorso, percorso);
+		
+		oldOrarioPartenza = i.getOrarioPartenza();
+		oldOrarioArrivo = i.getOrarioArrivo();
+		oldPercorso = i.getPercorso();
+		
+		pickYourLine.modificaItinerario("Caltagirone-Catania", null, LocalTime.of(14, 30), new ArrayList<Citta>());
+
+		assertTrue(oldOrarioPartenza.equals(LocalTime.of(12, 30)));
+		assertFalse(oldOrarioArrivo.equals(LocalTime.of(14, 30)));
+		assertEquals(oldPercorso, percorso);
+	}
+	
+	@Test
+	@DisplayName("Test della funzione modificaItinerario nel caso in cui il codice sia già esistente")
+	public void testModificaItinerario_CodiceItinerarioNonEsistente() {
+		List<Citta> percorso = new ArrayList<Citta>();
+		percorso.add(pickYourLine.getElencoCitta().get(1));
+		percorso.add(pickYourLine.getElencoCitta().get(5));
+		
+		Exception exception = assertThrows(Exception.class, () ->
+			pickYourLine.modificaItinerario("prova", LocalTime.of(12, 0), LocalTime.of(13, 0), percorso),
+			"Codice itinerario non esistente."
+		);
+		
+		assertEquals("Codice itinerario non esistente.", exception.getMessage());
+	}
+	
+	@Test
+	@DisplayName("Test della funzione inserisciItinerario nel caso in cui gli orari non siano validi")
+	public void testModificaItinerario_OrariNonValidi() {
+		List<Citta> percorso = new ArrayList<Citta>();
+		percorso.add(pickYourLine.getElencoCitta().get(1));
+		percorso.add(pickYourLine.getElencoCitta().get(3));
+		percorso.add(pickYourLine.getElencoCitta().get(5));
+		
+		Exception exception = assertThrows(Exception.class, () ->
+			pickYourLine.modificaItinerario("Catania-Caltagirone", LocalTime.of(12, 0), LocalTime.of(11, 0), percorso),
+			"L'orario di arrivo deve essere successivo a quello di partenza."
+		);
+		
+		assertEquals("L'orario di arrivo deve essere successivo a quello di partenza.", exception.getMessage());
+	}
+	
+	@Test
+	@DisplayName("Test della funzione inserisciItinerario nel caso in cui il percorso ha meno di due città")
+	public void testModificaItinerario_PercorsoTroppoCorto() {
+		List<Citta> percorso = new ArrayList<Citta>();
+		percorso.add(pickYourLine.getElencoCitta().get(1));
+		
+		Exception exception = assertThrows(Exception.class, () ->
+			pickYourLine.modificaItinerario("Catania-Caltagirone", LocalTime.of(12, 0), LocalTime.of(13, 0), percorso),
+			"Il percorso deve essere composto da almeno due città."
+		);
+		
+		assertEquals("Il percorso deve essere composto da almeno due città.", exception.getMessage());
+	}
+	
+	@Test
+	@DisplayName("Test della funzione inserisciItinerario nel caso in cui ci siano città inserite piu volte nel percorso")
+	public void testModificaItinerario_CittaDuplicateNelPercorso() {
+		List<Citta> percorso = new ArrayList<Citta>();
+		percorso.add(pickYourLine.getElencoCitta().get(1));
+		percorso.add(pickYourLine.getElencoCitta().get(1));
+		percorso.add(pickYourLine.getElencoCitta().get(5));
+		
+		Exception exception = assertThrows(Exception.class, () ->
+			pickYourLine.modificaItinerario("Catania-Caltagirone", LocalTime.of(12, 0), LocalTime.of(13, 0), percorso),
+			"Il percorso non può contenere città duplicate."
+		);
+		
+		assertEquals("Il percorso non può contenere città duplicate.", exception.getMessage());
+	}
+	
+	@Test
+	@DisplayName("Test della funzione eliminaItinerario")
+	public void testEliminaItinerario() {
+		boolean oldContenuto = pickYourLine.getElencoItinerari().containsKey("Catania-Caltagirone");
+		pickYourLine.eliminaItinerario("Catania-Caltagirone");
+		boolean contenuto = pickYourLine.getElencoItinerari().containsKey("Catania-Caltagirone");
+		
+		assertNotEquals(oldContenuto, contenuto);
+	}
+	
 }

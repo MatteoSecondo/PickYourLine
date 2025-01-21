@@ -49,7 +49,7 @@ public class Main {
 					invioSegnalazione(sc);
 					break;
 				case 10:
-					VisualizzaSegnalazioni(sc);
+					visualizzaSegnalazioni(sc);
 					break;
 			}
 
@@ -287,7 +287,7 @@ public class Main {
 	}
 
 
-	public static void VisualizzaSegnalazioni(Scanner sc){
+	public static void visualizzaSegnalazioni(Scanner sc){
 		PickYourLine pickYourLine = PickYourLine.getInstance();
 		Amministratore a = (Amministratore) pickYourLine.getUtenteCorrente();
 
@@ -296,10 +296,12 @@ public class Main {
 
 		pickYourLine.visualizzaElencoSegnalazioni();
 
-		do {
+		while (true){
 			System.out.println("\n Inserisci il codice di una segnalazione per vedere il dettaglio(0 per uscire):");
 			codiceSegnalazione = sc.nextLine().trim();
 
+			if (codiceSegnalazione.equals("0"))
+				break;
 
 			if (pickYourLine.getElencoSegnalazioni().containsKey(codiceSegnalazione)) {
 				try{
@@ -312,7 +314,7 @@ public class Main {
 			else {
 				System.out.println("\n Nessuna segnalazione trovata");
 			}
-		} while(!codiceSegnalazione.equals("0"));
+		}
 
 	}
 

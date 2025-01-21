@@ -1,8 +1,10 @@
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class PickYourLine {
 	private static PickYourLine pickYourLine;
@@ -406,5 +408,119 @@ public class PickYourLine {
 		}
 		
 		System.out.println(a.getDettagliAutomezzo());
+	}
+	
+	public void visualizzaElencoItinerari() {
+		this.elencoItinerari.forEach((k, i) -> System.out.println(i));
+	}
+	
+	public void inserisciItinerario(String codice, LocalTime orarioPartenza, LocalTime orarioArrivo, List<Citta> percorso) throws Exception {
+		Itinerario i = this.elencoItinerari.get(codice);
+		
+		if(i != null) {
+			throw new Exception("Codice itinerario già esistente.");
+		}
+		
+		if(!orarioArrivo.isAfter(orarioPartenza)) {
+			throw new Exception("L'orario di arrivo deve essere successivo a quello di partenza.");
+		}
+		
+		if(percorso.size() < 2) {
+			throw new Exception("Il percorso deve essere composto da almeno due città.");
+		}
+		
+		if(!controlloCittaDuplicate(percorso)) {
+			throw new Exception("Il percorso non può contenere città duplicate.");
+		}
+		
+		this.elencoItinerari.put(codice, new Itinerario(codice, orarioPartenza, orarioArrivo, percorso));
+	}
+	
+	public void modificaItinerario(String codice, LocalTime orarioPartenza, LocalTime orarioArrivo, List<Citta> percorso) throws Exception {
+		Itinerario i = this.elencoItinerari.get(codice);
+		
+		if(i == null) {
+			throw new Exception("Codice itinerario non esistente.");
+		}
+		
+		if(orarioPartenza != null) {
+			i.setOrarioPartenza(orarioPartenza);
+		}
+		
+		if(orarioArrivo != null) {
+			
+			if(!orarioArrivo.isAfter(i.getOrarioPartenza())) {
+				throw new Exception("L'orario di arrivo deve essere successivo a quello di partenza.");
+			}
+			
+			i.setOrarioArrivo(orarioArrivo);
+		}
+		
+		if(!percorso.isEmpty()) {
+			
+			if(percorso.size() < 2) {
+				throw new Exception("Il percorso deve essere composto da almeno due città.");
+			}
+			
+			if(!controlloCittaDuplicate(percorso)) {
+				throw new Exception("Il percorso non può contenere città duplicate.");
+			}
+			
+			i.setPercorso(percorso);
+		}
+	}
+	
+	private boolean controlloCittaDuplicate(List<Citta> percorso) {
+		Set<Citta> set = new HashSet<Citta>();
+		
+		for (Citta c : percorso) {
+			if(!set.add(c)) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	public void eliminaItinerario(String codice) {
+		this.elencoItinerari.remove(codice);
+	}
+	
+	public void visualizzaElencoAutomezzi() {
+		this.elencoAutomezzi.forEach((k, a) -> System.out.println(a));
+	}
+	
+	public void inserisciAutomezzo(String codice, int posti, String codiceItinerario) throws Exception {
+		
+		if(this.elencoAutomezzi.containsKey(codice)) {
+			throw new Exception("Codice automezzo già esistente.");
+		}
+		
+		Automezzo a = new Automezzo(codice, posti);
+		Itinerario i = pickYourLine.elencoItinerari.get(codiceItinerario);
+		
+		if(i == null) {
+			throw new Exception("Codice itinerario non esistente.");
+		}
+		
+		a.setItinerarioAssegnato(i);
+		this.elencoAutomezzi.put(codice, a);
+	}
+	
+	public void modificaAutomezzo(String codice, String codiceItinerario) throws Exception {
+		Automezzo a = this.elencoAutomezzi.get(codice);
+		
+		if(a == null) {
+			throw new Exception("Codice automezzo non esistente.");
+		}
+		
+		if(codiceItinerario != null && !codiceItinerario.equals("0")) {
+			Itinerario i = pickYourLine.elencoItinerari.get(codiceItinerario);
+			a.setItinerarioAssegnato(i);
+		}
+	}
+	
+	public void eliminaAutomezzo(String codice) {
+		this.elencoAutomezzi.remove(codice);
 	}
 }

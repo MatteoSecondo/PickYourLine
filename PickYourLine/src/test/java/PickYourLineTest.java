@@ -52,6 +52,8 @@ class PickYourLineTest {
 	void setup() throws Exception {
 		this.pickYourLine.loadItinerari();
 		MockitoAnnotations.openMocks(this);
+		this.pickYourLine.loadControllori();
+		this.pickYourLine.loadAutomezzi();
 	}
 
 	@AfterAll
@@ -527,5 +529,73 @@ class PickYourLineTest {
 		
 		assertNotEquals(oldContenuto, contenuto);
 	}
-	
+
+
+	@Test
+	@DisplayName("Test di inserisciAutomezzo nel caso che vada a buon fine")
+	public void testInserimentoAutomezzoValido() throws Exception {
+		pickYourLine.inserisciAutomezzo("automezzo70", 50, "Catania-Randazzo");
+		assertTrue(pickYourLine.getElencoAutomezzi().containsKey("automezzo70"));
+	}
+
+
+	@Test
+	@DisplayName("Test fallimento inserimento automezzo con codice già esistente")
+	public void testInserimentoAutomezzoCodiceEsistente() throws Exception {
+		// Assumi che 'automezzo1' sia già inserito nel sistema
+		pickYourLine.inserisciAutomezzo("automezzo1", 50, "Catania-Randazzo");
+		Exception exception = assertThrows(Exception.class, () -> {
+			pickYourLine.inserisciAutomezzo("automezzo1", 60, "Catania-Randazzo");
+		});
+		assertTrue(exception.getMessage().contains("Codice automezzo già esistente"));
+	}
+
+	@Test
+	@DisplayName("Test fallimento inserimento automezzo con itinerario non esistente")
+	public void testInserimentoAutomezzoItinerarioNonEsistente() {
+		Exception exception = assertThrows(Exception.class, () -> {
+			pickYourLine.inserisciAutomezzo("automezzo2", 50, "ItinerarioInesistente");
+		});
+		assertTrue(exception.getMessage().contains("Codice itinerario non esistente"));
+	}
+
+	@Test
+	@DisplayName("Test fallimento modifica automezzo non esistente")
+	public void testModificaAutomezzoNonEsistente() {
+		Exception exception = assertThrows(Exception.class, () -> {
+			pickYourLine.modificaAutomezzo("automezzoInesistente", "Catania-Randazzo");
+		});
+		assertTrue(exception.getMessage().contains("Codice automezzo non esistente"));
+	}
+
+	@Test
+	@DisplayName("Test successo modifica itinerario automezzo")
+	public void testModificaItinerarioAutomezzo() throws Exception {
+		pickYourLine.inserisciAutomezzo("automezzo2", 50, "Catania-Randazzo");
+		pickYourLine.modificaAutomezzo("automezzo2", "Randazzo-Catania");
+		Automezzo automezzo = pickYourLine.getElencoAutomezzi().get("automezzo2");
+		assertNotNull(automezzo.getItinerarioAssegnato());
+		assertEquals("Randazzo-Catania", automezzo.getItinerarioAssegnato().getCodice());
+	}
+
+	@Test
+	@DisplayName("Test eliminazione automezzo esistente")
+	public void testEliminazioneAutomezzoEsistente() throws Exception {
+		pickYourLine.inserisciAutomezzo("automezzo3", 50, "Catania-Randazzo");
+		assertTrue(pickYourLine.getElencoAutomezzi().containsKey("automezzo3"));
+		pickYourLine.eliminaAutomezzo("automezzo3");
+		assertFalse(pickYourLine.getElencoAutomezzi().containsKey("automezzo3"));
+	}
+
+
+	@Test
+	@DisplayName("Test eliminazione automezzo non esistente")
+	public void testEliminazioneAutomezzoNonEsistente() {
+		assertFalse(pickYourLine.getElencoAutomezzi().containsKey("automezzoInesistente"));
+		pickYourLine.eliminaAutomezzo("automezzoInesistente");  // Nessun errore dovrebbe essere lanciato
+		assertFalse(pickYourLine.getElencoAutomezzi().containsKey("automezzoInesistente"));
+	}
+
+
+
 }

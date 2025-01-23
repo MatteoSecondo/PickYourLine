@@ -482,7 +482,11 @@ public class PickYourLine {
 		return true;
 	}
 	
-	public void eliminaItinerario(String codice) {
+	public void eliminaItinerario(String codice) throws Exception {
+		if(!this.elencoItinerari.containsKey(codice)) {
+			throw new Exception("Codice itinerario non esistente.");
+		}
+		
 		this.elencoItinerari.remove(codice);
 	}
 	
@@ -508,10 +512,22 @@ public class PickYourLine {
 	}
 	
 	public void modificaAutomezzo(String codice, String codiceItinerario) throws Exception {
-		Automezzo a = this.elencoAutomezzi.get(codice);
+		Map<String, Automezzo> automezziNonInTransito = new HashMap<String, Automezzo>();
+		
+		this.elencoAutomezzi.forEach((k, a) -> {
+			if(a.getStato() instanceof NonInTransito) {
+				automezziNonInTransito.put(a.getCodice(), a);
+			}
+		});
+		
+		if(automezziNonInTransito.isEmpty()) {
+			throw new Exception("Nessun automezzo modificabile.");
+		}
+		
+		Automezzo a = automezziNonInTransito.get(codice);
 		
 		if(a == null) {
-			throw new Exception("Codice automezzo non esistente.");
+			throw new Exception("Automezzo non esistente o in transito.");
 		}
 		
 		if(codiceItinerario != null && !codiceItinerario.equals("0")) {
@@ -520,7 +536,19 @@ public class PickYourLine {
 		}
 	}
 	
-	public void eliminaAutomezzo(String codice) {
+	public void eliminaAutomezzo(String codice) throws Exception {
+		Map<String, Automezzo> automezziNonInTransito = new HashMap<String, Automezzo>();
+		
+		this.elencoAutomezzi.forEach((k, a) -> {
+			if(a.getStato() instanceof NonInTransito) {
+				automezziNonInTransito.put(a.getCodice(), a);
+			}
+		});
+		
+		if(!automezziNonInTransito.containsKey(codice)) {
+			throw new Exception("Automezzo non esistente o in transito.");
+		}
+		
 		this.elencoAutomezzi.remove(codice);
 	}
 }

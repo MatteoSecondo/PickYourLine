@@ -1,5 +1,6 @@
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -261,7 +262,12 @@ public class Main {
 				System.out.println("\nInserisci il codice dell'itinerario");
 				codice.append(sc.nextLine());
 				
-				pickYourLine.eliminaItinerario(codice.toString());
+				try {
+					pickYourLine.eliminaItinerario(codice.toString());
+				} catch (Exception e) {
+					System.out.println("\n" + e.getMessage());
+				}
+				
 				break;
 		}
 	}
@@ -406,7 +412,12 @@ public class Main {
 				System.out.println("\nInserisci il codice dell'automezzo");
 				codice.append(sc.nextLine());
 				
-				pickYourLine.eliminaAutomezzo(codice.toString());
+				try {
+					pickYourLine.eliminaAutomezzo(codice.toString());
+				} catch (Exception e) {
+					System.out.println("\n" + e.getMessage());
+				}
+				
 				break;
 		}
 	}
@@ -433,10 +444,18 @@ public class Main {
 			}
 			
 			if(operazioneScelta == 3) {
-				success = !success;
+				Map<String, Automezzo> automezziNonInTransito = new HashMap<String, Automezzo>();
+				
+				pickYourLine.getElencoAutomezzi().forEach((k, a) -> {
+					if(a.getStato() instanceof NonInTransito) {
+						automezziNonInTransito.put(a.getCodice(), a);
+					}
+				});
+				
+				success = automezziNonInTransito.containsKey(codice.toString());
 				
 				if(!success) {
-					System.out.println("\nCodice automezzo non esistente.");
+					System.out.println("\nCodice automezzo non esistente o non modificabile perchè in transito.");
 					codice.setLength(0);
 				}
 			}

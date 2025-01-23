@@ -520,12 +520,13 @@ class PickYourLineTest {
 	
 	@Test
 	@DisplayName("Test della funzione eliminaItinerario")
-	public void testEliminaItinerario() {
-		boolean oldContenuto = pickYourLine.getElencoItinerari().containsKey("Catania-Caltagirone");
-		pickYourLine.eliminaItinerario("Catania-Caltagirone");
-		boolean contenuto = pickYourLine.getElencoItinerari().containsKey("Catania-Caltagirone");
+	public void testEliminaItinerario_ItinerarioNonEsistente() {
+		Exception exception = assertThrows(Exception.class, () ->
+			pickYourLine.eliminaItinerario("prova99"),
+			"Codice itinerario non esistente."
+		);
 		
-		assertNotEquals(oldContenuto, contenuto);
+		assertEquals("Codice itinerario non esistente.", exception.getMessage());
 	}
 	
 }

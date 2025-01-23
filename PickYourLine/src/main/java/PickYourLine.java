@@ -263,10 +263,7 @@ public class PickYourLine {
 	}
 
 	public void loadControllori() {
-		Controllore co = new Controllore("f5b3");
-		this.elencoControllori.put("f5b3", co);
-		setUtenteCorrente(co);
-		
+		this.elencoControllori.put("f5b3", new Controllore("f5b3"));
 		this.elencoControllori.put("n7j5", new Controllore("n7j5"));
 		this.elencoControllori.put("h1ig", new Controllore("h1ig"));
 		this.elencoControllori.put("ba56", new Controllore("ba56"));
@@ -274,10 +271,7 @@ public class PickYourLine {
 	}
 
 	public void loadAmministratori() {
-		Amministratore a = new Amministratore("a7b7");
-		this.elencoAmministratori.put("a7b7", a);
-		setUtenteCorrente(a);
-
+		this.elencoAmministratori.put("a7b7", new Amministratore("a7b7"));
 		this.elencoAmministratori.put("a34j", new Amministratore("a34j"));
 		this.elencoAmministratori.put("a35j", new Amministratore("a35j"));
 		this.elencoAmministratori.put("a36j", new Amministratore("a36j"));
@@ -285,10 +279,7 @@ public class PickYourLine {
 	}
 
 	public void laodClienti(){
-		Cliente c = new Cliente("c74i", "Franco", "Tredita");
-		this .elencoClienti.put("c74i", c);
-		setUtenteCorrente(c);
-
+		this.elencoClienti.put("c74i", new Cliente("c74i", "Franco", "Tredita"));
 		this.elencoClienti.put("c2312", new Cliente("c2312", "Franco", "Bianchi"));
 		this.elencoClienti.put("c34rf", new Cliente("c34rf", "Giorgio", "Bianchi"));
 		this.elencoClienti.put("21dd", new Cliente("21dd", "Franco", "Rossi"));
@@ -307,15 +298,12 @@ public class PickYourLine {
 		this.elencoAutomezzi.put("Z22", new Automezzo("Z22", 25));
 		this.elencoAutomezzi.put("Y77", new Automezzo("Y77", 30));
 		this.elencoAutomezzi.put("C98", new Automezzo("C98", 25));
-		
-		Controllore co =(Controllore) utenteCorrente;
-		co.setAutomezzoSupervisionato(a);
 	}
 
 	public void loadElencoSegnalazioni(){
-		this.elencoSegnalazioni.put("s001", new Segnalazione("s001","Critica Personale", "Insulto verbale", new Cliente("0001","Tizio", "Bello")));
-		this.elencoSegnalazioni.put("s002", new Segnalazione("s002","Critica Servizio", "Servizio in ritardo nella mattina", new Cliente("0002","Mara","Meo")));
-		this.elencoSegnalazioni.put("s003", new Segnalazione("s003","Critica Automezzo", "Sedili senza cintura di sicurezza",new Cliente("0003","Ponzio","Pelato")));
+		this.elencoSegnalazioni.put("s001", new Segnalazione("s001","Critica Personale", "Insulto verbale", LocalDateTime.of(2025, 1, 10, 10, 50), new Cliente("0001","Tizio", "Bello")));
+		this.elencoSegnalazioni.put("s002", new Segnalazione("s002","Critica Servizio", "Servizio in ritardo nella mattina", LocalDateTime.of(2025, 1, 10, 11, 00), new Cliente("0002","Mara","Meo")));
+		this.elencoSegnalazioni.put("s003", new Segnalazione("s003","Critica Automezzo", "Sedili senza cintura di sicurezza", LocalDateTime.of(2025, 1, 12, 16, 30), new Cliente("0003","Ponzio","Pelato")));
 	}
 
 	public void visualizzaElencoCittaPartenza() {
@@ -468,7 +456,6 @@ public class PickYourLine {
 	}
 
 	public Segnalazione creaSegnalazione(String oggettoSegnalazione,String contenutoSegnalazione) {
-		LocalDateTime now = LocalDateTime.now();
 		Segnalazione s = new Segnalazione(oggettoSegnalazione,contenutoSegnalazione);
 		return s;
 	}
@@ -477,9 +464,13 @@ public class PickYourLine {
 		this.elencoSegnalazioni.put(segnalazione.getCodice(),segnalazione);
 	}
 
-	public void visualizzaElencoSegnalazioni(){
-
+	public void visualizzaElencoSegnalazioni() throws Exception {
 		System.out.println("-------------- Elenco segnalazioni --------------");
+		
+		if(elencoSegnalazioni.isEmpty()) {
+			throw new Exception("Non sono presenti segnalazioni.");
+		}
+		
 		for (Map.Entry<String, Segnalazione> entry : elencoSegnalazioni.entrySet()) {
 			Segnalazione s = entry.getValue();
 			System.out.println(s);;
@@ -494,8 +485,11 @@ public class PickYourLine {
 		}
 
 		s.visualizzaDettaglio();
+	}
 	
 	public void visualizzaElencoItinerari() {
+		pickYourLine.setUtenteCorrente(pickYourLine.getElencoAmministratori().get("a7b7"));
+		
 		this.elencoItinerari.forEach((k, i) -> System.out.println(i));
 	}
 	

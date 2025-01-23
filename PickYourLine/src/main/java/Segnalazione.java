@@ -1,6 +1,5 @@
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.Random;
 
 public class Segnalazione {
@@ -18,11 +17,11 @@ public class Segnalazione {
         this.cliente = (Cliente) PickYourLine.getInstance().getUtenteCorrente();
     }
 
-    public Segnalazione(String codice, String oggetto, String contenuto, Cliente cliente) {
+    public Segnalazione(String codice, String oggetto, String contenuto, LocalDateTime timestamp , Cliente cliente) {
         this.codice = codice;
         this.oggetto = oggetto;
         this.contenuto = contenuto;
-        this.timeStamp = LocalDateTime.now();
+        this.timeStamp = timestamp;
         this.cliente = cliente;
     }
 
@@ -42,7 +41,7 @@ public class Segnalazione {
 
 
     private String formattaData(LocalDateTime date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         return formatter.format(date);
     }
 
@@ -79,7 +78,15 @@ public class Segnalazione {
         this.timeStamp = timeStamp;
     }
 
-    @Override
+    public Cliente getCliente() {
+		return cliente;
+	}
+
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
+	}
+
+	@Override
     public String toString() {
         return "Segnalazione{" +
                 "codice='" + codice + '\'' +

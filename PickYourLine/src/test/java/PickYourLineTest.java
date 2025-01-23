@@ -237,7 +237,6 @@ class PickYourLineTest {
 		controllore.setAutomezzoSupervisionato(automezzo);
 		pickYourLine.setUtenteCorrente(controllore);
 
-
 		Exception exception = assertThrows(Exception.class, () ->
 				pickYourLine.timbraBiglietto("albero",1,3));
 		assertEquals("Non ci sono posti disponibili, operazione terminata.", exception.getMessage());
@@ -461,7 +460,7 @@ class PickYourLineTest {
 	}
 	
 	@Test
-	@DisplayName("Test della funzione modificaItinerario nel caso in cui il codice sia già esistente")
+	@DisplayName("Test della funzione modificaItinerario nel caso in cui il codice sia non esistente")
 	public void testModificaItinerario_CodiceItinerarioNonEsistente() {
 		List<Citta> percorso = new ArrayList<Citta>();
 		percorso.add(pickYourLine.getElencoCitta().get(1));
@@ -532,7 +531,6 @@ class PickYourLineTest {
 		assertEquals("Codice itinerario non esistente.", exception.getMessage());
 	}
 
-
 	@Test
 	@DisplayName("Test di inserisciAutomezzo nel caso che vada a buon fine")
 	public void testInserimentoAutomezzoValido() throws Exception {
@@ -586,7 +584,7 @@ class PickYourLineTest {
 
 	@Test
 	@DisplayName("Test successo modifica itinerario automezzo")
-	public void testModificaItinerarioAutomezzo() throws Exception {
+	public void testModificaAutomezzo_Successo() throws Exception {
 		pickYourLine.inserisciAutomezzo("automezzo2", 50, "Catania-Randazzo");
 		pickYourLine.modificaAutomezzo("automezzo2", "Randazzo-Catania");
 		Automezzo automezzo = pickYourLine.getElencoAutomezzi().get("automezzo2");
@@ -614,14 +612,9 @@ class PickYourLineTest {
 		assertEquals("Automezzo non esistente o in transito.", exception.getMessage());
 	}
 
-
-
-
 	@Test
 	@DisplayName("Test per verificare visualizzaDettaglioSegnalazione in caso in cui il codice sia valido")
 	void testVisualizzaDettaglioSegnalazioneConCodiceValido() throws Exception {
-
-
 		String codiceValido = "s001";
 		assertDoesNotThrow(() -> pickYourLine.visualizzaDettaglioSegnalazione(codiceValido));
 	}
@@ -636,6 +629,7 @@ class PickYourLineTest {
 
 		assertEquals("Codice segnalazione non valido.", exception.getMessage());
 	}
+	
 	@Test
 	@DisplayName("Test visualizza fermate data una citta nel caso in cui il codice città non è valido")
 	public void testVisualizzaElencoFermateCittaNonValida() throws Exception{
@@ -648,7 +642,11 @@ class PickYourLineTest {
 	@Test
 	@DisplayName("Test creazione segnalazione")
 	public void testCreaSegnalazioneCorretto() {
+		pickYourLine.setUtenteCorrente(pickYourLine.getElencoClienti().get("c74i"));
+		
 		Segnalazione sExpected = new Segnalazione("Critica Servizio","Servizio automezzi in ritardo");
+		sExpected.setCliente(pickYourLine.getElencoClienti().get("c74i"));
+		
 		String oggettoActual = "Critica Servizio";
 		String contenutoActual = "Servizio automezzi in ritardo";
 

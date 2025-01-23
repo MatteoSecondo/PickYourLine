@@ -29,7 +29,7 @@ public class Main {
 					+ "1- Cerca itinerario\n"
 					+ "2- Timbra biglietto\n"
 					+ "3- Monitora automezzo\n"
-          + "4- Gestisci itinerari\n"
+					+ "4- Gestisci itinerari\n"
 					+ "5- Gestisci automezzi\n"
 					+ "6- Visualizza fermate\n"
 					+ "9- Invio segnalazione\n"
@@ -46,24 +46,27 @@ public class Main {
 					cercaItinerario(sc);
 					break;
 				case 2:
+					pickYourLine.setUtenteCorrente(pickYourLine.getElencoControllori().get("f5b3"));
+					pickYourLine.getElencoControllori().get("f5b3").setAutomezzoSupervisionato(pickYourLine.getElencoAutomezzi().get("H23"));
 					ultimaCitta = timbraBiglietto(sc, ultimaCitta);
 					break;
 				case 3:
 					monitoraAutomezzo(sc);
-				case 6:
-					visualizzaFermate(sc);
-					break;
-				case 9:
-					invioSegnalazione(sc);
-					break;
-				case 10:
-					visualizzaSegnalazioni(sc);
-					break;
 				case 4:
 					gestisciItinerari(sc);
 					break;
 				case 5:
 					gestisciAutomezzi(sc);
+					break;
+				case 6:
+					visualizzaFermate(sc);
+					break;
+				case 9:
+					pickYourLine.setUtenteCorrente(pickYourLine.getElencoClienti().get("c74i"));
+					invioSegnalazione(sc);
+					break;
+				case 10:
+					visualizzaSegnalazioni(sc);
 					break;
 			}
 
@@ -228,7 +231,7 @@ public class Main {
 				} catch (Exception e) {
 					System.out.println("\n" + e.getMessage());
 				}
-			}while(!successo);
+			} while(!successo);
 		}	
 	}
 	
@@ -567,17 +570,22 @@ public class Main {
 		}while (scelta!=0);
 	}
 
+	@SuppressWarnings("resource")
 	public static void visualizzaSegnalazioni(Scanner sc){
 		PickYourLine pickYourLine = PickYourLine.getInstance();
-		Amministratore a = (Amministratore) pickYourLine.getUtenteCorrente();
 
 		String codiceSegnalazione;
 		sc = new Scanner(System.in);
 
-		pickYourLine.visualizzaElencoSegnalazioni();
+		try {
+			pickYourLine.visualizzaElencoSegnalazioni();
+		} catch (Exception e) {
+			System.out.println("\n" + e.getMessage());
+			return;
+		}
 
 		while (true){
-			System.out.println("\n Inserisci il codice di una segnalazione per vedere il dettaglio(0 per uscire):");
+			System.out.println("\nInserisci il codice di una segnalazione per vedere il dettaglio(0 per uscire):");
 			codiceSegnalazione = sc.nextLine().trim();
 
 			if (codiceSegnalazione.equals("0"))
@@ -592,7 +600,7 @@ public class Main {
 				}
 			}
 			else {
-				System.out.println("\n Nessuna segnalazione trovata");
+				System.out.println("\nSegnalazione non trovata");
 			}
 		}
 

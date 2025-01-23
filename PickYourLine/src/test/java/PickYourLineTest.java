@@ -46,6 +46,7 @@ class PickYourLineTest {
 	void setupAll(){
 		this.pickYourLine = PickYourLine.getInstance();
 		this.pickYourLine.loadCitta();
+		this.pickYourLine.loadElencoSegnalazioni();
 	}
 
 	@BeforeEach
@@ -614,5 +615,65 @@ class PickYourLineTest {
 	}
 
 
+
+
+	@Test
+	@DisplayName("Test per verificare visualizzaDettaglioSegnalazione in caso in cui il codice sia valido")
+	void testVisualizzaDettaglioSegnalazioneConCodiceValido() throws Exception {
+
+
+		String codiceValido = "s001";
+		assertDoesNotThrow(() -> pickYourLine.visualizzaDettaglioSegnalazione(codiceValido));
+	}
+
+	@Test
+	@DisplayName("Test per verificare visualizzaDettaglioSegnalazione in caso in cui il codice non sia valido")
+	void testVisualizzaDettaglioSegnalazioneConCodiceNonValido() {
+		String codiceNonValido = "s004";
+		Exception exception = assertThrows(Exception.class, () -> {
+			pickYourLine.visualizzaDettaglioSegnalazione(codiceNonValido);
+		});
+
+		assertEquals("Codice segnalazione non valido.", exception.getMessage());
+	}
+	@Test
+	@DisplayName("Test visualizza fermate data una citta nel caso in cui il codice città non è valido")
+	public void testVisualizzaElencoFermateCittaNonValida() throws Exception{
+		int codiceCitta = 999;
+		Exception exception = assertThrows(Exception.class, () ->
+				pickYourLine.visualizzaFermate(codiceCitta));
+		assertEquals("Codice città non non valido", exception.getMessage());
+	}
+
+	@Test
+	@DisplayName("Test creazione segnalazione")
+	public void testCreaSegnalazioneCorretto() {
+		Segnalazione sExpected = new Segnalazione("Critica Servizio","Servizio automezzi in ritardo");
+		String oggettoActual = "Critica Servizio";
+		String contenutoActual = "Servizio automezzi in ritardo";
+
+		Segnalazione sActual = pickYourLine.creaSegnalazione(oggettoActual,contenutoActual);
+		assertNotNull(sActual);
+		assertEquals(sExpected.getOggetto(), sActual.getOggetto());
+		assertEquals(sExpected.getContenuto(), sActual.getContenuto());
+	}
+
+	@Test
+	@DisplayName("Test invio segnalazione con successo")
+	public void testInvioSegnalazione() {
+		Map<String,Segnalazione> elencoSegnalazioneActual = pickYourLine.getElencoSegnalazioni();
+
+		Cliente cliente = new Cliente("12345","Cristian","Torrisi");
+		pickYourLine.setUtenteCorrente(cliente);
+
+		String oggetto = "Critica automezzi e traffico";
+		String contenuto = "Insulti offensivi rivolti al cliente";
+
+		Segnalazione segnalazione = new Segnalazione(oggetto,contenuto);
+		pickYourLine.invioSegnalazione(segnalazione);
+
+		assertTrue(elencoSegnalazioneActual.containsKey(segnalazione.getCodice()),
+				"Elenco segnalazioni non presenta la nuova segnalazione inviate");
+	}
 
 }

@@ -16,7 +16,9 @@ public class Main {
 		pickYourLine.loadItinerari();
 		pickYourLine.loadControllori();
 		pickYourLine.loadAutomezzi();
-
+		pickYourLine.laodClienti();
+		pickYourLine.loadAmministratori();
+		pickYourLine.loadElencoSegnalazioni();
 		System.out.println("Benvenuto!");
 		Scanner sc = new Scanner(System.in);
 		boolean ultimaCitta = false;
@@ -27,9 +29,11 @@ public class Main {
 					+ "1- Cerca itinerario\n"
 					+ "2- Timbra biglietto\n"
 					+ "3- Monitora automezzo\n"
-					+ "4- Gestisci itinerari\n"
+          + "4- Gestisci itinerari\n"
 					+ "5- Gestisci automezzi\n"
-					);
+					+ "6- Visualizza fermate\n"
+					+ "9- Invio segnalazione\n"
+					+ "10- Visualizza Segnalazioni\n");
 
 			int scelta = sc.nextInt();
 
@@ -46,6 +50,14 @@ public class Main {
 					break;
 				case 3:
 					monitoraAutomezzo(sc);
+				case 6:
+					visualizzaFermate(sc);
+					break;
+				case 9:
+					invioSegnalazione(sc);
+					break;
+				case 10:
+					visualizzaSegnalazioni(sc);
 					break;
 				case 4:
 					gestisciItinerari(sc);
@@ -488,6 +500,102 @@ public class Main {
 			System.out.println("\nInserisci il numero di posti");
 			posti.set(sc.nextInt());
 		}
+	}
+
+	@SuppressWarnings("resource")
+	public static void visualizzaFermate(Scanner sc) {
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+		sc = new Scanner(System.in);
+
+		boolean successo = false;
+		int codiceCitta;
+		System.out.println("Elenco Città:");
+		pickYourLine.visualizzaElencoCittaPartenza();
+
+		while (true) {
+			do {
+				System.out.println("\nInserisci il codice della città di cui vuoi conoscere le fermate, altrimenti 0 per uscire");
+				codiceCitta = sc.nextInt();
+
+				if (codiceCitta == 0)
+					return;
+				try {
+					pickYourLine.visualizzaFermate(codiceCitta);
+					successo = true;
+				}catch (Exception e) {
+					System.out.println("\n" + e.getMessage());
+				}
+			}while (!successo);
+		}
+	}
+
+	@SuppressWarnings("resource")
+	public static void invioSegnalazione(Scanner sc) {
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+
+		int scelta;
+		String oggettoSegnalazione;
+		String contenutoSegnalazione;
+
+		do {
+			Segnalazione segnalazione = null;
+			do {
+				System.out.println("Inserisci oggetto della segnalazione:");
+				sc = new Scanner(System.in);
+				oggettoSegnalazione = sc.nextLine();
+				System.out.println("\nInserisci contenuto della segnalazione: ");
+				sc = new Scanner(System.in);
+				contenutoSegnalazione = sc.nextLine();
+
+				try {
+					segnalazione = pickYourLine.creaSegnalazione(oggettoSegnalazione,contenutoSegnalazione);
+				}catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+
+				System.out.println(segnalazione);
+
+				System.out.println("\nInserisci 0 per annullare l'invio della segnalazione, altrimenti qualsiasi per confermare l'invio");
+
+				if(sc.nextInt() != 0) {
+					pickYourLine.invioSegnalazione(segnalazione);
+				}
+			}while (segnalazione == null);
+
+			System.out.println("Inserisci 0 per terminare l'operazione, altrimenti qualsiasi per continuare");
+			scelta = sc.nextInt();
+		}while (scelta!=0);
+	}
+
+	public static void visualizzaSegnalazioni(Scanner sc){
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+		Amministratore a = (Amministratore) pickYourLine.getUtenteCorrente();
+
+		String codiceSegnalazione;
+		sc = new Scanner(System.in);
+
+		pickYourLine.visualizzaElencoSegnalazioni();
+
+		while (true){
+			System.out.println("\n Inserisci il codice di una segnalazione per vedere il dettaglio(0 per uscire):");
+			codiceSegnalazione = sc.nextLine().trim();
+
+			if (codiceSegnalazione.equals("0"))
+				break;
+
+			if (pickYourLine.getElencoSegnalazioni().containsKey(codiceSegnalazione)) {
+				try{
+					pickYourLine.visualizzaDettaglioSegnalazione(codiceSegnalazione);
+				}
+				catch(Exception e){
+					System.out.println("\n" + e.getMessage());
+				}
+			}
+			else {
+				System.out.println("\n Nessuna segnalazione trovata");
+			}
+		}
+
 	}
 
 }

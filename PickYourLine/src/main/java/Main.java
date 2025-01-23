@@ -1,6 +1,12 @@
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
 
@@ -23,6 +29,8 @@ public class Main {
 					+ "1- Cerca itinerario\n"
 					+ "2- Timbra biglietto\n"
 					+ "3- Monitora automezzo\n"
+          + "4- Gestisci itinerari\n"
+					+ "5- Gestisci automezzi\n"
 					+ "6- Visualizza fermate\n"
 					+ "9- Invio segnalazione\n"
 					+ "10- Visualizza Segnalazioni\n");
@@ -50,6 +58,12 @@ public class Main {
 					break;
 				case 10:
 					visualizzaSegnalazioni(sc);
+					break;
+				case 4:
+					gestisciItinerari(sc);
+					break;
+				case 5:
+					gestisciAutomezzi(sc);
 					break;
 			}
 
@@ -217,6 +231,276 @@ public class Main {
 			}while(!successo);
 		}	
 	}
+	
+	public static void gestisciItinerari(Scanner sc) {
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+		
+		StringBuilder codice = new StringBuilder();
+		int oraPartenza = 0, minutoPartenza = 0, oraArrivo = 0, minutoArrivo = 0;
+		LocalTime[] orariPartenzaEArrivo = new LocalTime[2];
+		Set<Citta> percorso = new HashSet<Citta>();
+		
+		System.out.println("Inserisci 1 per visualizzare, 2 per inserire, 3 per modificare, 4 per eliminare, qualsiasi per uscire:");
+		int operazioneScelta = sc.nextInt();
+		
+		switch(operazioneScelta) {
+			case 1:
+				pickYourLine.visualizzaElencoItinerari();
+				break;
+			case 2:
+				inserisciInputItinerario(sc, operazioneScelta, codice, oraPartenza, minutoPartenza,
+						oraArrivo, minutoArrivo, orariPartenzaEArrivo, percorso);
+				
+				try {
+					pickYourLine.inserisciItinerario(codice.toString(), orariPartenzaEArrivo[0], orariPartenzaEArrivo[1], new ArrayList<Citta>(percorso));
+				} catch (Exception e) {
+					System.out.println("\n" + e.getMessage());
+				}
+				
+				break;
+			case 3:
+				inserisciInputItinerario(sc, operazioneScelta, codice, oraPartenza, minutoPartenza,
+						oraArrivo, minutoArrivo, orariPartenzaEArrivo, percorso);
+				
+				try {
+					pickYourLine.modificaItinerario(codice.toString(), orariPartenzaEArrivo[0], orariPartenzaEArrivo[1], new ArrayList<Citta>(percorso));
+				} catch (Exception e) {
+					System.out.println("\n" + e.getMessage());
+				}
+				
+				break;
+			case 4:
+				sc = new Scanner(System.in);
+				System.out.println("\nInserisci il codice dell'itinerario");
+				codice.append(sc.nextLine());
+				
+				try {
+					pickYourLine.eliminaItinerario(codice.toString());
+				} catch (Exception e) {
+					System.out.println("\n" + e.getMessage());
+				}
+				
+				break;
+		}
+	}
+	
+	@SuppressWarnings("resource")
+	private static void inserisciInputItinerario(Scanner sc, int operazioneScelta,
+			StringBuilder codice, int oraPartenza, int minutoPartenza, int oraArrivo, int minutoArrivo,
+			LocalTime[] orariPartenzaEArrivo, Set<Citta> percorso) {
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+		sc = new Scanner(System.in);
+		
+		boolean success;
+		Itinerario i;
+		
+		do {
+			success = true;
+			
+			System.out.println("\nInserisci il codice dell'itinerario");
+			codice.append(sc.nextLine());
+			
+			i = pickYourLine.getElencoItinerari().get(codice.toString());
+			
+			if(operazioneScelta == 2 && i != null) {
+				System.out.println("\nCodice itinerario già presente");
+				success = false;
+				codice.setLength(0);
+			} else if(operazioneScelta == 3 && i == null){
+				System.out.println("\nCodice itinerario non esistente.");
+				success = false;
+				codice.setLength(0);
+			}
+		} while(!success);
+		
+		do {
+			success = true;
+			
+			if(operazioneScelta == 2) {
+				System.out.println("Inserisci l'ora di partenza");
+			} else {
+				System.out.println("Inserisci l'ora di partenza, 0 per non modificare");
+			}
+			
+			oraPartenza = sc.nextInt();
+			
+			if(operazioneScelta == 2 || (operazioneScelta == 3 && oraPartenza != 0)) {
+				System.out.println("Inserisci il minuto di partenza");
+				minutoPartenza = sc.nextInt();
+				orariPartenzaEArrivo[0] = LocalTime.of(oraPartenza, minutoPartenza);
+			} else {
+				orariPartenzaEArrivo[0] = i.getOrarioPartenza();
+			}
+			
+			if(operazioneScelta == 2) {
+				System.out.println("Inserisci l'ora di arrivo");
+			} else {
+				System.out.println("Inserisci l'ora di arrivo, 0 per non modificare");
+			}
+			
+			oraArrivo = sc.nextInt();
+			
+			if(operazioneScelta == 2 || (operazioneScelta == 3 && oraArrivo != 0)) {
+				System.out.println("Inserisci il minuto di arrivo");
+				minutoArrivo = sc.nextInt();
+				orariPartenzaEArrivo[1] = LocalTime.of(oraArrivo, minutoArrivo);
+			} else {
+				orariPartenzaEArrivo[1] = i.getOrarioArrivo();
+			}
+			
+			
+			if(!orariPartenzaEArrivo[1].isAfter(orariPartenzaEArrivo[0])) {
+				System.out.println("\nL'orario di arrivo deve essere successivo a quello di partenza.");
+				success = false;
+			}
+			
+		} while(!success);
+		
+		int codiceCitta;
+		Citta c;
+		
+		pickYourLine.visualizzaElencoCittaPartenza();
+		
+		while(true) {
+			System.out.println("\nInserisci il codice della città da aggiungere al percorso dell'itinerario, 0 per terminare l'operazione");
+			codiceCitta = sc.nextInt();
+			
+			if(codiceCitta == 0) {
+				if((operazioneScelta == 2 && percorso.size() < 2) || (operazioneScelta == 3 && !percorso.isEmpty() && percorso.size() < 2)) {
+					System.out.println("\nIl percorso deve essere composto da almeno due città.");
+					continue;
+				} else if(percorso.size() >= 2 || (operazioneScelta == 3 && percorso.isEmpty())) {
+					break;
+				}	
+			}
+			
+			c = pickYourLine.getElencoCitta().get(codiceCitta);
+			
+			if(c == null) {
+				System.out.println("\nCodice città non esistente.");
+			}
+			
+			if(!percorso.add(c)) {
+				System.out.println("\nCittà già presente nel percorso.");
+			}
+		}
+	}
+	
+	public static void gestisciAutomezzi(Scanner sc) {
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+		
+		StringBuilder codice = new StringBuilder(), codiceItinerario = new StringBuilder();
+		AtomicInteger posti = new AtomicInteger();
+		
+		System.out.println("Inserisci 1 per visualizzare, 2 per inserire, 3 per modificare, 4 per eliminare, qualsiasi per uscire:");
+		int operazioneScelta = sc.nextInt();
+		
+		switch(operazioneScelta) {
+			case 1:
+				pickYourLine.visualizzaElencoAutomezzi();
+				break;
+			case 2:
+				inserisciInputAutomezzzo(sc, operazioneScelta, codice, posti, codiceItinerario);
+				
+				try {
+					pickYourLine.inserisciAutomezzo(codice.toString(), posti.get(), codiceItinerario.toString());
+				} catch (Exception e) {
+					System.out.println("\n" + e.getMessage());
+				}
+				
+				break;
+			case 3:
+				inserisciInputAutomezzzo(sc, operazioneScelta, codice, posti, codiceItinerario);
+				
+				try {
+					pickYourLine.modificaAutomezzo(codice.toString(), codiceItinerario.toString());
+				} catch (Exception e) {
+					System.out.println("\n" + e.getMessage());
+				}
+				
+				break;
+			case 4:
+				sc = new Scanner(System.in);
+				System.out.println("\nInserisci il codice dell'automezzo");
+				codice.append(sc.nextLine());
+				
+				try {
+					pickYourLine.eliminaAutomezzo(codice.toString());
+				} catch (Exception e) {
+					System.out.println("\n" + e.getMessage());
+				}
+				
+				break;
+		}
+	}
+	
+	@SuppressWarnings("resource")
+	private static void inserisciInputAutomezzzo(Scanner sc, int operazioneScelta,
+			StringBuilder codice, AtomicInteger posti, StringBuilder codiceItinerario) {
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+		sc = new Scanner(System.in);
+		
+		boolean success;
+		
+		do {
+			System.out.println("\nInserisci il codice dell'automezzo");
+			codice.append(sc.nextLine());
+			
+			success = !pickYourLine.getElencoAutomezzi().containsKey(codice.toString());
+			
+			if(operazioneScelta == 2) {
+				if(!success) {
+					System.out.println("\nCodice automezzo già esistente.");
+					codice.setLength(0);
+				}
+			}
+			
+			if(operazioneScelta == 3) {
+				Map<String, Automezzo> automezziNonInTransito = new HashMap<String, Automezzo>();
+				
+				pickYourLine.getElencoAutomezzi().forEach((k, a) -> {
+					if(a.getStato() instanceof NonInTransito) {
+						automezziNonInTransito.put(a.getCodice(), a);
+					}
+				});
+				
+				success = automezziNonInTransito.containsKey(codice.toString());
+				
+				if(!success) {
+					System.out.println("\nCodice automezzo non esistente o non modificabile perchè in transito.");
+					codice.setLength(0);
+				}
+			}
+		} while(!success);
+		
+		pickYourLine.visualizzaElencoItinerari();
+		
+		do {
+			success = true;
+			
+			if(operazioneScelta == 2) {
+				System.out.println("\nInserisci il codice dell'itinerario");
+			} else {
+				System.out.println("\nInserisci il codice dell'itinerario, 0 per non modificare");
+			}
+			
+			codiceItinerario.append(sc.nextLine());
+			
+			if(!codiceItinerario.toString().equals("0")) {
+				success = pickYourLine.getElencoItinerari().containsKey(codiceItinerario.toString());
+				
+				if(operazioneScelta == 2 && !success) {
+					System.out.println("\nCodice itinerario non esistente.");
+					codiceItinerario.setLength(0);
+				}
+			}
+		} while(!success);
+		
+		if(operazioneScelta == 2) {
+			System.out.println("\nInserisci il numero di posti");
+			posti.set(sc.nextInt());
+		}
+	}
 
 	@SuppressWarnings("resource")
 	public static void visualizzaFermate(Scanner sc) {
@@ -281,11 +565,7 @@ public class Main {
 			System.out.println("Inserisci 0 per terminare l'operazione, altrimenti qualsiasi per continuare");
 			scelta = sc.nextInt();
 		}while (scelta!=0);
-
-
-
 	}
-
 
 	public static void visualizzaSegnalazioni(Scanner sc){
 		PickYourLine pickYourLine = PickYourLine.getInstance();

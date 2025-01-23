@@ -47,11 +47,15 @@ public class Citta {
 		
 		return fermata;
 	}
+
+    public void visualizzaElencoFermate() {
+        elencoFermate.forEach(f -> System.out.println(f.getNome()));
+    }
     
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        //if (this == o) return true;
+        //if (o == null || getClass() != o.getClass()) return false;
         Citta citta = (Citta) o;
         return this.codice == citta.codice && this.nome.equals(citta.nome);
     }

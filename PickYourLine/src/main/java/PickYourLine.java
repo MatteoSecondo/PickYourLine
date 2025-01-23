@@ -1,8 +1,6 @@
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PickYourLine {
 	private static PickYourLine pickYourLine;
@@ -11,12 +9,18 @@ public class PickYourLine {
 	private Map<String, Itinerario> elencoItinerari;
 	private Map<String, Controllore> elencoControllori;
 	private Map<String, Automezzo> elencoAutomezzi;
-	
+	private Map<String,Segnalazione> elencoSegnalazioni;
+	private Map<String, Amministratore> elencoAmministratori;
+	private Map<String, Cliente> elencoClienti;
+
 	private PickYourLine() {
 		this.elencoItinerari = new HashMap<String, Itinerario>();
 		this.elencoCitta = new HashMap<Integer, Citta>();
 		this.elencoControllori = new HashMap<String, Controllore>();
 		this.elencoAutomezzi = new HashMap<String, Automezzo>();
+		this.elencoSegnalazioni = new HashMap<String, Segnalazione>();
+		this.elencoAmministratori = new HashMap<String, Amministratore>();
+		this.elencoClienti = new HashMap<String,Cliente>();
 	}
 	
 	public static PickYourLine getInstance() {
@@ -54,6 +58,18 @@ public class PickYourLine {
 	public Map<String, Automezzo> getElencoAutomezzi() {
 		return elencoAutomezzi;
 	}
+
+	public Map<String,Segnalazione> getElencoSegnalazioni() {
+		return elencoSegnalazioni;
+	}
+
+	public Map<String, Amministratore> getElencoAmministratori() {
+		return elencoAmministratori;
+	}
+	public Map<String, Cliente> getElencoClienti() {
+		return elencoClienti;
+	}
+
 
 	public void loadItinerari() {
 		List<Citta> p = new ArrayList<Citta>();
@@ -247,14 +263,27 @@ public class PickYourLine {
 	}
 
 	public void loadControllori() {
-		Controllore co = new Controllore("f5b3");
-		this.elencoControllori.put("f5b3", co);
-		setUtenteCorrente(co);
-		
+		this.elencoControllori.put("f5b3", new Controllore("f5b3"));
 		this.elencoControllori.put("n7j5", new Controllore("n7j5"));
 		this.elencoControllori.put("h1ig", new Controllore("h1ig"));
 		this.elencoControllori.put("ba56", new Controllore("ba56"));
 		this.elencoControllori.put("zy31", new Controllore("zy31"));
+	}
+
+	public void loadAmministratori() {
+		this.elencoAmministratori.put("a7b7", new Amministratore("a7b7"));
+		this.elencoAmministratori.put("a34j", new Amministratore("a34j"));
+		this.elencoAmministratori.put("a35j", new Amministratore("a35j"));
+		this.elencoAmministratori.put("a36j", new Amministratore("a36j"));
+		this.elencoAmministratori.put("a37j", new Amministratore("a37j"));
+	}
+
+	public void laodClienti(){
+		this.elencoClienti.put("c74i", new Cliente("c74i", "Franco", "Tredita"));
+		this.elencoClienti.put("c2312", new Cliente("c2312", "Franco", "Bianchi"));
+		this.elencoClienti.put("c34rf", new Cliente("c34rf", "Giorgio", "Bianchi"));
+		this.elencoClienti.put("21dd", new Cliente("21dd", "Franco", "Rossi"));
+		this.elencoClienti.put("asda", new Cliente("asda", "Franco", "Marroni"));
 	}
 
 	public void loadAutomezzi() {
@@ -269,13 +298,17 @@ public class PickYourLine {
 		this.elencoAutomezzi.put("Z22", new Automezzo("Z22", 25));
 		this.elencoAutomezzi.put("Y77", new Automezzo("Y77", 30));
 		this.elencoAutomezzi.put("C98", new Automezzo("C98", 25));
-		
-		Controllore co =(Controllore) utenteCorrente;
-		co.setAutomezzoSupervisionato(a);
 	}
-	
+
+	public void loadElencoSegnalazioni(){
+		this.elencoSegnalazioni.put("s001", new Segnalazione("s001","Critica Personale", "Insulto verbale", LocalDateTime.of(2025, 1, 10, 10, 50), new Cliente("0001","Tizio", "Bello")));
+		this.elencoSegnalazioni.put("s002", new Segnalazione("s002","Critica Servizio", "Servizio in ritardo nella mattina", LocalDateTime.of(2025, 1, 10, 11, 00), new Cliente("0002","Mara","Meo")));
+		this.elencoSegnalazioni.put("s003", new Segnalazione("s003","Critica Automezzo", "Sedili senza cintura di sicurezza", LocalDateTime.of(2025, 1, 12, 16, 30), new Cliente("0003","Ponzio","Pelato")));
+	}
+
 	public void visualizzaElencoCittaPartenza() {
-		elencoCitta.forEach((key, c) -> {System.out.println(c);});
+		elencoCitta.forEach((key, c) -> {System.out.println(c
+				.getCodice() + " - " + c.getNome());});
 	}
 	
 	public Map<Integer, Citta> inserisciCittaPartenza(int codiceCittaPartenza) throws Exception {
@@ -339,11 +372,15 @@ public class PickYourLine {
 		
 		Citta cittaAttuale = co.getAutomezzoSupervisionato().getPosizioneAttuale().getCittaDiAppartenenza();
 		
-		if(cittaPartenza != cittaAttuale) {
+		if(!cittaPartenza.equals(cittaAttuale)) {
 			throw new Exception("Non è possibile partire da una città diversa da quella attuale.");
 		}
 		
 		Citta cittaDestinazione = this.elencoCitta.get(codiceCittaDestinazione);
+		
+		if(cittaPartenza.equals(cittaDestinazione)) {
+			throw new Exception("Città di partenza e destinazione non possono essere uguali.");
+		}
 		
 		Itinerario i = co.getAutomezzoSupervisionato().getItinerarioAssegnato().getSeDisponibile(this.getElencoCitta().get(codiceCittaPartenza), cittaDestinazione);
 		
@@ -406,5 +443,191 @@ public class PickYourLine {
 		}
 		
 		System.out.println(a.getDettagliAutomezzo());
+	}
+
+	public void visualizzaFermate(int codiceCitta) throws Exception{
+		Citta c = elencoCitta.get(codiceCitta);
+
+		if (c == null) {
+			throw new Exception("Codice città non non valido");
+		}
+
+		c.visualizzaElencoFermate();
+	}
+
+	public Segnalazione creaSegnalazione(String oggettoSegnalazione,String contenutoSegnalazione) {
+		Segnalazione s = new Segnalazione(oggettoSegnalazione,contenutoSegnalazione);
+		return s;
+	}
+
+	public void invioSegnalazione(Segnalazione segnalazione) {
+		this.elencoSegnalazioni.put(segnalazione.getCodice(),segnalazione);
+	}
+
+	public void visualizzaElencoSegnalazioni() throws Exception {
+		System.out.println("-------------- Elenco segnalazioni --------------");
+		
+		if(elencoSegnalazioni.isEmpty()) {
+			throw new Exception("Non sono presenti segnalazioni.");
+		}
+		
+		for (Map.Entry<String, Segnalazione> entry : elencoSegnalazioni.entrySet()) {
+			Segnalazione s = entry.getValue();
+			System.out.println(s);;
+		}
+	}
+
+	public void visualizzaDettaglioSegnalazione(String codiceSegnalazione) throws Exception {
+		Segnalazione s = elencoSegnalazioni.get(codiceSegnalazione);
+
+		if(s == null) {
+			throw new Exception("Codice segnalazione non valido.");
+		}
+
+		s.visualizzaDettaglio();
+	}
+	
+	public void visualizzaElencoItinerari() {
+		pickYourLine.setUtenteCorrente(pickYourLine.getElencoAmministratori().get("a7b7"));
+		
+		this.elencoItinerari.forEach((k, i) -> System.out.println(i));
+	}
+	
+	public void inserisciItinerario(String codice, LocalTime orarioPartenza, LocalTime orarioArrivo, List<Citta> percorso) throws Exception {
+		Itinerario i = this.elencoItinerari.get(codice);
+		
+		if(i != null) {
+			throw new Exception("Codice itinerario già esistente.");
+		}
+		
+		if(!orarioArrivo.isAfter(orarioPartenza)) {
+			throw new Exception("L'orario di arrivo deve essere successivo a quello di partenza.");
+		}
+		
+		if(percorso.size() < 2) {
+			throw new Exception("Il percorso deve essere composto da almeno due città.");
+		}
+		
+		if(!controlloCittaDuplicate(percorso)) {
+			throw new Exception("Il percorso non può contenere città duplicate.");
+		}
+		
+		this.elencoItinerari.put(codice, new Itinerario(codice, orarioPartenza, orarioArrivo, percorso));
+	}
+	
+	public void modificaItinerario(String codice, LocalTime orarioPartenza, LocalTime orarioArrivo, List<Citta> percorso) throws Exception {
+		Itinerario i = this.elencoItinerari.get(codice);
+		
+		if(i == null) {
+			throw new Exception("Codice itinerario non esistente.");
+		}
+		
+		if(orarioPartenza != null) {
+			i.setOrarioPartenza(orarioPartenza);
+		}
+		
+		if(orarioArrivo != null) {
+			
+			if(!orarioArrivo.isAfter(i.getOrarioPartenza())) {
+				throw new Exception("L'orario di arrivo deve essere successivo a quello di partenza.");
+			}
+			
+			i.setOrarioArrivo(orarioArrivo);
+		}
+		
+		if(!percorso.isEmpty()) {
+			
+			if(percorso.size() < 2) {
+				throw new Exception("Il percorso deve essere composto da almeno due città.");
+			}
+			
+			if(!controlloCittaDuplicate(percorso)) {
+				throw new Exception("Il percorso non può contenere città duplicate.");
+			}
+			
+			i.setPercorso(percorso);
+		}
+	}
+	
+	private boolean controlloCittaDuplicate(List<Citta> percorso) {
+		Set<Citta> set = new HashSet<Citta>();
+		
+		for (Citta c : percorso) {
+			if(!set.add(c)) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	public void eliminaItinerario(String codice) throws Exception {
+		if(!this.elencoItinerari.containsKey(codice)) {
+			throw new Exception("Codice itinerario non esistente.");
+		}
+		
+		this.elencoItinerari.remove(codice);
+	}
+	
+	public void visualizzaElencoAutomezzi() {
+		this.elencoAutomezzi.forEach((k, a) -> System.out.println(a));
+	}
+	
+	public void inserisciAutomezzo(String codice, int posti, String codiceItinerario) throws Exception {
+		
+		if(this.elencoAutomezzi.containsKey(codice)) {
+			throw new Exception("Codice automezzo già esistente.");
+		}
+		
+		Automezzo a = new Automezzo(codice, posti);
+		Itinerario i = pickYourLine.elencoItinerari.get(codiceItinerario);
+		
+		if(i == null) {
+			throw new Exception("Codice itinerario non esistente.");
+		}
+		
+		a.setItinerarioAssegnato(i);
+		this.elencoAutomezzi.put(codice, a);
+	}
+	
+	public void modificaAutomezzo(String codice, String codiceItinerario) throws Exception {
+		Map<String, Automezzo> automezziNonInTransito = new HashMap<String, Automezzo>();
+		
+		this.elencoAutomezzi.forEach((k, a) -> {
+			if(a.getStato() instanceof NonInTransito) {
+				automezziNonInTransito.put(a.getCodice(), a);
+			}
+		});
+		
+		if(automezziNonInTransito.isEmpty()) {
+			throw new Exception("Nessun automezzo modificabile.");
+		}
+		
+		Automezzo a = automezziNonInTransito.get(codice);
+		
+		if(a == null) {
+			throw new Exception("Automezzo non esistente o in transito.");
+		}
+		
+		if(codiceItinerario != null && !codiceItinerario.equals("0")) {
+			Itinerario i = pickYourLine.elencoItinerari.get(codiceItinerario);
+			a.setItinerarioAssegnato(i);
+		}
+	}
+	
+	public void eliminaAutomezzo(String codice) throws Exception {
+		Map<String, Automezzo> automezziNonInTransito = new HashMap<String, Automezzo>();
+		
+		this.elencoAutomezzi.forEach((k, a) -> {
+			if(a.getStato() instanceof NonInTransito) {
+				automezziNonInTransito.put(a.getCodice(), a);
+			}
+		});
+		
+		if(!automezziNonInTransito.containsKey(codice)) {
+			throw new Exception("Automezzo non esistente o in transito.");
+		}
+		
+		this.elencoAutomezzi.remove(codice);
 	}
 }

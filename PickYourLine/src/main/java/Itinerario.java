@@ -47,6 +47,10 @@ public class Itinerario{
 		return percorso;
 	}
 
+	public void setPercorso(List<Citta> percorso) {
+		this.percorso = percorso;
+	}
+
 	public Itinerario getSeDisponibile(Citta cittaPartenza, Citta cittaDestinazione){
     	
         if (this.percorso.contains(cittaPartenza) && this.percorso.contains(cittaDestinazione)) {

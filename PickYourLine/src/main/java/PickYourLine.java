@@ -341,11 +341,15 @@ public class PickYourLine {
 		
 		Citta cittaAttuale = co.getAutomezzoSupervisionato().getPosizioneAttuale().getCittaDiAppartenenza();
 		
-		if(cittaPartenza != cittaAttuale) {
+		if(!cittaPartenza.equals(cittaAttuale)) {
 			throw new Exception("Non è possibile partire da una città diversa da quella attuale.");
 		}
 		
 		Citta cittaDestinazione = this.elencoCitta.get(codiceCittaDestinazione);
+		
+		if(cittaPartenza.equals(cittaDestinazione)) {
+			throw new Exception("Città di partenza e destinazione non possono essere uguali.");
+		}
 		
 		Itinerario i = co.getAutomezzoSupervisionato().getItinerarioAssegnato().getSeDisponibile(this.getElencoCitta().get(codiceCittaPartenza), cittaDestinazione);
 		

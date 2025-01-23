@@ -557,6 +557,7 @@ class PickYourLineTest {
 		Exception exception = assertThrows(Exception.class, () -> {
 			pickYourLine.inserisciAutomezzo("automezzo2", 50, "ItinerarioInesistente");
 		});
+		
 		assertTrue(exception.getMessage().contains("Codice itinerario non esistente"));
 	}
 
@@ -566,7 +567,20 @@ class PickYourLineTest {
 		Exception exception = assertThrows(Exception.class, () -> {
 			pickYourLine.modificaAutomezzo("automezzoInesistente", "Catania-Randazzo");
 		});
-		assertTrue(exception.getMessage().contains("Codice automezzo non esistente"));
+		
+		assertTrue(exception.getMessage().contains("Automezzo non esistente o in transito."));
+	}
+	
+	@Test
+	@DisplayName("Test modifica automezzo nel caso in cui non ci sono automezzi da modificare")
+	public void testModificaAutomezzo_AutomezziNonModificabili() {
+		pickYourLine.getElencoAutomezzi().forEach((k, a) -> a.inSupervisione());
+		
+		Exception exception = assertThrows(Exception.class, () -> {
+			pickYourLine.modificaAutomezzo("automezzoInesistente", "Catania-Randazzo");
+		});
+		
+		assertTrue(exception.getMessage().contains("Nessun automezzo modificabile."));
 	}
 
 	@Test
@@ -588,13 +602,15 @@ class PickYourLineTest {
 		assertFalse(pickYourLine.getElencoAutomezzi().containsKey("automezzo3"));
 	}
 
-
 	@Test
 	@DisplayName("Test eliminazione automezzo non esistente")
 	public void testEliminazioneAutomezzoNonEsistente() {
-		assertFalse(pickYourLine.getElencoAutomezzi().containsKey("automezzoInesistente"));
-		pickYourLine.eliminaAutomezzo("automezzoInesistente");  // Nessun errore dovrebbe essere lanciato
-		assertFalse(pickYourLine.getElencoAutomezzi().containsKey("automezzoInesistente"));
+		Exception exception = assertThrows(Exception.class, () ->
+			pickYourLine.eliminaAutomezzo("prova99"),
+			"Automezzo non esistente o in transito."
+		);
+	
+		assertEquals("Automezzo non esistente o in transito.", exception.getMessage());
 	}
 
 

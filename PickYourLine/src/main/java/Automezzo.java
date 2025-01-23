@@ -90,7 +90,11 @@ public class Automezzo {
 		return itinerarioAssegnato;
 	}
 
-    public void loadBiglietti(Map<String, Biglietto> elencoBiglietti){
+    public void setItinerarioAssegnato(Itinerario itinerarioAssegnato) {
+		this.itinerarioAssegnato = itinerarioAssegnato;
+	}
+
+	public void loadBiglietti(Map<String, Biglietto> elencoBiglietti){
         this.elencoBiglietti = elencoBiglietti;
     }
 
@@ -159,10 +163,11 @@ public class Automezzo {
 				+ "\nItinerarioAssegnato=" + itinerarioAssegnato
     			+ "\nPercorsoItinerario=" + percorso;
     }
-    
-    @Override
+
+	@Override
 	public String toString() {
-		return "Automezzo [codice=" + codice + ", posti=" + posti + ", stato=" + stato + "]";
+		return "Automezzo [codice=" + codice + ", posti=" + posti + ", itinerarioAssegnato=" + itinerarioAssegnato
+				+ "]";
 	}
     
 }

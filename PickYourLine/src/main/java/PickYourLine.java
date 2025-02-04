@@ -647,18 +647,13 @@ public class PickYourLine {
 
 	public void eliminaControllore(String codice) throws Exception {
 		Controllore co = this.elencoControllori.get(codice);
-
-
 		if (co == null){
 			throw new Exception("Controllore non esistente.");
 		}
 
-
 		if (co.getAutomezzoSupervisionato() != null){
 			throw new Exception("Il controllore sta supervisionando un automezzo.");
 		}
-
-
 			this.elencoControllori.remove(codice);
 		}
 }

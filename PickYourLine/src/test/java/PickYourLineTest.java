@@ -674,4 +674,49 @@ class PickYourLineTest {
 				"Elenco segnalazioni non presenta la nuova segnalazione inviate");
 	}
 
+
+	@Test
+	@DisplayName("Test inserimento controllore con successo")
+	public void testInserisciControllore_successo() throws Exception {
+		pickYourLine.inserisciControllore("aaaa");
+		assertTrue(pickYourLine.getElencoControllori().containsKey("aaaa"));
+	}
+
+	@Test
+	@DisplayName("Test inserimento controllore con duplicato")
+	public void testInserisciControllore_duplicato() throws Exception {
+		Exception exception = assertThrows(Exception.class, () -> {
+			pickYourLine.inserisciControllore("f5b3");
+		});
+		assertEquals("Controllore già esistente.", exception.getMessage());
+	}
+
+	@Test
+	@DisplayName("Test elimina controllore con successo")
+	public void testEliminaControllore_successo() throws Exception {
+		pickYourLine.eliminaControllore("f5b3");
+		assertFalse(pickYourLine.getElencoControllori().containsKey("f5b3"));
+	}
+
+	@Test
+	@DisplayName("Test elimina controllore controllore non esistente")
+	public void testEliminaControllore_nonEsistente() throws Exception {
+		Exception exception = assertThrows(Exception.class, () -> {
+			pickYourLine.eliminaControllore("ce2c3");
+		});
+		assertEquals("Controllore non esistente.", exception.getMessage());
+	}
+
+	@Test
+	@DisplayName("Test elimina controllore controllore con automezzo supervisionato")
+	public void testEliminaControllore_conAutomezzoSupervisionato() throws Exception {
+		Controllore co = pickYourLine.getElencoControllori().get("f5b3");
+		co.setAutomezzoSupervisionato(pickYourLine.getElencoAutomezzi().get("H23"));
+
+		Exception exception = assertThrows(Exception.class, () -> {
+			pickYourLine.eliminaControllore("f5b3");
+		});
+		assertEquals("Il controllore sta supervisionando un automezzo.", exception.getMessage());
+	}
+
 }

@@ -33,7 +33,8 @@ public class Main {
 					+ "5- Gestisci automezzi\n"
 					+ "6- Visualizza fermate\n"
 					+ "9- Invio segnalazione\n"
-					+ "10- Visualizza Segnalazioni\n");
+					+ "10- Visualizza Segnalazioni\n"
+					+ "11- Gestisci Controllori\n");
 
 			int scelta = sc.nextInt();
 
@@ -68,6 +69,9 @@ public class Main {
 				case 10:
 					visualizzaSegnalazioni(sc);
 					break;
+				case 11:
+					gestisciControllori(sc);
+
 			}
 
 		}
@@ -605,5 +609,44 @@ public class Main {
 		}
 
 	}
+
+
+	public static void gestisciControllori(Scanner sc) {
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+
+		String codice;
+
+		System.out.println("Inserisci 1 per visualizzare, 2 per inserire, 3 per eliminare, qualsiasi per uscire:");
+		int operazioneScelta = sc.nextInt();
+		sc.nextLine();
+
+		switch (operazioneScelta) {
+			case 1:
+				pickYourLine.visualizzaElencoControllori();
+				break;
+			case 2:
+				System.out.println("Inserisci il codice del controllore:");
+				codice = sc.nextLine();
+				try {
+					pickYourLine.inserisciControllore(codice);
+					System.out.println("Controllore inserito correttamente.");
+				} catch (Exception e) {
+					System.out.println("\n" + e.getMessage());
+				}
+				break;
+			case 3:
+				System.out.println("Inserisci il codice del controllore da eliminare:");
+				codice = sc.nextLine();
+
+				try {
+					pickYourLine.eliminaControllore(codice);
+					System.out.println("Controllore eliminato correttamente.");
+				} catch (Exception e) {
+					System.out.println("\n" + e.getMessage());
+				}
+				break;
+		}
+	}
+
 
 }

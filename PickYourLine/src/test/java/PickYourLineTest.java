@@ -55,6 +55,7 @@ class PickYourLineTest {
 		MockitoAnnotations.openMocks(this);
 		this.pickYourLine.loadControllori();
 		this.pickYourLine.loadAutomezzi();
+		this.pickYourLine.loadAvvisi();
 	}
 
 	@AfterAll
@@ -558,10 +559,44 @@ class PickYourLineTest {
 	@DisplayName("Test fallimento inserimento automezzo con itinerario non esistente")
 	public void testInserimentoAutomezzoItinerarioNonEsistente() {
 		Exception exception = assertThrows(Exception.class, () -> {
-			pickYourLine.inserisciAutomezzo("automezzo2", 50, "ItinerarioInesistente");
+			pickYourLine.inserisciAutomezzo("automezzo20", 50, "ItinerarioInesistente");
 		});
 		
 		assertTrue(exception.getMessage().contains("Codice itinerario non esistente"));
+	}
+
+	@Test
+	@DisplayName("Test successo modifica itinerario automezzo")
+	public void testModificaAutomezzo_Successo() throws Exception {
+		pickYourLine.setUtenteCorrente(new Amministratore("001"));
+		pickYourLine.inserisciAutomezzo("automezzo22", 50, "Catania-Randazzo");
+		pickYourLine.modificaAutomezzo("automezzo22", 0,"Randazzo-Catania");
+		Automezzo automezzo = pickYourLine.getElencoAutomezzi().get("automezzo2");
+		assertNotNull(automezzo.getItinerarioAssegnato());
+		assertEquals("Randazzo-Catania", automezzo.getItinerarioAssegnato().getCodice());
+	}
+	
+	@Test
+	@DisplayName("Test successo modifica stato automezzo")
+	public void testModificaAutomezzo_Stato_Successo() throws Exception {
+		pickYourLine.setUtenteCorrente(new Amministratore("001"));
+		pickYourLine.inserisciAutomezzo("automezzo2", 50, "Catania-Randazzo");
+		Automezzo automezzo = pickYourLine.getElencoAutomezzi().get("automezzo2");
+		
+		pickYourLine.modificaAutomezzo("automezzo2", 2,"Randazzo-Catania");
+		
+		assertTrue(automezzo.getStato() instanceof InManutenzione);
+		assertEquals("Catania-Randazzo", automezzo.getItinerarioAssegnato().getCodice());
+		
+		pickYourLine.modificaAutomezzo("automezzo2", 1,"Randazzo-Catania");
+		
+		assertTrue(automezzo.getStato() instanceof NonInTransito);
+		assertEquals("Randazzo-Catania", automezzo.getItinerarioAssegnato().getCodice());
+		
+		pickYourLine.modificaAutomezzo("automezzo2", 3,"Caltagirone-Catania");
+		
+		assertTrue(automezzo.getStato() instanceof Dismesso);
+		assertEquals("Randazzo-Catania", automezzo.getItinerarioAssegnato().getCodice());
 	}
 
 	@Test
@@ -584,17 +619,6 @@ class PickYourLineTest {
 		});
 		
 		assertTrue(exception.getMessage().contains("Nessun automezzo modificabile."));
-	}
-
-	@Test
-	@DisplayName("Test successo modifica itinerario automezzo")
-	public void testModificaAutomezzo_Successo() throws Exception {
-		pickYourLine.setUtenteCorrente(new Amministratore("001"));
-		pickYourLine.inserisciAutomezzo("automezzo2", 50, "Catania-Randazzo");
-		pickYourLine.modificaAutomezzo("automezzo2", 0,"Randazzo-Catania");
-		Automezzo automezzo = pickYourLine.getElencoAutomezzi().get("automezzo2");
-		assertNotNull(automezzo.getItinerarioAssegnato());
-		assertEquals("Randazzo-Catania", automezzo.getItinerarioAssegnato().getCodice());
 	}
 
 	@Test
@@ -679,6 +703,79 @@ class PickYourLineTest {
 
 		assertTrue(elencoSegnalazioneActual.containsKey(segnalazione.getCodice()),
 				"Elenco segnalazioni non presenta la nuova segnalazione inviate");
+	}
+	
+	@Test
+	@DisplayName("Test invio avviso con successo")
+	public void testInserisciAvviso_Successo() {
+		int oldSize = pickYourLine.getElencoAvvisi().size();
+		pickYourLine.inserisciAvviso("test", "test");
+		assertTrue(pickYourLine.getElencoAvvisi().size() == oldSize + 1);
+	}
+	
+	@Test
+	@DisplayName("Test modifica avviso con successo")
+	public void testModificaAvviso_Successo() throws Exception {
+		Avviso av = pickYourLine.getElencoAvvisi().get("a001");
+		String oldContent = av.getContenuto();
+		pickYourLine.modificaAvviso("a001", "oggetto", "0");
+		
+		assertEquals("oggetto", av.getOggetto());
+		assertNotEquals(oldContent, "0");
+	}
+	
+	@Test
+	@DisplayName("Test modifica avviso nel caso in cui l'avviso non esista")
+	public void testModificaAvviso_AvvisoNonEsistente() {
+		Exception exception = assertThrows(Exception.class, () ->
+			pickYourLine.modificaAvviso("test", "modifica", "modifica"),
+			"Codice avviso non esistente."
+		);
+
+		assertEquals("Codice avviso non esistente.", exception.getMessage());
+	}
+	
+	@Test
+	@DisplayName("Test elimina avviso con successo")
+	public void testEliminaAvviso_Successo() throws Exception {
+		int oldSize = pickYourLine.getElencoAvvisi().size();
+		pickYourLine.eliminaAvviso("a001");
+		assertTrue(pickYourLine.getElencoAvvisi().size() == oldSize - 1);
+	}
+	
+	@Test
+	@DisplayName("Test elimina avviso nel caso in cui l'avviso non esista")
+	public void testEliminaAvviso_AvvisoNonEsistente(){
+		Exception exception = assertThrows(Exception.class, () ->
+			pickYourLine.eliminaAvviso("test"),
+			"Codice avviso non esistente."
+		);
+
+		assertEquals("Codice avviso non esistente.", exception.getMessage());
+	}
+	
+	@Test
+	@DisplayName("Test visualizza avvisi nel caso in cui l'elenco sia vuoto")
+	public void testVisualizzaElencoAvvisi_ElencoVuoto() {
+		pickYourLine.getElencoAvvisi().clear();
+		
+		Exception exception = assertThrows(Exception.class, () ->
+			pickYourLine.visualizzaElencoAvvisi(),
+			"Non sono presenti avvisi nel sistema."
+		);
+
+		assertEquals("Non sono presenti avvisi nel sistema.", exception.getMessage());
+	}
+	
+	@Test
+	@DisplayName("Test visualizza dettaglio avviso nel caso in cui l'avviso non esista")
+	public void testVisualizzaDettaglioAvviso_AvvisoNonEsistente(){
+		Exception exception = assertThrows(Exception.class, () ->
+			pickYourLine.visualizzaDettaglioAvviso("test"),
+			"Codice avviso non esistente."
+		);
+
+		assertEquals("Codice avviso non esistente.", exception.getMessage());
 	}
 
 }

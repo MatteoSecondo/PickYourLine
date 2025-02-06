@@ -674,4 +674,98 @@ class PickYourLineTest {
 				"Elenco segnalazioni non presenta la nuova segnalazione inviate");
 	}
 
+	@Test
+	@DisplayName("Test verifica supervisione automezzo con già un automezzo in supervisione")
+	public void testVerificaSupervisioneInsuccesso() {
+		Controllore controllore = pickYourLine.getElencoControllori().get("f5b3");
+		Automezzo automezzo = pickYourLine.getElencoAutomezzi().get("C98");
+		controllore.setAutomezzoSupervisionato(automezzo);
+
+		Exception exception = assertThrows(Exception.class, () ->
+				pickYourLine.verificaSupervisione(controllore));
+		assertEquals("Stai già supervisionando l'automezzo: " + automezzo.getCodice(), exception.getMessage());
+	}
+
+	@Test
+	@DisplayName("Test visualizza automezzi non in transito, nel caso in cui ho un elenco vuoto")
+	public void testVisualizzaElencoAutomezziNonInTransitoElencoVuoto() {
+		Map<String, Automezzo> elencoAutomezzi = pickYourLine.getElencoAutomezzi();
+
+		elencoAutomezzi.forEach((k,a) ->
+				a.setItinerarioAssegnato(pickYourLine.getElencoItinerari().get("Catania-Adrano Rapido")));
+
+		elencoAutomezzi.forEach((k,a) -> a.inSupervisione());
+
+		Exception exception = assertThrows(Exception.class, () ->
+				pickYourLine.visualizzaElencoAutomezziNonInTransito());
+		assertEquals("Nessun automezzo disponibile per la supervisione.", exception.getMessage());
+
+	}
+	@Test
+	@DisplayName("Test supervisione automezzo con successo")
+	public void testSupervisionaAutomezzoConSuccesso()  {
+		Controllore controllore = pickYourLine.getElencoControllori().get("f5b3");
+		String codiceAutomezzo = "C98";
+		Map<String, Automezzo> automezziDisponibili = pickYourLine.getElencoAutomezzi();
+
+		automezziDisponibili.forEach((k,a) -> {
+			if (a.getCodice().equals(codiceAutomezzo)) {
+				a.nonInSupervisione();
+				a.setItinerarioAssegnato(pickYourLine.getElencoItinerari().get("Catania-Paterno"));
+			}
+		});
+
+		assertDoesNotThrow(() -> pickYourLine.supervisionaAutomezzo(controllore,codiceAutomezzo,automezziDisponibili));
+		assertEquals(pickYourLine.getElencoAutomezzi().get("C98"),controllore.getAutomezzoSupervisionato());
+		assertInstanceOf(InTransito.class,controllore.getAutomezzoSupervisionato().getStato());
+	}
+	@Test
+	@DisplayName("Test supervisiona automezzo nel caso di codice automezzo non valido")
+	public void testSupervisionaAutomezzoCodiceNonValido() {
+		Controllore controllore = pickYourLine.getElencoControllori().get("f5b3");
+		String automezzoNonEsistente = "H99";
+		Map<String, Automezzo> automezziDisponibili = pickYourLine.getElencoAutomezzi();
+
+		automezziDisponibili.forEach((k,a) ->
+				a.setItinerarioAssegnato(pickYourLine.getElencoItinerari().get("Catania-Adrano Rapido")));
+
+		Exception exception = assertThrows(Exception.class, () ->
+				pickYourLine.supervisionaAutomezzo(controllore,automezzoNonEsistente,automezziDisponibili));
+		assertEquals("Codice automezzo non valido", exception.getMessage());
+	}
+	@Test
+	@DisplayName("Test supervisiona automezzo nel caso di itinerario non assegnato all'automezzo")
+	public void testSupervisionaAutomezzoItinerarioNonAssegnato() {
+		Controllore controllore = pickYourLine.getElencoControllori().get("f5b3");
+		String automezzoSenzaItinerario = "C98";
+		Map<String, Automezzo> automezziDisponibili = pickYourLine.getElencoAutomezzi();
+
+		Exception exception = assertThrows(Exception.class, () ->
+				pickYourLine.supervisionaAutomezzo(controllore,automezzoSenzaItinerario,automezziDisponibili));
+		assertEquals("Assegna un itinerario prima di supervisionare questo automezzo", exception.getMessage());
+	}
+	@Test
+	@DisplayName("Test fine corsa in caso di successo")
+	public void testFineCorsaConSuccesso() {
+		Controllore controllore = pickYourLine.getElencoControllori().get("f5b3");
+		Automezzo automezzoSupervisionato = pickYourLine.getElencoAutomezzi().get("C98");
+		automezzoSupervisionato.setItinerarioAssegnato(pickYourLine.getElencoItinerari().get("Catania-Adrano Rapido"));
+		automezzoSupervisionato.inSupervisione();
+		controllore.setAutomezzoSupervisionato(automezzoSupervisionato);
+
+		assertDoesNotThrow(() -> pickYourLine.fineCorsa(controllore,automezzoSupervisionato));
+		assertEquals(null,controllore.getAutomezzoSupervisionato());
+		assertInstanceOf(NonInTransito.class,automezzoSupervisionato.getStato());
+	}
+	@Test
+	@DisplayName("Test fine corsa nel caso controllore non supervisiona automezzo")
+	public void testFineCorsaControlloreNonSupervisionaAutomezzo() {
+		Controllore controllore = pickYourLine.getElencoControllori().get("f5b3");
+		controllore.setAutomezzoSupervisionato(null);
+
+		Exception exception = assertThrows(Exception.class, () ->
+				pickYourLine.fineCorsa(controllore,controllore.getAutomezzoSupervisionato()));
+		assertEquals("Non stai supervisionando nessun automezzo.", exception.getMessage());
+	}
+
 }

@@ -1,16 +1,22 @@
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class PickYourLine {
 	private static PickYourLine pickYourLine;
 	private Utente utenteCorrente;
 	private Map<Integer, Citta> elencoCitta;
 	private Map<String, Itinerario> elencoItinerari;
-	private Map<String, Controllore> elencoControllori;
 	private Map<String, Automezzo> elencoAutomezzi;
 	private Map<String,Segnalazione> elencoSegnalazioni;
+	private Map<String, Avviso> elencoAvvisi;
 	private Map<String, Amministratore> elencoAmministratori;
+	private Map<String, Controllore> elencoControllori;
 	private Map<String, Cliente> elencoClienti;
 
 	private PickYourLine() {
@@ -21,6 +27,7 @@ public class PickYourLine {
 		this.elencoSegnalazioni = new HashMap<String, Segnalazione>();
 		this.elencoAmministratori = new HashMap<String, Amministratore>();
 		this.elencoClienti = new HashMap<String,Cliente>();
+		this.elencoAvvisi = new HashMap<String, Avviso>();
 	}
 	
 	public static PickYourLine getInstance() {
@@ -57,6 +64,10 @@ public class PickYourLine {
 
 	public Map<String, Automezzo> getElencoAutomezzi() {
 		return elencoAutomezzi;
+	}
+
+	public Map<String, Avviso> getElencoAvvisi() {
+		return elencoAvvisi;
 	}
 
 	public Map<String,Segnalazione> getElencoSegnalazioni() {
@@ -305,6 +316,11 @@ public class PickYourLine {
 		this.elencoSegnalazioni.put("s002", new Segnalazione("s002","Critica Servizio", "Servizio in ritardo nella mattina", LocalDateTime.of(2025, 1, 10, 11, 00), new Cliente("0002","Mara","Meo")));
 		this.elencoSegnalazioni.put("s003", new Segnalazione("s003","Critica Automezzo", "Sedili senza cintura di sicurezza", LocalDateTime.of(2025, 1, 12, 16, 30), new Cliente("0003","Ponzio","Pelato")));
 	}
+	
+	public void loadAvvisi() {
+		this.elencoAvvisi.put("a001", new Avviso("a001","Possibili ritardi", "Possibili ritardi nella giornata odierna", LocalDateTime.of(2025, 1, 10, 10, 50), new Amministratore("0001")));
+		this.elencoAvvisi.put("a002", new Avviso("a002","Incidente", "Grave incidente blocca alcune strade", LocalDateTime.of(2025, 1, 25, 9, 10), new Amministratore("0002")));
+	}
 
 	public void visualizzaElencoCittaPartenza() {
 		elencoCitta.forEach((key, c) -> {System.out.println(c
@@ -488,8 +504,6 @@ public class PickYourLine {
 	}
 	
 	public void visualizzaElencoItinerari() {
-		pickYourLine.setUtenteCorrente(pickYourLine.getElencoAmministratori().get("a7b7"));
-		
 		this.elencoItinerari.forEach((k, i) -> System.out.println(i));
 	}
 	
@@ -513,6 +527,7 @@ public class PickYourLine {
 		}
 		
 		this.elencoItinerari.put(codice, new Itinerario(codice, orarioPartenza, orarioArrivo, percorso));
+		inserisciAvviso("Nuovo itinerario disponibile", "L'itinerario " + i + "è stato aggiunto al servizio");
 	}
 	
 	public void modificaItinerario(String codice, LocalTime orarioPartenza, LocalTime orarioArrivo, List<Citta> percorso) throws Exception {
@@ -547,6 +562,8 @@ public class PickYourLine {
 			
 			i.setPercorso(percorso);
 		}
+		
+		inserisciAvviso("Modifica itinerario", "L'itinerario " + i.getCodice() + " ha subito delle variazioni, da adesso l'itinerario sarà " + i);
 	}
 	
 	private boolean controlloCittaDuplicate(List<Citta> percorso) {
@@ -562,11 +579,14 @@ public class PickYourLine {
 	}
 	
 	public void eliminaItinerario(String codice) throws Exception {
-		if(!this.elencoItinerari.containsKey(codice)) {
+		Itinerario i = this.elencoItinerari.get(codice);
+		
+		if(i == null) {
 			throw new Exception("Codice itinerario non esistente.");
 		}
 		
 		this.elencoItinerari.remove(codice);
+		inserisciAvviso("Rimozione itinerario dal servizio", "L'itinerario " + i + " non sarà più disponibile");
 	}
 	
 	public void visualizzaElencoAutomezzi() {
@@ -588,13 +608,14 @@ public class PickYourLine {
 		
 		a.setItinerarioAssegnato(i);
 		this.elencoAutomezzi.put(codice, a);
+		inserisciAvviso("Nuovo automezzo",  "L'automezzo " + a + "è stato aggiunto al servizio, da adesso percorrerà l'itinerario " + i.getCodice());
 	}
 	
-	public void modificaAutomezzo(String codice, String codiceItinerario) throws Exception {
+	public void modificaAutomezzo(String codice, int codiceStato, String codiceItinerario) throws Exception {
 		Map<String, Automezzo> automezziNonInTransito = new HashMap<String, Automezzo>();
 		
 		this.elencoAutomezzi.forEach((k, a) -> {
-			if(a.getStato() instanceof NonInTransito) {
+			if(a.getStato() instanceof NonInTransito || a.getStato() instanceof InManutenzione) {
 				automezziNonInTransito.put(a.getCodice(), a);
 			}
 		});
@@ -609,9 +630,22 @@ public class PickYourLine {
 			throw new Exception("Automezzo non esistente o in transito.");
 		}
 		
-		if(codiceItinerario != null && !codiceItinerario.equals("0")) {
+		switch(codiceStato) {
+			case 1:
+				a.nonInSupervisione();
+				break;
+			case 2:
+				a.inManutenzione();
+				break;
+			case 3:
+				a.inDismissione();
+				break;
+		}
+		
+		if(a.getStato() instanceof NonInTransito && codiceItinerario != null && !codiceItinerario.equals("0")) {
 			Itinerario i = pickYourLine.elencoItinerari.get(codiceItinerario);
 			a.setItinerarioAssegnato(i);
+			inserisciAvviso("Cambio itinerario per l'automezzo" + a.getCodice(), "L'automezzo " + a.getCodice() + " ha subito un cambio di itinerario, da adesso percorrerà l'itinerario " + i);
 		}
 	}
 	
@@ -624,10 +658,60 @@ public class PickYourLine {
 			}
 		});
 		
-		if(!automezziNonInTransito.containsKey(codice)) {
+		Automezzo a = automezziNonInTransito.get(codice);
+		
+		if(a == null) {
 			throw new Exception("Automezzo non esistente o in transito.");
 		}
 		
 		this.elencoAutomezzi.remove(codice);
+		inserisciAvviso("Rimozione automezzo", "L'automezzo " + a + "non sarà più disponibile");
+	}
+	
+	public void inserisciAvviso(String oggetto, String contenuto) {
+		Avviso av = new Avviso(oggetto, contenuto);
+		this.elencoAvvisi.put(av.getCodice(), av);
+	}
+	
+	public void modificaAvviso(String codice, String oggetto, String contenuto) throws Exception {
+		Avviso av = this.elencoAvvisi.get(codice);
+		
+		if(av == null) {
+			throw new Exception("Codice avviso non esistente.");
+		}
+		
+		if(!oggetto.equals("0")) {
+			av.setOggetto(oggetto);
+		}
+		
+		if(!contenuto.equals("0")) {
+			av.setContenuto(contenuto);
+		}
+	}
+	
+	public void eliminaAvviso(String codice) throws Exception {
+		if(!this.elencoAvvisi.containsKey(codice)) {
+			throw new Exception("Codice avviso non esistente.");
+		}
+		
+		this.elencoAvvisi.remove(codice);
+	}
+	
+	public void visualizzaElencoAvvisi() throws Exception {
+		if(this.elencoAvvisi.isEmpty()) {
+			throw new Exception("Non sono presenti avvisi nel sistema.");
+		}
+		
+		this.elencoAvvisi.forEach((k, av) -> System.out.println(av));
+	}
+	
+	public void visualizzaDettaglioAvviso(String codice) throws Exception {
+		Avviso av = this.elencoAvvisi.get(codice);
+		
+		if(av == null) {
+			throw new Exception("Codice avviso non esistente.");
+		}
+		
+		av.visualizzaDettaglio();
 	}
 }

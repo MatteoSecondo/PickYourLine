@@ -48,6 +48,14 @@ public class Automezzo {
 	public void nonInSupervisione() {
 		this.stato.nonInSupervisione(this);
 	}
+	
+	public void inManutenzione() {
+		this.stato.inManutenzione(this);
+	}
+	
+	public void inDismissione() {
+		this.stato.inDismissione(this);
+	}
 
 	public String getCodice() {
         return codice;

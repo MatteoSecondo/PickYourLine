@@ -19,6 +19,8 @@ public class Main {
 		pickYourLine.laodClienti();
 		pickYourLine.loadAmministratori();
 		pickYourLine.loadElencoSegnalazioni();
+		pickYourLine.loadAvvisi();
+		
 		System.out.println("Benvenuto!");
 		Scanner sc = new Scanner(System.in);
 		boolean ultimaCitta = false;
@@ -32,6 +34,8 @@ public class Main {
 					+ "4- Gestisci itinerari\n"
 					+ "5- Gestisci automezzi\n"
 					+ "6- Visualizza fermate\n"
+					+ "7- Gestisci avvisi\n"
+					+ "8- Visualizza avvisi\n"
 					+ "9- Invio segnalazione\n"
 					+ "10- Visualizza Segnalazioni\n");
 
@@ -53,13 +57,22 @@ public class Main {
 				case 3:
 					monitoraAutomezzo(sc);
 				case 4:
+					pickYourLine.setUtenteCorrente(pickYourLine.getElencoAmministratori().get("a7b7"));
 					gestisciItinerari(sc);
 					break;
 				case 5:
+					pickYourLine.setUtenteCorrente(pickYourLine.getElencoAmministratori().get("a7b7"));
 					gestisciAutomezzi(sc);
 					break;
 				case 6:
 					visualizzaFermate(sc);
+					break;
+				case 7:
+					pickYourLine.setUtenteCorrente(pickYourLine.getElencoAmministratori().get("a7b7"));
+					gestisciAvvisi(sc);
+					break;
+				case 8:
+					visualizzaAvvisi(sc);
 					break;
 				case 9:
 					pickYourLine.setUtenteCorrente(pickYourLine.getElencoClienti().get("c74i"));
@@ -393,7 +406,7 @@ public class Main {
 		PickYourLine pickYourLine = PickYourLine.getInstance();
 		
 		StringBuilder codice = new StringBuilder(), codiceItinerario = new StringBuilder();
-		AtomicInteger posti = new AtomicInteger();
+		AtomicInteger posti = new AtomicInteger(), codiceStato = new AtomicInteger();
 		
 		System.out.println("Inserisci 1 per visualizzare, 2 per inserire, 3 per modificare, 4 per eliminare, qualsiasi per uscire:");
 		int operazioneScelta = sc.nextInt();
@@ -403,7 +416,7 @@ public class Main {
 				pickYourLine.visualizzaElencoAutomezzi();
 				break;
 			case 2:
-				inserisciInputAutomezzzo(sc, operazioneScelta, codice, posti, codiceItinerario);
+				inserisciInputAutomezzzo(sc, operazioneScelta, codice, posti, codiceItinerario, codiceStato);
 				
 				try {
 					pickYourLine.inserisciAutomezzo(codice.toString(), posti.get(), codiceItinerario.toString());
@@ -413,10 +426,10 @@ public class Main {
 				
 				break;
 			case 3:
-				inserisciInputAutomezzzo(sc, operazioneScelta, codice, posti, codiceItinerario);
+				inserisciInputAutomezzzo(sc, operazioneScelta, codice, posti, codiceItinerario, codiceStato);
 				
 				try {
-					pickYourLine.modificaAutomezzo(codice.toString(), codiceItinerario.toString());
+					pickYourLine.modificaAutomezzo(codice.toString(), codiceStato.get(), codiceItinerario.toString());
 				} catch (Exception e) {
 					System.out.println("\n" + e.getMessage());
 				}
@@ -439,11 +452,12 @@ public class Main {
 	
 	@SuppressWarnings("resource")
 	private static void inserisciInputAutomezzzo(Scanner sc, int operazioneScelta,
-			StringBuilder codice, AtomicInteger posti, StringBuilder codiceItinerario) {
+			StringBuilder codice, AtomicInteger posti, StringBuilder codiceItinerario, AtomicInteger codiceStato) {
 		PickYourLine pickYourLine = PickYourLine.getInstance();
 		sc = new Scanner(System.in);
 		
 		boolean success;
+		Automezzo automezzo = null;
 		
 		do {
 			System.out.println("\nInserisci il codice dell'automezzo");
@@ -459,22 +473,31 @@ public class Main {
 			}
 			
 			if(operazioneScelta == 3) {
-				Map<String, Automezzo> automezziNonInTransito = new HashMap<String, Automezzo>();
+				Map<String, Automezzo> automezziModificabili = new HashMap<String, Automezzo>();
 				
 				pickYourLine.getElencoAutomezzi().forEach((k, a) -> {
-					if(a.getStato() instanceof NonInTransito) {
-						automezziNonInTransito.put(a.getCodice(), a);
+					if(a.getStato() instanceof NonInTransito || a.getStato() instanceof InManutenzione) {
+						automezziModificabili.put(a.getCodice(), a);
 					}
 				});
 				
-				success = automezziNonInTransito.containsKey(codice.toString());
+				automezzo = automezziModificabili.get(codice.toString());
 				
-				if(!success) {
+				if(automezzo == null) {
 					System.out.println("\nCodice automezzo non esistente o non modificabile perchè in transito.");
 					codice.setLength(0);
 				}
 			}
-		} while(!success);
+		} while(automezzo == null);
+		
+		System.out.println("Inserisci 1 per cambiare lo stato in NonInTransito, 2 in Manutenzione, 3 in Dismesso, 0 per non cambiarlo");
+		codiceStato.set(sc.nextInt());
+		
+		sc = new Scanner(System.in);
+		
+		if((!(automezzo.getStato() instanceof NonInTransito) && codiceStato.get() != 1) || ((automezzo.getStato() instanceof NonInTransito)) && (codiceStato.get() == 2 || codiceStato.get() == 3)) {
+			return;
+		}
 		
 		pickYourLine.visualizzaElencoItinerari();
 		
@@ -522,12 +545,14 @@ public class Main {
 
 				if (codiceCitta == 0)
 					return;
+				
 				try {
 					pickYourLine.visualizzaFermate(codiceCitta);
 					successo = true;
 				}catch (Exception e) {
 					System.out.println("\n" + e.getMessage());
 				}
+				
 			}while (!successo);
 		}
 	}
@@ -604,6 +629,89 @@ public class Main {
 			}
 		}
 
+	}
+	
+	@SuppressWarnings("resource")
+	public static void gestisciAvvisi(Scanner sc) {
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+		String codice, oggetto, contenuto;
+		
+		System.out.println("Inserisci 1 per inserire, 2 per modificare, 3 per eliminare, qualsiasi per uscire:");
+		int operazioneScelta = sc.nextInt();
+		
+		sc = new Scanner(System.in);
+		
+		switch(operazioneScelta) {
+			case 1: 
+				System.out.println("Inserisci l'oggetto dell'avviso");
+				oggetto = sc.nextLine();
+				System.out.println("Inserisci il contenuto dell'avviso");
+				contenuto = sc.nextLine();
+				
+				pickYourLine.inserisciAvviso(oggetto, contenuto);
+				break;
+			case 2: 
+				do {
+					System.out.println("Inserisci il codice dell'avviso");
+					codice = sc.nextLine();
+					
+					if(!pickYourLine.getElencoAvvisi().containsKey(codice)) {
+						System.out.println("Codice avviso non esistente.");
+					}
+				} while(!pickYourLine.getElencoAvvisi().containsKey(codice));
+			
+				System.out.println("Inserisci l'oggetto dell'avviso, 0 per non modificare");
+				oggetto = sc.nextLine();
+				System.out.println("Inserisci il contenuto dell'avviso, 0 per non modificare");
+				contenuto = sc.nextLine();
+				
+				try {
+					pickYourLine.modificaAvviso(codice, oggetto, contenuto);
+				} catch (Exception e) {
+					System.out.println("\n" + e.getMessage());
+				}
+			
+				break;
+			case 3: 
+				System.out.println("Inserisci il codice dell'avviso");
+				codice = sc.nextLine();
+				
+				try {
+					pickYourLine.eliminaAvviso(codice);
+				} catch (Exception e) {
+					System.out.println("\n" + e.getMessage());
+				}
+				
+				break;
+		}
+	}
+	
+	@SuppressWarnings("resource")
+	public static void visualizzaAvvisi(Scanner sc) {
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+		sc = new Scanner(System.in);
+		String codice;
+
+		while (true) {
+			try {
+				pickYourLine.visualizzaElencoAvvisi();
+			} catch (Exception e) {
+				System.out.println("\n" + e.getMessage());
+			}
+
+			System.out.println("\nInserisci il codice dell'avviso da visualizzare in dettaglio, altrimenti 0 per uscire");
+			codice = sc.nextLine();
+
+			if (codice.equals("0"))
+				break;
+
+			try {
+				pickYourLine.visualizzaDettaglioAvviso(codice);
+				System.out.println("");
+			} catch (Exception e) {
+				System.out.println("\n" + e.getMessage());
+			}
+		}
 	}
 
 }

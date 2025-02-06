@@ -630,4 +630,53 @@ public class PickYourLine {
 		
 		this.elencoAutomezzi.remove(codice);
 	}
+	public boolean verificaSupervisione(Controllore controllore) throws Exception {
+		Automezzo automezzoSupervisionato = controllore.getAutomezzoSupervisionato();
+		if (automezzoSupervisionato != null) {
+			throw new Exception("Stai già supervisionando l'automezzo: " + automezzoSupervisionato.getCodice());
+		}
+		return true;
+	}
+
+	public Map<String, Automezzo> visualizzaElencoAutomezziNonInTransito() throws Exception {
+		Map<String, Automezzo> automezziNonInTransito = new HashMap<String, Automezzo>();
+		this.elencoAutomezzi.forEach((k,a) -> {
+			if (a.getStato() instanceof NonInTransito){
+				automezziNonInTransito.put(a.getCodice(),a);
+			}
+		});
+
+		if (automezziNonInTransito.isEmpty()) {
+			throw new Exception("Nessun automezzo disponibile per la supervisione.");
+		}
+
+		System.out.println("Automezzi disponibili:");
+		automezziNonInTransito.forEach((codice, automezzo) -> System.out.println("- " + codice + " posti: " + automezzo.getPosti()));
+
+		return automezziNonInTransito;
+	}
+
+	public void supervisionaAutomezzo(Controllore controllore,String codiceAutomezzo,Map<String, Automezzo> automezziDisponibili) throws Exception {
+		Automezzo automezzo = automezziDisponibili.get(codiceAutomezzo);
+
+		if (automezzo == null) {
+			throw new Exception("Codice automezzo non valido");
+		}
+		if (automezzo.getItinerarioAssegnato() == null) {
+			throw new Exception("Assegna un itinerario prima di supervisionare questo automezzo");
+		}
+
+		controllore.setAutomezzoSupervisionato(automezzo);
+		automezzo.inSupervisione();
+	}
+
+	public void fineCorsa(Controllore controllore,Automezzo automezzoSupervisionato) throws Exception {
+		if (automezzoSupervisionato == null) {
+			throw new Exception("Non stai supervisionando nessun automezzo.");
+		}
+
+		automezzoSupervisionato.nonInSupervisione();
+		controllore.setAutomezzoSupervisionato(null);
+
+	}
 }

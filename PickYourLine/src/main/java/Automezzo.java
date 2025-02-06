@@ -164,6 +164,10 @@ public class Automezzo {
     			+ "\nPercorsoItinerario=" + percorso;
     }
 
+    public void svuotaAutomezzo() {
+        this.elencoBiglietti.clear();
+    }
+
 	@Override
 	public String toString() {
 		return "Automezzo [codice=" + codice + ", posti=" + posti + ", itinerarioAssegnato=" + itinerarioAssegnato

@@ -33,7 +33,9 @@ public class Main {
 					+ "5- Gestisci automezzi\n"
 					+ "6- Visualizza fermate\n"
 					+ "9- Invio segnalazione\n"
-					+ "10- Visualizza Segnalazioni\n");
+					+ "10- Visualizza Segnalazioni\n"
+					+ "12- Inizio Corsa\n"
+					+ "13- Fine Corsa\n");
 
 			int scelta = sc.nextInt();
 
@@ -47,11 +49,11 @@ public class Main {
 					break;
 				case 2:
 					pickYourLine.setUtenteCorrente(pickYourLine.getElencoControllori().get("f5b3"));
-					pickYourLine.getElencoControllori().get("f5b3").setAutomezzoSupervisionato(pickYourLine.getElencoAutomezzi().get("H23"));
 					ultimaCitta = timbraBiglietto(sc, ultimaCitta);
 					break;
 				case 3:
 					monitoraAutomezzo(sc);
+					break;
 				case 4:
 					gestisciItinerari(sc);
 					break;
@@ -67,6 +69,14 @@ public class Main {
 					break;
 				case 10:
 					visualizzaSegnalazioni(sc);
+					break;
+				case 12:
+					pickYourLine.setUtenteCorrente(pickYourLine.getElencoControllori().get("f5b3"));
+					inizioCorsa(sc);
+					break;
+				case 13:
+					pickYourLine.setUtenteCorrente(pickYourLine.getElencoControllori().get("f5b3"));
+					fineCorsa();
 					break;
 			}
 
@@ -133,6 +143,11 @@ public class Main {
 	public static boolean timbraBiglietto(Scanner sc, boolean ultimaCitta) {
 		PickYourLine pickYourLine = PickYourLine.getInstance();
 		Controllore co = (Controllore) pickYourLine.getUtenteCorrente();
+
+		if (co.getAutomezzoSupervisionato() == null) {
+			System.out.println("Non puoi timbrare biglietti finchè non supervisioni un automezzo");
+			return false;
+		}
 		
 		int scelta;
 	
@@ -264,7 +279,7 @@ public class Main {
 			case 3:
 				inserisciInputItinerario(sc, operazioneScelta, codice, oraPartenza, minutoPartenza,
 						oraArrivo, minutoArrivo, orariPartenzaEArrivo, percorso);
-				
+
 				try {
 					pickYourLine.modificaItinerario(codice.toString(), orariPartenzaEArrivo[0], orariPartenzaEArrivo[1], new ArrayList<Citta>(percorso));
 				} catch (Exception e) {
@@ -276,7 +291,6 @@ public class Main {
 				sc = new Scanner(System.in);
 				System.out.println("\nInserisci il codice dell'itinerario");
 				codice.append(sc.nextLine());
-				
 				try {
 					pickYourLine.eliminaItinerario(codice.toString());
 				} catch (Exception e) {
@@ -404,17 +418,16 @@ public class Main {
 				break;
 			case 2:
 				inserisciInputAutomezzzo(sc, operazioneScelta, codice, posti, codiceItinerario);
-				
+
 				try {
 					pickYourLine.inserisciAutomezzo(codice.toString(), posti.get(), codiceItinerario.toString());
 				} catch (Exception e) {
 					System.out.println("\n" + e.getMessage());
 				}
-				
 				break;
 			case 3:
 				inserisciInputAutomezzzo(sc, operazioneScelta, codice, posti, codiceItinerario);
-				
+
 				try {
 					pickYourLine.modificaAutomezzo(codice.toString(), codiceItinerario.toString());
 				} catch (Exception e) {
@@ -438,8 +451,7 @@ public class Main {
 	}
 	
 	@SuppressWarnings("resource")
-	private static void inserisciInputAutomezzzo(Scanner sc, int operazioneScelta,
-			StringBuilder codice, AtomicInteger posti, StringBuilder codiceItinerario) {
+	private static void inserisciInputAutomezzzo(Scanner sc, int operazioneScelta, StringBuilder codice, AtomicInteger posti, StringBuilder codiceItinerario) {
 		PickYourLine pickYourLine = PickYourLine.getInstance();
 		sc = new Scanner(System.in);
 		
@@ -448,7 +460,6 @@ public class Main {
 		do {
 			System.out.println("\nInserisci il codice dell'automezzo");
 			codice.append(sc.nextLine());
-			
 			success = !pickYourLine.getElencoAutomezzi().containsKey(codice.toString());
 			
 			if(operazioneScelta == 2) {
@@ -604,6 +615,55 @@ public class Main {
 			}
 		}
 
+	}
+
+	public static void inizioCorsa(Scanner sc){
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+		Controllore controllore = (Controllore) pickYourLine.getUtenteCorrente();
+		sc = new Scanner(System.in);
+
+		try {
+			pickYourLine.verificaSupervisione(controllore);
+
+			System.out.println("Inizio servizio...\n");
+			Map<String, Automezzo> automezziDisponibili = pickYourLine.visualizzaElencoAutomezziNonInTransito();
+
+			String codiceSupervisione;
+			boolean codiceValido = false;
+
+			do {
+				System.out.println("Inserisci il codice dell'automezzo che vuoi supervisionare(0 per uscire): ");
+				codiceSupervisione = sc.nextLine();
+
+				if (codiceSupervisione.equals("0"))
+					break;
+
+				try {
+					pickYourLine.supervisionaAutomezzo(controllore, codiceSupervisione, automezziDisponibili);
+					codiceValido = true;
+					System.out.println("Automezzo supervisionato correttamente.");
+				} catch (Exception e) {
+					System.out.println("\n" + e.getMessage());
+				}
+
+			} while (!codiceValido);
+
+		} catch (Exception e) {
+			System.out.println("\n" + e.getMessage());
+		}
+
+    }
+
+	public static void fineCorsa() {
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+		Controllore controllore = (Controllore) pickYourLine.getUtenteCorrente();
+		Automezzo automezzoSupervisionato = controllore.getAutomezzoSupervisionato();
+
+		try{
+			pickYourLine.fineCorsa(controllore,automezzoSupervisionato);
+		}catch (Exception e) {
+			System.out.println("\n" + e.getMessage());
+		}
 	}
 
 }

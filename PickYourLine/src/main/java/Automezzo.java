@@ -139,11 +139,6 @@ public class Automezzo {
     	Citta penultimaCitta = this.itinerarioAssegnato.getPercorso().get(this.itinerarioAssegnato.getPercorso().size() - 2);
     
     	if(cittaAttuale.equals(penultimaCitta)) {
-    		/*System.out.println("Hai terminato il tuo turno.");
-    		Controllore co = (Controllore) PickYourLine.getInstance().getUtenteCorrente();
-    		co.setAutomezzoSupervisionato(null);
-    		nonInSupervisione();*/
-    		
     		return true;
     	}
     	return false;

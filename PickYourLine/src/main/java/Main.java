@@ -619,48 +619,42 @@ public class Main {
 
 	public static void inizioCorsa(Scanner sc){
 		PickYourLine pickYourLine = PickYourLine.getInstance();
-		Controllore controllore = (Controllore) pickYourLine.getUtenteCorrente();
+		Map<String, Automezzo> automezziDisponibili = new HashMap<>();
+		String codiceSupervisione;
+		boolean codiceValido = false;
+
 		sc = new Scanner(System.in);
 
 		try {
-			pickYourLine.verificaSupervisione(controllore);
-
-			System.out.println("Inizio servizio...\n");
-			Map<String, Automezzo> automezziDisponibili = pickYourLine.visualizzaElencoAutomezziNonInTransito();
-
-			String codiceSupervisione;
-			boolean codiceValido = false;
-
-			do {
-				System.out.println("Inserisci il codice dell'automezzo che vuoi supervisionare(0 per uscire): ");
-				codiceSupervisione = sc.nextLine();
-
-				if (codiceSupervisione.equals("0"))
-					break;
-
-				try {
-					pickYourLine.supervisionaAutomezzo(controllore, codiceSupervisione, automezziDisponibili);
-					codiceValido = true;
-					System.out.println("Automezzo supervisionato correttamente.");
-				} catch (Exception e) {
-					System.out.println("\n" + e.getMessage());
-				}
-
-			} while (!codiceValido);
-
+			automezziDisponibili = pickYourLine.visualizzaElencoAutomezziNonInTransito();
 		} catch (Exception e) {
 			System.out.println("\n" + e.getMessage());
+			return;
 		}
+		do {
+			System.out.println("Inserisci il codice dell'automezzo che vuoi supervisionare(0 per uscire): ");
+			codiceSupervisione = sc.nextLine();
+
+			if (codiceSupervisione.equals("0"))
+				break;
+
+			try {
+				pickYourLine.supervisionaAutomezzo(codiceSupervisione, automezziDisponibili);
+				codiceValido = true;
+				System.out.println("Inizio servizio...\n");
+				System.out.println("Automezzo supervisionato correttamente.");
+			} catch (Exception e) {
+				System.out.println("\n" + e.getMessage());
+			}
+
+		} while (!codiceValido);
 
     }
 
 	public static void fineCorsa() {
 		PickYourLine pickYourLine = PickYourLine.getInstance();
-		Controllore controllore = (Controllore) pickYourLine.getUtenteCorrente();
-		Automezzo automezzoSupervisionato = controllore.getAutomezzoSupervisionato();
-
 		try{
-			pickYourLine.fineCorsa(controllore,automezzoSupervisionato);
+			pickYourLine.fineCorsa();
 		}catch (Exception e) {
 			System.out.println("\n" + e.getMessage());
 		}

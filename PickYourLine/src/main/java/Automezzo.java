@@ -48,6 +48,14 @@ public class Automezzo {
 	public void nonInSupervisione() {
 		this.stato.nonInSupervisione(this);
 	}
+	
+	public void inManutenzione() {
+		this.stato.inManutenzione(this);
+	}
+	
+	public void inDismissione() {
+		this.stato.inDismissione(this);
+	}
 
 	public String getCodice() {
         return codice;
@@ -139,11 +147,6 @@ public class Automezzo {
     	Citta penultimaCitta = this.itinerarioAssegnato.getPercorso().get(this.itinerarioAssegnato.getPercorso().size() - 2);
     
     	if(cittaAttuale.equals(penultimaCitta)) {
-    		/*System.out.println("Hai terminato il tuo turno.");
-    		Controllore co = (Controllore) PickYourLine.getInstance().getUtenteCorrente();
-    		co.setAutomezzoSupervisionato(null);
-    		nonInSupervisione();*/
-    		
     		return true;
     	}
     	return false;
@@ -164,10 +167,14 @@ public class Automezzo {
     			+ "\nPercorsoItinerario=" + percorso;
     }
 
+    public void svuotaAutomezzo() {
+        this.elencoBiglietti.clear();
+    }
+
 	@Override
 	public String toString() {
-		return "Automezzo [codice=" + codice + ", posti=" + posti + ", itinerarioAssegnato=" + itinerarioAssegnato
-				+ "]";
+		return "Automezzo [codice=" + codice + ", posti=" + posti + ", stato=" + stato + ", itinerarioAssegnato="
+				+ itinerarioAssegnato + "]";
 	}
     
 }

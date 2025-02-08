@@ -714,4 +714,62 @@ public class PickYourLine {
 		
 		av.visualizzaDettaglio();
 	}
+	private boolean verificaSupervisione() throws Exception {
+		Controllore controllore = (Controllore) pickYourLine.getUtenteCorrente();
+		Automezzo automezzoSupervisionato = controllore.getAutomezzoSupervisionato();
+		if (automezzoSupervisionato != null) {
+			return false;
+		}
+		return true;
+	}
+
+	public Map<String, Automezzo> visualizzaElencoAutomezziNonInTransito() throws Exception {
+		Map<String, Automezzo> automezziNonInTransito = new HashMap<String, Automezzo>();
+
+		if (!verificaSupervisione()) {
+			throw new Exception("Stai già supervisionando un automezzo");
+		}
+
+		this.elencoAutomezzi.forEach((k,a) -> {
+			if (a.getStato() instanceof NonInTransito){
+				automezziNonInTransito.put(a.getCodice(),a);
+			}
+		});
+
+		if (automezziNonInTransito.isEmpty()) {
+			throw new Exception("Nessun automezzo disponibile per la supervisione.");
+		}
+
+		System.out.println("Automezzi disponibili:");
+		automezziNonInTransito.forEach((codice, automezzo) -> System.out.println("- " + codice + " posti: " + automezzo.getPosti()));
+
+		return automezziNonInTransito;
+	}
+
+	public void supervisionaAutomezzo(String codiceAutomezzo,Map<String, Automezzo> automezziDisponibili) throws Exception {
+		Controllore controllore = (Controllore) pickYourLine.getUtenteCorrente();
+		Automezzo automezzo = automezziDisponibili.get(codiceAutomezzo);
+
+		if (automezzo == null) {
+			throw new Exception("Codice automezzo non valido");
+		}
+		if (automezzo.getItinerarioAssegnato() == null) {
+			throw new Exception("Assegna un itinerario prima di supervisionare questo automezzo");
+		}
+
+		controllore.setAutomezzoSupervisionato(automezzo);
+		automezzo.inSupervisione();
+	}
+
+	public void fineCorsa() throws Exception {
+		Controllore controllore = (Controllore) pickYourLine.getUtenteCorrente();
+		Automezzo automezzoSupervisionato = controllore.getAutomezzoSupervisionato();
+		if (automezzoSupervisionato == null) {
+			throw new Exception("Non stai supervisionando nessun automezzo.");
+		}
+
+		automezzoSupervisionato.nonInSupervisione();
+		controllore.setAutomezzoSupervisionato(null);
+
+	}
 }

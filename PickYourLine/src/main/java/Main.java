@@ -37,7 +37,9 @@ public class Main {
 					+ "7- Gestisci avvisi\n"
 					+ "8- Visualizza avvisi\n"
 					+ "9- Invio segnalazione\n"
-					+ "10- Visualizza Segnalazioni\n");
+					+ "10- Visualizza Segnalazioni\n"
+					+ "12- Inizio Corsa\n"
+					+ "13- Fine Corsa\n");
 
 			int scelta = sc.nextInt();
 
@@ -51,11 +53,11 @@ public class Main {
 					break;
 				case 2:
 					pickYourLine.setUtenteCorrente(pickYourLine.getElencoControllori().get("f5b3"));
-					pickYourLine.getElencoControllori().get("f5b3").setAutomezzoSupervisionato(pickYourLine.getElencoAutomezzi().get("H23"));
 					ultimaCitta = timbraBiglietto(sc, ultimaCitta);
 					break;
 				case 3:
 					monitoraAutomezzo(sc);
+					break;
 				case 4:
 					pickYourLine.setUtenteCorrente(pickYourLine.getElencoAmministratori().get("a7b7"));
 					gestisciItinerari(sc);
@@ -80,6 +82,14 @@ public class Main {
 					break;
 				case 10:
 					visualizzaSegnalazioni(sc);
+					break;
+				case 12:
+					pickYourLine.setUtenteCorrente(pickYourLine.getElencoControllori().get("f5b3"));
+					inizioCorsa(sc);
+					break;
+				case 13:
+					pickYourLine.setUtenteCorrente(pickYourLine.getElencoControllori().get("f5b3"));
+					fineCorsa();
 					break;
 			}
 
@@ -146,6 +156,11 @@ public class Main {
 	public static boolean timbraBiglietto(Scanner sc, boolean ultimaCitta) {
 		PickYourLine pickYourLine = PickYourLine.getInstance();
 		Controllore co = (Controllore) pickYourLine.getUtenteCorrente();
+
+		if (co.getAutomezzoSupervisionato() == null) {
+			System.out.println("Non puoi timbrare biglietti finchè non supervisioni un automezzo");
+			return false;
+		}
 		
 		int scelta;
 	
@@ -277,7 +292,7 @@ public class Main {
 			case 3:
 				inserisciInputItinerario(sc, operazioneScelta, codice, oraPartenza, minutoPartenza,
 						oraArrivo, minutoArrivo, orariPartenzaEArrivo, percorso);
-				
+
 				try {
 					pickYourLine.modificaItinerario(codice.toString(), orariPartenzaEArrivo[0], orariPartenzaEArrivo[1], new ArrayList<Citta>(percorso));
 				} catch (Exception e) {
@@ -289,7 +304,6 @@ public class Main {
 				sc = new Scanner(System.in);
 				System.out.println("\nInserisci il codice dell'itinerario");
 				codice.append(sc.nextLine());
-				
 				try {
 					pickYourLine.eliminaItinerario(codice.toString());
 				} catch (Exception e) {
@@ -423,7 +437,6 @@ public class Main {
 				} catch (Exception e) {
 					System.out.println("\n" + e.getMessage());
 				}
-				
 				break;
 			case 3:
 				inserisciInputAutomezzzo(sc, operazioneScelta, codice, posti, codiceItinerario, codiceStato);
@@ -462,7 +475,6 @@ public class Main {
 		do {
 			System.out.println("\nInserisci il codice dell'automezzo");
 			codice.append(sc.nextLine());
-			
 			success = !pickYourLine.getElencoAutomezzi().containsKey(codice.toString());
 			
 			if(operazioneScelta == 2) {
@@ -711,6 +723,49 @@ public class Main {
 			} catch (Exception e) {
 				System.out.println("\n" + e.getMessage());
 			}
+		}
+	}
+
+	public static void inizioCorsa(Scanner sc){
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+		Map<String, Automezzo> automezziDisponibili = new HashMap<>();
+		String codiceSupervisione;
+		boolean codiceValido = false;
+
+		sc = new Scanner(System.in);
+
+		try {
+			automezziDisponibili = pickYourLine.visualizzaElencoAutomezziNonInTransito();
+		} catch (Exception e) {
+			System.out.println("\n" + e.getMessage());
+			return;
+		}
+		do {
+			System.out.println("Inserisci il codice dell'automezzo che vuoi supervisionare(0 per uscire): ");
+			codiceSupervisione = sc.nextLine();
+
+			if (codiceSupervisione.equals("0"))
+				break;
+
+			try {
+				pickYourLine.supervisionaAutomezzo(codiceSupervisione, automezziDisponibili);
+				codiceValido = true;
+				System.out.println("Inizio servizio...\n");
+				System.out.println("Automezzo supervisionato correttamente.");
+			} catch (Exception e) {
+				System.out.println("\n" + e.getMessage());
+			}
+
+		} while (!codiceValido);
+
+    }
+
+	public static void fineCorsa() {
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+		try{
+			pickYourLine.fineCorsa();
+		}catch (Exception e) {
+			System.out.println("\n" + e.getMessage());
 		}
 	}
 

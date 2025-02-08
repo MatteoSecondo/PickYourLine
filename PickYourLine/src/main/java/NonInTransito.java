@@ -2,6 +2,11 @@ public class NonInTransito implements StatoAutomezzo {
 	
 	@Override
 	public void inSupervisione(Automezzo a) {
+		Itinerario itinerario = a.getItinerarioAssegnato();
+		Citta primaCittaPercorso = itinerario.getPercorso().getFirst();
+		Fermata primaFermata = primaCittaPercorso.getElencoFermate().getFirst();
+		a.setPosizioneAttuale(primaFermata);
+
 		a.setStato(new InTransito());
 		System.out.println("L'automezzo " + a.getCodice() + " è partito.");
 	}

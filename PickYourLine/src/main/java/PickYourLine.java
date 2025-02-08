@@ -772,4 +772,30 @@ public class PickYourLine {
 		controllore.setAutomezzoSupervisionato(null);
 
 	}
+
+
+	public void visualizzaElencoControllori() {
+		this.elencoControllori.forEach((k, a) -> System.out.println(a));
+	}
+
+	public void inserisciControllore(String codice) throws Exception {
+
+		if(this.elencoControllori.containsKey(codice)){
+			throw new Exception("Controllore già esistente.");
+		}
+		Controllore c = new Controllore(codice);
+		this.elencoControllori.put(codice, c);
+	}
+
+	public void eliminaControllore(String codice) throws Exception {
+		Controllore co = this.elencoControllori.get(codice);
+		if (co == null){
+			throw new Exception("Controllore non esistente.");
+		}
+
+		if (co.getAutomezzoSupervisionato() != null){
+			throw new Exception("Il controllore sta supervisionando un automezzo.");
+		}
+			this.elencoControllori.remove(codice);
+		}
 }

@@ -38,6 +38,7 @@ public class Main {
 					+ "8- Visualizza avvisi\n"
 					+ "9- Invio segnalazione\n"
 					+ "10- Visualizza Segnalazioni\n"
+					+ "11- Gestisci Controllori\n"
 					+ "12- Inizio Corsa\n"
 					+ "13- Fine Corsa\n");
 
@@ -83,6 +84,9 @@ public class Main {
 				case 10:
 					visualizzaSegnalazioni(sc);
 					break;
+				case 11:
+					gestisciControllori(sc);
+          break;
 				case 12:
 					pickYourLine.setUtenteCorrente(pickYourLine.getElencoControllori().get("f5b3"));
 					inizioCorsa(sc);
@@ -768,5 +772,44 @@ public class Main {
 			System.out.println("\n" + e.getMessage());
 		}
 	}
+
+
+	public static void gestisciControllori(Scanner sc) {
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+
+		String codice;
+
+		System.out.println("Inserisci 1 per visualizzare, 2 per inserire, 3 per eliminare, qualsiasi per uscire:");
+		int operazioneScelta = sc.nextInt();
+		sc.nextLine();
+
+		switch (operazioneScelta) {
+			case 1:
+				pickYourLine.visualizzaElencoControllori();
+				break;
+			case 2:
+				System.out.println("Inserisci il codice del controllore:");
+				codice = sc.nextLine();
+				try {
+					pickYourLine.inserisciControllore(codice);
+					System.out.println("Controllore inserito correttamente.");
+				} catch (Exception e) {
+					System.out.println("\n" + e.getMessage());
+				}
+				break;
+			case 3:
+				System.out.println("Inserisci il codice del controllore da eliminare:");
+				codice = sc.nextLine();
+
+				try {
+					pickYourLine.eliminaControllore(codice);
+					System.out.println("Controllore eliminato correttamente.");
+				} catch (Exception e) {
+					System.out.println("\n" + e.getMessage());
+				}
+				break;
+		}
+	}
+
 
 }

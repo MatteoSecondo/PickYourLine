@@ -773,15 +773,14 @@ public class PickYourLine {
 	public void fineCorsa() throws Exception {
 		Controllore controllore = (Controllore) pickYourLine.getUtenteCorrente();
 		Automezzo automezzoSupervisionato = controllore.getAutomezzoSupervisionato();
+		
 		if (automezzoSupervisionato == null) {
 			throw new Exception("Non stai supervisionando nessun automezzo.");
 		}
 
 		automezzoSupervisionato.nonInSupervisione();
 		controllore.setAutomezzoSupervisionato(null);
-
 	}
-
 
 	public void visualizzaElencoControllori() {
 		this.elencoControllori.forEach((k, a) -> System.out.println(a));

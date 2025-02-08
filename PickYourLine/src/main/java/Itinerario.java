@@ -1,5 +1,4 @@
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +14,7 @@ public class Itinerario{
         this.codice = codice;
         this.orarioPartenza = orarioPartenza;
         this.orarioArrivo = orarioArrivo;
-        this.percorso = new ArrayList<Citta>();
-        loadPercorso(p);
+        this.percorso = p;
     }
 
     public String getCodice() {
@@ -91,10 +89,6 @@ public class Itinerario{
                 System.out.println(citta.getNome() + " - " + fermata.getNome());
             }
         }
-    }
-
-    public void loadPercorso(List<Citta> p){
-        this.percorso = p;
     }
 
     @Override

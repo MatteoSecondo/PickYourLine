@@ -500,7 +500,7 @@ public class Main {
 				automezzo = automezziModificabili.get(codice.toString());
 				
 				if(automezzo == null) {
-					System.out.println("\nCodice automezzo non esistente o non modificabile perchè in transito.");
+					System.out.println("\nAutomezzo non modificabile perchè in transito o dismesso.");
 					codice.setLength(0);
 				}
 			}
@@ -730,6 +730,7 @@ public class Main {
 		}
 	}
 
+	@SuppressWarnings("resource")
 	public static void inizioCorsa(Scanner sc){
 		PickYourLine pickYourLine = PickYourLine.getInstance();
 		Map<String, Automezzo> automezziDisponibili = new HashMap<>();

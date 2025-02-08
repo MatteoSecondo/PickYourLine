@@ -571,7 +571,7 @@ class PickYourLineTest {
 		pickYourLine.setUtenteCorrente(new Amministratore("001"));
 		pickYourLine.inserisciAutomezzo("automezzo22", 50, "Catania-Randazzo");
 		pickYourLine.modificaAutomezzo("automezzo22", 0,"Randazzo-Catania");
-		Automezzo automezzo = pickYourLine.getElencoAutomezzi().get("automezzo2");
+		Automezzo automezzo = pickYourLine.getElencoAutomezzi().get("automezzo22");
 		assertNotNull(automezzo.getItinerarioAssegnato());
 		assertEquals("Randazzo-Catania", automezzo.getItinerarioAssegnato().getCodice());
 	}
@@ -606,13 +606,16 @@ class PickYourLineTest {
 			pickYourLine.modificaAutomezzo("automezzoInesistente", 0,"Catania-Randazzo");
 		});
 		
-		assertTrue(exception.getMessage().contains("Automezzo non esistente o in transito."));
+		assertTrue(exception.getMessage().contains("Automezzo non modificabile perchè in transito o dismesso."));
 	}
 	
 	@Test
 	@DisplayName("Test modifica automezzo nel caso in cui non ci sono automezzi da modificare")
 	public void testModificaAutomezzo_AutomezziNonModificabili() {
-		pickYourLine.getElencoAutomezzi().forEach((k, a) -> a.inSupervisione());
+		pickYourLine.getElencoAutomezzi().forEach((k, a) -> {
+			a.setItinerarioAssegnato(pickYourLine.getElencoItinerari().get("Catania-Randazzo"));
+			a.inSupervisione();
+		});
 		
 		Exception exception = assertThrows(Exception.class, () -> {
 			pickYourLine.modificaAutomezzo("automezzoInesistente", 0,"Catania-Randazzo");
@@ -782,7 +785,7 @@ class PickYourLineTest {
 	@DisplayName("Test visualizza automezzi non in transito, nel caso in cui ho un elenco vuoto")
 	public void testVisualizzaElencoAutomezziNonInTransitoElencoVuoto() {
 		Map<String, Automezzo> elencoAutomezzi = pickYourLine.getElencoAutomezzi();
-		pickYourLine.setUtenteCorrente(pickYourLine.getElencoControllori().get("f5b3"));
+		pickYourLine.setUtenteCorrente(pickYourLine.getElencoControllori().get("n7j5"));
 
 		elencoAutomezzi.forEach((k,a) ->
 				a.setItinerarioAssegnato(pickYourLine.getElencoItinerari().get("Catania-Adrano Rapido")));
@@ -841,7 +844,7 @@ class PickYourLineTest {
 
 		Exception exception = assertThrows(Exception.class, () ->
 				pickYourLine.supervisionaAutomezzo(automezzoSenzaItinerario,automezziDisponibili));
-		assertEquals("Assegna un itinerario prima di supervisionare questo automezzo", exception.getMessage());
+		assertEquals("Non puoi supervisionare un automezzo senza un itinerario assegnato.", exception.getMessage());
 	}
 
 	@Test
@@ -891,8 +894,8 @@ class PickYourLineTest {
 	@Test
 	@DisplayName("Test elimina controllore con successo")
 	public void testEliminaControllore_successo() throws Exception {
-		pickYourLine.eliminaControllore("f5b3");
-		assertFalse(pickYourLine.getElencoControllori().containsKey("f5b3"));
+		pickYourLine.eliminaControllore("n7j5");
+		assertFalse(pickYourLine.getElencoControllori().containsKey("n7j5"));
 	}
 
 	@Test

@@ -22,6 +22,7 @@ public class Avviso extends Messaggio {
 		this.amministratore = amministratore;
 	}
 	
+	@Override
 	public void visualizzaDettaglio() {
 		String s = super.toString();
 		

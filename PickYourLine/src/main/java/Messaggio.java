@@ -72,5 +72,7 @@ public abstract class Messaggio {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         return formatter.format(date);
     }
+	
+	public abstract void visualizzaDettaglio();
     
 }

@@ -303,6 +303,7 @@ public class PickYourLine {
 		b1.put("ypc8jf", new Biglietto("ypc8jf", elencoCitta.get(1), elencoCitta.get(4)));
 		
 		Automezzo a = new Automezzo("H23", 25, this.getElencoItinerari().get("Catania-Randazzo"), b1);
+		pickYourLine.getElencoControllori().get("f5b3").setAutomezzoSupervisionato(a);
 		this.elencoAutomezzi.put("H23", a);
 		
 		this.elencoAutomezzi.put("B51", new Automezzo("B51", 20));
@@ -386,6 +387,10 @@ public class PickYourLine {
 		
 		Citta cittaPartenza = this.elencoCitta.get(codiceCittaPartenza);
 		
+		if(cittaPartenza == null) {
+			throw new Exception("La città di partenza non è presente nell'elenco.");
+		}
+		
 		Citta cittaAttuale = co.getAutomezzoSupervisionato().getPosizioneAttuale().getCittaDiAppartenenza();
 		
 		if(!cittaPartenza.equals(cittaAttuale)) {
@@ -393,6 +398,10 @@ public class PickYourLine {
 		}
 		
 		Citta cittaDestinazione = this.elencoCitta.get(codiceCittaDestinazione);
+		
+		if(cittaDestinazione == null) {
+			throw new Exception("La città di destinazione non è presente nell'elenco.");
+		}
 		
 		if(cittaPartenza.equals(cittaDestinazione)) {
 			throw new Exception("Città di partenza e destinazione non possono essere uguali.");
@@ -627,7 +636,7 @@ public class PickYourLine {
 		Automezzo a = automezziNonInTransito.get(codice);
 		
 		if(a == null) {
-			throw new Exception("Automezzo non esistente o in transito.");
+			throw new Exception("Automezzo non modificabile perchè in transito o dismesso.");
 		}
 		
 		switch(codiceStato) {
@@ -645,7 +654,7 @@ public class PickYourLine {
 		if(a.getStato() instanceof NonInTransito && codiceItinerario != null && !codiceItinerario.equals("0")) {
 			Itinerario i = pickYourLine.elencoItinerari.get(codiceItinerario);
 			a.setItinerarioAssegnato(i);
-			inserisciAvviso("Cambio itinerario per l'automezzo" + a.getCodice(), "L'automezzo " + a.getCodice() + " ha subito un cambio di itinerario, da adesso percorrerà l'itinerario " + i);
+			inserisciAvviso("Cambio itinerario per l'automezzo " + a.getCodice(), "L'automezzo " + a.getCodice() + " ha subito un cambio di itinerario, da adesso percorrerà l'itinerario " + i);
 		}
 	}
 	
@@ -754,7 +763,7 @@ public class PickYourLine {
 			throw new Exception("Codice automezzo non valido");
 		}
 		if (automezzo.getItinerarioAssegnato() == null) {
-			throw new Exception("Assegna un itinerario prima di supervisionare questo automezzo");
+			throw new Exception("Non puoi supervisionare un automezzo senza un itinerario assegnato.");
 		}
 
 		controllore.setAutomezzoSupervisionato(automezzo);

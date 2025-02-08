@@ -173,8 +173,8 @@ public class Automezzo {
 
 	@Override
 	public String toString() {
-		return "Automezzo [codice=" + codice + ", posti=" + posti + ", itinerarioAssegnato=" + itinerarioAssegnato
-				+ "]";
+		return "Automezzo [codice=" + codice + ", posti=" + posti + ", stato=" + stato + ", itinerarioAssegnato="
+				+ itinerarioAssegnato + "]";
 	}
     
 }

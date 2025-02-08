@@ -22,6 +22,7 @@ public class Segnalazione extends Messaggio{
 		this.cliente = cliente;
 	}
 
+	@Override
     public void visualizzaDettaglio() {
     	String s = super.toString();
     	

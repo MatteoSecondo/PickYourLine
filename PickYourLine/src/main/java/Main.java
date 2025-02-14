@@ -16,7 +16,7 @@ public class Main {
 		pickYourLine.loadItinerari();
 		pickYourLine.loadControllori();
 		pickYourLine.loadAutomezzi();
-		pickYourLine.laodClienti();
+		pickYourLine.loadClienti();
 		pickYourLine.loadAmministratori();
 		pickYourLine.loadElencoSegnalazioni();
 		pickYourLine.loadAvvisi();
@@ -40,7 +40,8 @@ public class Main {
 					+ "10- Visualizza Segnalazioni\n"
 					+ "11- Gestisci Controllori\n"
 					+ "12- Inizio Corsa\n"
-					+ "13- Fine Corsa\n");
+					+ "13- Fine Corsa\n"
+					+ "14- Login Utente\n");
 
 			int scelta = sc.nextInt();
 
@@ -86,7 +87,7 @@ public class Main {
 					break;
 				case 11:
 					gestisciControllori(sc);
-          break;
+          			break;
 				case 12:
 					pickYourLine.setUtenteCorrente(pickYourLine.getElencoControllori().get("f5b3"));
 					inizioCorsa(sc);
@@ -94,6 +95,9 @@ public class Main {
 				case 13:
 					pickYourLine.setUtenteCorrente(pickYourLine.getElencoControllori().get("f5b3"));
 					fineCorsa();
+					break;
+				case 14:
+					loginUtente(sc);
 					break;
 			}
 
@@ -809,6 +813,35 @@ public class Main {
 					System.out.println("\n" + e.getMessage());
 				}
 				break;
+		}
+	}
+
+	public static void loginUtente(Scanner sc) {
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+		String codice;
+		String password;
+
+		if (!pickYourLine.verificaAutenticazione()) {
+			System.out.println("C'è già un utente loggato. Effettua il logout prima di tentare il login.");
+			return;
+		}
+
+		System.out.println("Inserisci codice utente: ");
+		sc = new Scanner(System.in);
+		codice = sc.nextLine();
+		System.out.println("Inserisci password: ");
+		sc = new Scanner(System.in);
+		password = sc.nextLine();
+
+		if (codice.isEmpty() || password.isEmpty()) {
+			System.out.println("Codice utente o password non possono essere vuoti.");
+			return;
+		}
+
+		try{
+			pickYourLine.login(codice,password);
+		}catch (Exception e){
+			System.out.println("\n" + e.getMessage());
 		}
 	}
 

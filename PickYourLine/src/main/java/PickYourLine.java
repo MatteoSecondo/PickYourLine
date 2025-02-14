@@ -1,3 +1,5 @@
+import at.favre.lib.crypto.bcrypt.BCrypt;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -274,27 +276,27 @@ public class PickYourLine {
 	}
 
 	public void loadControllori() {
-		this.elencoControllori.put("f5b3", new Controllore("f5b3"));
-		this.elencoControllori.put("n7j5", new Controllore("n7j5"));
-		this.elencoControllori.put("h1ig", new Controllore("h1ig"));
-		this.elencoControllori.put("ba56", new Controllore("ba56"));
-		this.elencoControllori.put("zy31", new Controllore("zy31"));
+		this.elencoControllori.put("f5b3", new Controllore("f5b3", "bello"));
+		this.elencoControllori.put("n7j5", new Controllore("n7j5","bello"));
+		this.elencoControllori.put("h1ig", new Controllore("h1ig","bello"));
+		this.elencoControllori.put("ba56", new Controllore("ba56","bello"));
+		this.elencoControllori.put("zy31", new Controllore("zy31","bello"));
 	}
 
 	public void loadAmministratori() {
-		this.elencoAmministratori.put("a7b7", new Amministratore("a7b7"));
-		this.elencoAmministratori.put("a34j", new Amministratore("a34j"));
-		this.elencoAmministratori.put("a35j", new Amministratore("a35j"));
-		this.elencoAmministratori.put("a36j", new Amministratore("a36j"));
-		this.elencoAmministratori.put("a37j", new Amministratore("a37j"));
+		this.elencoAmministratori.put("a7b7", new Amministratore("a7b7","ciao"));
+		this.elencoAmministratori.put("a34j", new Amministratore("a34j","ciao"));
+		this.elencoAmministratori.put("a35j", new Amministratore("a35j","ciao"));
+		this.elencoAmministratori.put("a36j", new Amministratore("a36j","ciao"));
+		this.elencoAmministratori.put("a37j", new Amministratore("a37j","ciao"));
 	}
 
-	public void laodClienti(){
-		this.elencoClienti.put("c74i", new Cliente("c74i", "Franco", "Tredita"));
-		this.elencoClienti.put("c2312", new Cliente("c2312", "Franco", "Bianchi"));
-		this.elencoClienti.put("c34rf", new Cliente("c34rf", "Giorgio", "Bianchi"));
-		this.elencoClienti.put("21dd", new Cliente("21dd", "Franco", "Rossi"));
-		this.elencoClienti.put("asda", new Cliente("asda", "Franco", "Marroni"));
+	public void loadClienti(){
+		this.elencoClienti.put("c74i", new Cliente("c74i", "franco", "Franco", "Tredita"));
+		this.elencoClienti.put("c2312", new Cliente("c2312", "bianco", "Franco", "Bianchi"));
+		this.elencoClienti.put("c34rf", new Cliente("c34rf", "giorgio", "Giorgio", "Bianghi"));
+		this.elencoClienti.put("21dd", new Cliente("21dd", "rossetto", "Franco", "Rossi"));
+		this.elencoClienti.put("asda", new Cliente("asda", "marronetto", "Franco", "Marroni"));
 	}
 
 	public void loadAutomezzi() {
@@ -313,14 +315,14 @@ public class PickYourLine {
 	}
 
 	public void loadElencoSegnalazioni(){
-		this.elencoSegnalazioni.put("s001", new Segnalazione("s001","Critica Personale", "Insulto verbale", LocalDateTime.of(2025, 1, 10, 10, 50), new Cliente("0001","Tizio", "Bello")));
-		this.elencoSegnalazioni.put("s002", new Segnalazione("s002","Critica Servizio", "Servizio in ritardo nella mattina", LocalDateTime.of(2025, 1, 10, 11, 00), new Cliente("0002","Mara","Meo")));
-		this.elencoSegnalazioni.put("s003", new Segnalazione("s003","Critica Automezzo", "Sedili senza cintura di sicurezza", LocalDateTime.of(2025, 1, 12, 16, 30), new Cliente("0003","Ponzio","Pelato")));
+		this.elencoSegnalazioni.put("s001", new Segnalazione("s001","Critica Personale", "Insulto verbale", LocalDateTime.of(2025, 1, 10, 10, 50), new Cliente("0001","tizio", "Tizio", "Bello")));
+		this.elencoSegnalazioni.put("s002", new Segnalazione("s002","Critica Servizio", "Servizio in ritardo nella mattina", LocalDateTime.of(2025, 1, 10, 11, 00), new Cliente("0001","tizio", "Tizio", "Bello")));
+		this.elencoSegnalazioni.put("s003", new Segnalazione("s003","Critica Automezzo", "Sedili senza cintura di sicurezza", LocalDateTime.of(2025, 1, 12, 16, 30), new Cliente("0001","tizio", "Tizio", "Bello")));
 	}
 	
 	public void loadAvvisi() {
-		this.elencoAvvisi.put("a001", new Avviso("a001","Possibili ritardi", "Possibili ritardi nella giornata odierna", LocalDateTime.of(2025, 1, 10, 10, 50), new Amministratore("0001")));
-		this.elencoAvvisi.put("a002", new Avviso("a002","Incidente", "Grave incidente blocca alcune strade", LocalDateTime.of(2025, 1, 25, 9, 10), new Amministratore("0002")));
+		this.elencoAvvisi.put("a001", new Avviso("a001","Possibili ritardi", "Possibili ritardi nella giornata odierna", LocalDateTime.of(2025, 1, 10, 10, 50), new Amministratore("0001","ciao")));
+		this.elencoAvvisi.put("a002", new Avviso("a002","Incidente", "Grave incidente blocca alcune strade", LocalDateTime.of(2025, 1, 25, 9, 10), new Amministratore("0002","ciao")));
 	}
 
 	public void visualizzaElencoCittaPartenza() {
@@ -791,7 +793,7 @@ public class PickYourLine {
 		if(this.elencoControllori.containsKey(codice)){
 			throw new Exception("Controllore già esistente.");
 		}
-		Controllore c = new Controllore(codice);
+		Controllore c = new Controllore(codice,"Bellissimo");
 		this.elencoControllori.put(codice, c);
 	}
 
@@ -806,4 +808,23 @@ public class PickYourLine {
 		}
 			this.elencoControllori.remove(codice);
 		}
+
+	public boolean verificaAutenticazione() {
+		return getUtenteCorrente() == null;
+	}
+	public void login(String codice, String password) throws Exception {
+		Utente utente = this.elencoClienti.get(codice);
+		if (utente == null) {
+			throw new Exception("Codice utente non esistente");
+		}
+
+		String passwordUtente = utente.getPassword();
+		BCrypt.Result result = BCrypt.verifyer().verify(password.toCharArray(), passwordUtente);
+		if (result.verified) {
+			setUtenteCorrente(utente);
+			System.out.println("L'Utente: " + utente.getCodice() + " ha eseguito correttamente l'accesso");
+		} else {
+			throw new Exception("Password inserita non corretta");
+		}
+	}
 }

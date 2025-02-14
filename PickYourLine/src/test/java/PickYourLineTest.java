@@ -922,6 +922,19 @@ class PickYourLineTest {
 	}
 
 	@Test
+	@DisplayName("Test login Utente: accesso già effettuato")
+	public void testLoginConAccessoEffettuato() {
+		pickYourLine.setUtenteCorrente(pickYourLine.getElencoUtenti().get("f5b3"));
+		String codice = "c74i";
+		String password = "franco";
+		Exception exception = assertThrows(Exception.class, () -> {
+			pickYourLine.login(codice,password);
+		});
+		assertEquals("Hai già effettuato l'accesso. Effettua il logout prima di tentare il login."
+				,exception.getMessage());
+	}
+
+	@Test
 	@DisplayName("Test login Utente: codice utente non esistente")
 	public void testLoginConCodiceUtenteNonEsistente() {
 		String codiceNonEsistente = "ahbcd";

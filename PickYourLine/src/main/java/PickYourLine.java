@@ -341,9 +341,7 @@ public class PickYourLine {
 	public Map<String, Itinerario> inserisciCittaDestinazione(int codiceCittaPartenza, int codiceCittaDestinazione, Map<Integer, Citta> elencoDestinazioniDisponibili) throws Exception{
 		Citta cittaDestinazione = elencoDestinazioniDisponibili.get(codiceCittaDestinazione);
 		
-		if(this.getElencoCitta().get(codiceCittaPartenza).equals(this.getElencoCitta().get(codiceCittaDestinazione))) {
-			throw new Exception("La città di partenza e quella di destinazione sono la stessa città.");
-		} else if(cittaDestinazione == null) {
+		if(cittaDestinazione == null) {
 			throw new Exception("Codice città non non idoneo alla ricerca effettuata.");
 		}
 		
@@ -714,12 +712,22 @@ public class PickYourLine {
 		
 		av.visualizzaDettaglio();
 	}
+	
 	private boolean verificaSupervisione() throws Exception {
-		Controllore controllore = (Controllore) pickYourLine.getUtenteCorrente();
+		Utente u = pickYourLine.getUtenteCorrente();
+	
+		if(!(u instanceof Controllore)) {
+			return true;
+		}
+		
+		Controllore controllore = (Controllore) u;
+		
 		Automezzo automezzoSupervisionato = controllore.getAutomezzoSupervisionato();
+		
 		if (automezzoSupervisionato != null) {
 			return false;
 		}
+		
 		return true;
 	}
 
@@ -804,11 +812,17 @@ public class PickYourLine {
 	}
 
 	public boolean verificaAutenticazione() {
-		return getUtenteCorrente() == null;
+		return getUtenteCorrente() != null;
 	}
 
 	public void login(String codice, String password) throws Exception {
+		
+		if(verificaAutenticazione()) {
+			throw new Exception("Hai già effettuato l'accesso. Effettua il logout prima di tentare il login.");
+		}
+		
 		Utente utente = this.elencoUtenti.get(codice);
+		
 		if (utente == null) {
 			throw new Exception("Codice utente non esistente");
 		}
@@ -816,11 +830,24 @@ public class PickYourLine {
 		String passwordUtente = utente.getPassword();
 		BCrypt.Result result = BCrypt.verifyer().verify(password.toCharArray(), passwordUtente);
 
-		if (result.verified) {
-			setUtenteCorrente(utente);
-			System.out.println("L'Utente: " + utente.getCodice() + " ha eseguito correttamente l'accesso");
-		} else {
+		if (!result.verified) {
 			throw new Exception("Password inserita non corretta");
 		}
+		
+		setUtenteCorrente(utente);
+		System.out.println("L'Utente: " + utente.getCodice() + " ha eseguito correttamente l'accesso");
+	}
+
+	public void logout() throws Exception {
+		
+		if(!verificaAutenticazione()) {
+			throw new Exception("Non hai effettuato l'accesso. Effettua il login prima di tentare il logout.");
+		}
+		
+		if(!verificaSupervisione()) {
+			throw new Exception("Non puoi effettuare il logout se stai supervisionando un automezzo.");
+		}
+		
+		setUtenteCorrente(null);
 	}
 }

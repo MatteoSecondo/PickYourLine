@@ -47,6 +47,7 @@ class PickYourLineTest {
 		this.pickYourLine = PickYourLine.getInstance();
 		this.pickYourLine.loadCitta();
 		this.pickYourLine.loadElencoSegnalazioni();
+		this.pickYourLine.loadAmministratori();
 	}
 
 	@BeforeEach
@@ -137,7 +138,7 @@ class PickYourLineTest {
         Exception exception = assertThrows(Exception.class, () -> {
         	this.pickYourLine.inserisciCittaDestinazione(1, 1, this.elencoDestinazioniDisponibili);
         });
-        assertEquals("La città di partenza e quella di destinazione sono la stessa città.", exception.getMessage());
+        assertEquals("Codice città non non idoneo alla ricerca effettuata.", exception.getMessage());
     }
 
     @Test
@@ -798,7 +799,6 @@ class PickYourLineTest {
 		Exception exception = assertThrows(Exception.class, () ->
 				pickYourLine.visualizzaElencoAutomezziNonInTransito());
 		assertEquals("Nessun automezzo disponibile per la supervisione.", exception.getMessage());
-
 	}
 
 	@Test
@@ -926,6 +926,7 @@ class PickYourLineTest {
 	public void testLoginConCodiceUtenteNonEsistente() {
 		String codiceNonEsistente = "ahbcd";
 		String password = "franco";
+		pickYourLine.setUtenteCorrente(null);
 
 		Exception exception = assertThrows(Exception.class, () -> {
 			pickYourLine.login(codiceNonEsistente,password);
@@ -938,12 +939,48 @@ class PickYourLineTest {
 	public void testLoginConPasswordErrata() {
 		String codice = "c74i";
 		String passwordErrata = "ciccio";
+		pickYourLine.setUtenteCorrente(null);
 
 		Exception exception = assertThrows(Exception.class, () -> {
 			pickYourLine.login(codice,passwordErrata);
 		});
 		assertEquals("Password inserita non corretta", exception.getMessage());
+	}
+	
+	@Test
+	@DisplayName("Test logout nel caso di successo")
+	public void testLogout_Successo() throws Exception {
+		Amministratore am = (Amministratore) pickYourLine.getElencoUtenti().get("a7b7");
+		pickYourLine.setUtenteCorrente(am);
+		pickYourLine.logout();
+		assertNull(pickYourLine.getUtenteCorrente());
+	}
+	
+	@Test
+	@DisplayName("Test logout nel caso di accesso non effettuato")
+	public void testLogout_AccessoNonEffettuato() {
+		pickYourLine.setUtenteCorrente(null);
+		
+		Exception exception = assertThrows(Exception.class, () ->
+			pickYourLine.logout(),
+			"Non hai effettuato l'accesso. Effettua il login prima di tentare il logout."
+		);
 
+		assertEquals("Non hai effettuato l'accesso. Effettua il login prima di tentare il logout.", exception.getMessage());
+	}
+	
+	@Test
+	@DisplayName("Test logout nel caso di supervisione ancora in corso")
+	public void testLogout_SupervisioneInCorso() {
+		Controllore co = (Controllore) pickYourLine.getElencoUtenti().get("f5b3");
+		pickYourLine.setUtenteCorrente(co);
+		
+		Exception exception = assertThrows(Exception.class, () ->
+			pickYourLine.logout(),
+			"Non puoi effettuare il logout se stai supervisionando un automezzo."
+		);
+
+		assertEquals("Non puoi effettuare il logout se stai supervisionando un automezzo.", exception.getMessage());
 	}
 
 }

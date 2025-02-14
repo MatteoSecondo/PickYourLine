@@ -43,7 +43,10 @@ public class Main {
 					+ "11- Gestisci Controllori\n"
 					+ "12- Inizio Corsa\n"
 					+ "13- Fine Corsa\n"
-					+ "14- Login Utente\n");
+					+ "14- Login Utente\n"
+					+ "15- Logout Utente\n"
+					);
+			
 
 			sc = new Scanner(System.in);
 
@@ -63,50 +66,91 @@ public class Main {
 					cercaItinerario(sc);
 					break;
 				case 2:
-					pickYourLine.setUtenteCorrente(pickYourLine.getElencoUtenti().get("f5b3"));
+					if(pickYourLine.getUtenteCorrente() == null || !(pickYourLine.getUtenteCorrente() instanceof Controllore)) {
+						System.out.println("Non hai il permesso per effettuare l'operazione.");
+						break;
+					}
+					
 					ultimaCitta = timbraBiglietto(sc, ultimaCitta);
 					break;
 				case 3:
 					monitoraAutomezzo(sc);
 					break;
 				case 4:
-					pickYourLine.setUtenteCorrente(pickYourLine.getElencoUtenti().get("a7b7"));
+					if(pickYourLine.getUtenteCorrente() == null || !(pickYourLine.getUtenteCorrente() instanceof Amministratore)) {
+						System.out.println("Non hai il permesso per effettuare l'operazione.");
+						break;
+					}
+					
 					gestisciItinerari(sc);
 					break;
 				case 5:
-					pickYourLine.setUtenteCorrente(pickYourLine.getElencoUtenti().get("a7b7"));
+					if(pickYourLine.getUtenteCorrente() == null || !(pickYourLine.getUtenteCorrente() instanceof Amministratore)) {
+						System.out.println("Non hai il permesso per effettuare l'operazione.");
+						break;
+					}
+					
 					gestisciAutomezzi(sc);
 					break;
 				case 6:
 					visualizzaFermate(sc);
 					break;
 				case 7:
-					pickYourLine.setUtenteCorrente(pickYourLine.getElencoUtenti().get("a7b7"));
+					if(pickYourLine.getUtenteCorrente() == null || !(pickYourLine.getUtenteCorrente() instanceof Amministratore)) {
+						System.out.println("Non hai il permesso per effettuare l'operazione.");
+						break;
+					}
+					
 					gestisciAvvisi(sc);
 					break;
 				case 8:
 					visualizzaAvvisi(sc);
 					break;
 				case 9:
-					pickYourLine.setUtenteCorrente(pickYourLine.getElencoUtenti().get("c74i"));
+					if(pickYourLine.getUtenteCorrente() == null || !(pickYourLine.getUtenteCorrente() instanceof Cliente)) {
+						System.out.println("Non hai il permesso per effettuare l'operazione.");
+						break;
+					}
+					
 					invioSegnalazione(sc);
 					break;
 				case 10:
+					if(pickYourLine.getUtenteCorrente() == null || !(pickYourLine.getUtenteCorrente() instanceof Amministratore)) {
+						System.out.println("Non hai il permesso per effettuare l'operazione.");
+						break;
+					}
+					
 					visualizzaSegnalazioni(sc);
 					break;
 				case 11:
+					if(pickYourLine.getUtenteCorrente() == null || !(pickYourLine.getUtenteCorrente() instanceof Amministratore)) {
+						System.out.println("Non hai il permesso per effettuare l'operazione.");
+						break;
+					}
+					
 					gestisciControllori(sc);
           			break;
 				case 12:
-					pickYourLine.setUtenteCorrente(pickYourLine.getElencoUtenti().get("f5b3"));
+					if(pickYourLine.getUtenteCorrente() == null || !(pickYourLine.getUtenteCorrente() instanceof Controllore)) {
+						System.out.println("Non hai il permesso per effettuare l'operazione.");
+						break;
+					}
+					
 					inizioCorsa(sc);
 					break;
 				case 13:
-					pickYourLine.setUtenteCorrente(pickYourLine.getElencoUtenti().get("f5b3"));
+					if(pickYourLine.getUtenteCorrente() == null || !(pickYourLine.getUtenteCorrente() instanceof Controllore)) {
+						System.out.println("Non hai il permesso per effettuare l'operazione.");
+						break;
+					}
+					
 					fineCorsa();
 					break;
 				case 14:
 					loginUtente(sc);
+					break;
+				case 15:
+					logoutUtente();
 					break;
 			}
 
@@ -229,10 +273,9 @@ public class Main {
 				System.out.println("\n" + e.getMessage());
 			}
 		} while(!successo);
-		
-		successo = false;
 
 		do {
+			successo = false;
 			Biglietto b = null;
 			int codiceCittaPartenza = 0;
 			int codiceCittaDestinazione = 0;
@@ -1042,12 +1085,13 @@ public class Main {
 		}
 	}
 
+	@SuppressWarnings("resource")
 	public static void loginUtente(Scanner sc) {
 		PickYourLine pickYourLine = PickYourLine.getInstance();
 		String codice;
 		String password;
 
-		if (!pickYourLine.verificaAutenticazione()) {
+		if (pickYourLine.verificaAutenticazione()) {
 			System.out.println("Hai già effettuato l'accesso. Effettua il logout prima di tentare il login.");
 			return;
 		}
@@ -1071,5 +1115,14 @@ public class Main {
 		}
 	}
 
-
+	public static void logoutUtente() {
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+		
+		try {
+			pickYourLine.logout();
+			System.out.println("Hai effettuato il logout correttamente.");
+		} catch (Exception e) {
+			System.out.println("\n" + e.getMessage());
+		}
+	}
 }

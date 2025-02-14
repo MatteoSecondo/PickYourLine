@@ -2,6 +2,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -22,8 +23,9 @@ public class Main {
 		pickYourLine.loadAvvisi();
 		
 		System.out.println("Benvenuto!");
-		Scanner sc = new Scanner(System.in);
+		Scanner sc;
 		boolean ultimaCitta = false;
+		int scelta = 0;
 
 		while(true) {
 			System.out.println("\nScegli tra le operazioni disponibili.");
@@ -43,7 +45,14 @@ public class Main {
 					+ "13- Fine Corsa\n"
 					+ "14- Login Utente\n");
 
-			int scelta = sc.nextInt();
+			sc = new Scanner(System.in);
+
+			try {
+				scelta = sc.nextInt();
+			} catch (InputMismatchException e) {
+				System.out.println("Inserisci un valore numerico.");
+				continue;
+			}
 
 			switch(scelta) {
 				case 0:
@@ -54,32 +63,32 @@ public class Main {
 					cercaItinerario(sc);
 					break;
 				case 2:
-					pickYourLine.setUtenteCorrente(pickYourLine.getElencoControllori().get("f5b3"));
+					pickYourLine.setUtenteCorrente(pickYourLine.getElencoUtenti().get("f5b3"));
 					ultimaCitta = timbraBiglietto(sc, ultimaCitta);
 					break;
 				case 3:
 					monitoraAutomezzo(sc);
 					break;
 				case 4:
-					pickYourLine.setUtenteCorrente(pickYourLine.getElencoAmministratori().get("a7b7"));
+					pickYourLine.setUtenteCorrente(pickYourLine.getElencoUtenti().get("a7b7"));
 					gestisciItinerari(sc);
 					break;
 				case 5:
-					pickYourLine.setUtenteCorrente(pickYourLine.getElencoAmministratori().get("a7b7"));
+					pickYourLine.setUtenteCorrente(pickYourLine.getElencoUtenti().get("a7b7"));
 					gestisciAutomezzi(sc);
 					break;
 				case 6:
 					visualizzaFermate(sc);
 					break;
 				case 7:
-					pickYourLine.setUtenteCorrente(pickYourLine.getElencoAmministratori().get("a7b7"));
+					pickYourLine.setUtenteCorrente(pickYourLine.getElencoUtenti().get("a7b7"));
 					gestisciAvvisi(sc);
 					break;
 				case 8:
 					visualizzaAvvisi(sc);
 					break;
 				case 9:
-					pickYourLine.setUtenteCorrente(pickYourLine.getElencoClienti().get("c74i"));
+					pickYourLine.setUtenteCorrente(pickYourLine.getElencoUtenti().get("c74i"));
 					invioSegnalazione(sc);
 					break;
 				case 10:
@@ -89,11 +98,11 @@ public class Main {
 					gestisciControllori(sc);
           			break;
 				case 12:
-					pickYourLine.setUtenteCorrente(pickYourLine.getElencoControllori().get("f5b3"));
+					pickYourLine.setUtenteCorrente(pickYourLine.getElencoUtenti().get("f5b3"));
 					inizioCorsa(sc);
 					break;
 				case 13:
-					pickYourLine.setUtenteCorrente(pickYourLine.getElencoControllori().get("f5b3"));
+					pickYourLine.setUtenteCorrente(pickYourLine.getElencoUtenti().get("f5b3"));
 					fineCorsa();
 					break;
 				case 14:
@@ -111,12 +120,18 @@ public class Main {
 		pickYourLine.visualizzaElencoCittaPartenza();
 		
 		Map<Integer, Citta> elencoDestinazioniDisponibili = null;
-		int codiceCittaPartenza;
+		int codiceCittaPartenza = 0;
 
 		do {
 			System.out.println("\nInserisci il codice della città di partenza");
 			sc = new Scanner(System.in);
-			codiceCittaPartenza = sc.nextInt();
+
+			try {
+				codiceCittaPartenza = sc.nextInt();
+			} catch (InputMismatchException e) {
+				System.out.println("Inserisci un valore numerico.");
+				continue;
+			}
 
 			try {
 				elencoDestinazioniDisponibili = pickYourLine.inserisciCittaPartenza(codiceCittaPartenza);
@@ -128,11 +143,18 @@ public class Main {
 		elencoDestinazioniDisponibili.forEach((key, c) -> System.out.println(c));
 
 		Map<String, Itinerario> itinerariDisponibili = null;
+		int codiceCittaDestinazione = 0;
 
 		do {
 			System.out.println("\nInserisci il codice della città di destinazione");
 			sc = new Scanner(System.in);
-			int codiceCittaDestinazione = sc.nextInt();
+
+			try {
+				codiceCittaDestinazione = sc.nextInt();
+			} catch (InputMismatchException e) {
+				System.out.println("Inserisci un valore numerico.");
+				continue;
+			}
 
 			try {
 				itinerariDisponibili = pickYourLine.inserisciCittaDestinazione(codiceCittaPartenza, codiceCittaDestinazione, elencoDestinazioniDisponibili);
@@ -170,7 +192,7 @@ public class Main {
 			return false;
 		}
 		
-		int scelta;
+		int scelta = 0;
 	
 		String nomeFermata;
 		boolean successo = false;
@@ -208,18 +230,33 @@ public class Main {
 			}
 		} while(!successo);
 		
+		successo = false;
+
 		do {
 			Biglietto b = null;
-			
+			int codiceCittaPartenza = 0;
+			int codiceCittaDestinazione = 0;
+
 			do {
 				System.out.println("\nInserisci il codice del biglietto");
 				sc = new Scanner(System.in);
 				String codiceBiglietto = sc.nextLine();
-				System.out.println("\nInserisci il codice della città di partenza");
-				int codiceCittaPartenza = sc.nextInt();
-				System.out.println("\nInserisci il codice della città di destinazione");
-				int codiceCittaDestinazione = sc.nextInt();
-	
+
+				do {
+					sc = new Scanner(System.in);
+
+					try {
+						System.out.println("\nInserisci il codice della città di partenza");
+						codiceCittaPartenza = sc.nextInt();
+						System.out.println("\nInserisci il codice della città di destinazione");
+						codiceCittaDestinazione = sc.nextInt();
+						successo = true;
+					} catch (InputMismatchException e) {
+						System.out.println("Inserisci un valore numerico.");
+						continue;
+					}
+				} while(!successo);
+
 				try {
 					b = pickYourLine.timbraBiglietto(codiceBiglietto, codiceCittaPartenza, codiceCittaDestinazione);
 				} catch (Exception e) {
@@ -229,14 +266,42 @@ public class Main {
 			} while(b == null);
 			
 			System.out.println(b);
-			System.out.println("\nInserisci 0 per annullare l'inserimento, altrimenti qualsiasi per confermare");
+
+			int conferma = 0;
+			successo = false;
+
+			do {
+				sc = new Scanner(System.in);
+				System.out.println("\nInserisci 0 per annullare l'inserimento, altrimenti qualsiasi per confermare");
+
+				try {
+					conferma = sc.nextInt();
+					successo = true;
+				} catch (InputMismatchException e) {
+					System.out.println("Inserisci un valore numerico.");
+					continue;
+				}
+			} while(!successo);
 			
-			if(sc.nextInt() != 0) {
+			if(conferma != 0) {
 				pickYourLine.confermaInserimento();
 			}
 			
-			System.out.println("Inserisci 0 per terminare l'inserimento, altrimenti qualsiasi per continuare");
-			scelta = sc.nextInt();
+			successo = false;
+
+			do {
+				sc = new Scanner(System.in);
+				System.out.println("Inserisci 0 per terminare l'inserimento, altrimenti qualsiasi per continuare");
+
+				try {
+					scelta = sc.nextInt();
+					successo = true;
+				} catch (InputMismatchException e) {
+					System.out.println("Inserisci un valore numerico.");
+					continue;
+				}
+			} while(!successo);
+
 		} while(scelta != 0);
 		
 		pickYourLine.terminaInserimento();
@@ -271,6 +336,7 @@ public class Main {
 		}	
 	}
 	
+	@SuppressWarnings("resource")
 	public static void gestisciItinerari(Scanner sc) {
 		PickYourLine pickYourLine = PickYourLine.getInstance();
 		
@@ -278,9 +344,21 @@ public class Main {
 		int oraPartenza = 0, minutoPartenza = 0, oraArrivo = 0, minutoArrivo = 0;
 		LocalTime[] orariPartenzaEArrivo = new LocalTime[2];
 		Set<Citta> percorso = new HashSet<Citta>();
-		
-		System.out.println("Inserisci 1 per visualizzare, 2 per inserire, 3 per modificare, 4 per eliminare, qualsiasi per uscire:");
-		int operazioneScelta = sc.nextInt();
+		boolean successo = false;
+		int operazioneScelta = 0;
+
+		do {
+			System.out.println("Inserisci 1 per visualizzare, 2 per inserire, 3 per modificare, 4 per eliminare, qualsiasi per uscire:");
+			sc = new Scanner(System.in);
+
+			try {
+				operazioneScelta = sc.nextInt();
+				successo = true;
+			} catch (InputMismatchException e) {
+				System.out.println("Inserisci un valore numerico.");
+				continue;
+			}
+		} while(!successo);
 		
 		switch(operazioneScelta) {
 			case 1:
@@ -312,6 +390,7 @@ public class Main {
 				sc = new Scanner(System.in);
 				System.out.println("\nInserisci il codice dell'itinerario");
 				codice.append(sc.nextLine());
+
 				try {
 					pickYourLine.eliminaItinerario(codice.toString());
 				} catch (Exception e) {
@@ -329,7 +408,7 @@ public class Main {
 		PickYourLine pickYourLine = PickYourLine.getInstance();
 		sc = new Scanner(System.in);
 		
-		boolean success;
+		boolean success = true;
 		Itinerario i;
 		
 		do {
@@ -352,35 +431,83 @@ public class Main {
 		} while(!success);
 		
 		do {
-			success = true;
+			success = false;
 			
-			if(operazioneScelta == 2) {
-				System.out.println("Inserisci l'ora di partenza");
-			} else {
-				System.out.println("Inserisci l'ora di partenza, 0 per non modificare");
-			}
-			
-			oraPartenza = sc.nextInt();
+			do {
+				if(operazioneScelta == 2) {
+					System.out.println("Inserisci l'ora di partenza");
+				} else {
+					System.out.println("Inserisci l'ora di partenza, 0 per non modificare");
+				}
+
+				sc = new Scanner(System.in);
+
+				try {
+					oraPartenza = sc.nextInt();
+					success = true;
+				} catch (InputMismatchException e) {
+					System.out.println("Inserisci un valore numerico.");
+					continue;
+				}
+			} while(!success);
 			
 			if(operazioneScelta == 2 || (operazioneScelta == 3 && oraPartenza != 0)) {
-				System.out.println("Inserisci il minuto di partenza");
-				minutoPartenza = sc.nextInt();
+				success = false;
+
+				do {
+					System.out.println("Inserisci il minuto di partenza");
+					sc = new Scanner(System.in);
+
+					try {
+						minutoPartenza = sc.nextInt();
+						success = true;
+					} catch (InputMismatchException e) {
+						System.out.println("Inserisci un valore numerico.");
+						continue;
+					}
+				} while(!success);
+
 				orariPartenzaEArrivo[0] = LocalTime.of(oraPartenza, minutoPartenza);
 			} else {
 				orariPartenzaEArrivo[0] = i.getOrarioPartenza();
 			}
 			
-			if(operazioneScelta == 2) {
-				System.out.println("Inserisci l'ora di arrivo");
-			} else {
-				System.out.println("Inserisci l'ora di arrivo, 0 per non modificare");
-			}
-			
-			oraArrivo = sc.nextInt();
+			success = false;
+
+			do {
+				if(operazioneScelta == 2) {
+					System.out.println("Inserisci l'ora di arrivo");
+				} else {
+					System.out.println("Inserisci l'ora di arrivo, 0 per non modificare");
+				}
+
+				sc = new Scanner(System.in);
+
+				try {
+					oraArrivo = sc.nextInt();
+					success = true;
+				} catch (InputMismatchException e) {
+					System.out.println("Inserisci un valore numerico.");
+					continue;
+				}
+			} while(!success);
 			
 			if(operazioneScelta == 2 || (operazioneScelta == 3 && oraArrivo != 0)) {
-				System.out.println("Inserisci il minuto di arrivo");
-				minutoArrivo = sc.nextInt();
+				success = false;
+
+				do {
+					System.out.println("Inserisci il minuto di arrivo");
+					sc = new Scanner(System.in);
+
+					try {
+						minutoArrivo = sc.nextInt();
+						success = true;
+					} catch (InputMismatchException e) {
+						System.out.println("Inserisci un valore numerico.");
+						continue;
+					}
+				} while(!success);
+
 				orariPartenzaEArrivo[1] = LocalTime.of(oraArrivo, minutoArrivo);
 			} else {
 				orariPartenzaEArrivo[1] = i.getOrarioArrivo();
@@ -400,8 +527,20 @@ public class Main {
 		pickYourLine.visualizzaElencoCittaPartenza();
 		
 		while(true) {
-			System.out.println("\nInserisci il codice della città da aggiungere al percorso dell'itinerario, 0 per terminare l'operazione");
-			codiceCitta = sc.nextInt();
+			codiceCitta = -1;
+
+			do {
+				System.out.println("\nInserisci il codice della città da aggiungere al percorso dell'itinerario, 0 per terminare l'operazione");
+				sc = new Scanner(System.in);
+
+				try {
+					codiceCitta = sc.nextInt();
+					success = true;
+				} catch (InputMismatchException e) {
+					System.out.println("Inserisci un valore numerico.");
+					continue;
+				}
+			} while(!success);
 			
 			if(codiceCitta == 0) {
 				if((operazioneScelta == 2 && percorso.size() < 2) || (operazioneScelta == 3 && !percorso.isEmpty() && percorso.size() < 2)) {
@@ -412,26 +551,42 @@ public class Main {
 				}	
 			}
 			
-			c = pickYourLine.getElencoCitta().get(codiceCitta);
-			
-			if(c == null) {
-				System.out.println("\nCodice città non esistente.");
-			}
-			
-			if(!percorso.add(c)) {
-				System.out.println("\nCittà già presente nel percorso.");
+			if(codiceCitta != -1) {
+				c = pickYourLine.getElencoCitta().get(codiceCitta);
+
+				if(c == null) {
+					System.out.println("\nCodice città non esistente.");
+				}
+
+				if(!percorso.add(c)) {
+					System.out.println("\nCittà già presente nel percorso.");
+				}
 			}
 		}
 	}
 	
+	@SuppressWarnings("resource")
 	public static void gestisciAutomezzi(Scanner sc) {
 		PickYourLine pickYourLine = PickYourLine.getInstance();
 		
 		StringBuilder codice = new StringBuilder(), codiceItinerario = new StringBuilder();
 		AtomicInteger posti = new AtomicInteger(), codiceStato = new AtomicInteger();
 		
-		System.out.println("Inserisci 1 per visualizzare, 2 per inserire, 3 per modificare, 4 per eliminare, qualsiasi per uscire:");
-		int operazioneScelta = sc.nextInt();
+		boolean successo = false;
+		int operazioneScelta = 0;
+
+		do {
+			System.out.println("Inserisci 1 per visualizzare, 2 per inserire, 3 per modificare, 4 per eliminare, qualsiasi per uscire:");
+			sc = new Scanner(System.in);
+
+			try {
+				operazioneScelta = sc.nextInt();
+				successo = true;
+			} catch (InputMismatchException e) {
+				System.out.println("Inserisci un valore numerico.");
+				continue;
+			}
+		} while(!successo);
 		
 		switch(operazioneScelta) {
 			case 1:
@@ -492,6 +647,8 @@ public class Main {
 				}
 			}
 			
+			success = true;
+
 			if(operazioneScelta == 3) {
 				Map<String, Automezzo> automezziModificabili = new HashMap<String, Automezzo>();
 				
@@ -506,17 +663,32 @@ public class Main {
 				if(automezzo == null) {
 					System.out.println("\nAutomezzo non modificabile perchè in transito o dismesso.");
 					codice.setLength(0);
+					success = false;
 				}
 			}
-		} while(automezzo == null);
+		} while(!success);
 		
-		System.out.println("Inserisci 1 per cambiare lo stato in NonInTransito, 2 in Manutenzione, 3 in Dismesso, 0 per non cambiarlo");
-		codiceStato.set(sc.nextInt());
-		
-		sc = new Scanner(System.in);
-		
-		if((!(automezzo.getStato() instanceof NonInTransito) && codiceStato.get() != 1) || ((automezzo.getStato() instanceof NonInTransito)) && (codiceStato.get() == 2 || codiceStato.get() == 3)) {
-			return;
+		success = false;
+
+		if(operazioneScelta == 3) {
+			do {
+				System.out.println("Inserisci 1 per cambiare lo stato in NonInTransito, 2 in Manutenzione, 3 in Dismesso, 0 per non cambiarlo");
+				sc = new Scanner(System.in);
+
+				try {
+					codiceStato.set(sc.nextInt());
+					success = true;
+				} catch (InputMismatchException e) {
+					System.out.println("Inserisci un valore numerico.");
+					continue;
+				}
+			} while(!success);
+
+			sc = new Scanner(System.in);
+
+			if((!(automezzo.getStato() instanceof NonInTransito) && codiceStato.get() != 1) || ((automezzo.getStato() instanceof NonInTransito)) && (codiceStato.get() == 2 || codiceStato.get() == 3)) {
+				return;
+			}
 		}
 		
 		pickYourLine.visualizzaElencoItinerari();
@@ -542,9 +714,21 @@ public class Main {
 			}
 		} while(!success);
 		
+		success = false;
+
 		if(operazioneScelta == 2) {
-			System.out.println("\nInserisci il numero di posti");
-			posti.set(sc.nextInt());
+			do {
+				System.out.println("\nInserisci il numero di posti");
+				sc = new Scanner(System.in);
+
+				try {
+					posti.set(sc.nextInt());
+					success = true;
+				} catch (InputMismatchException e) {
+					System.out.println("Inserisci un valore numerico.");
+					continue;
+				}
+			} while(!success);
 		}
 	}
 
@@ -554,18 +738,34 @@ public class Main {
 		sc = new Scanner(System.in);
 
 		boolean successo = false;
-		int codiceCitta;
+		int codiceCitta = -1;
 		System.out.println("Elenco Città:");
 		pickYourLine.visualizzaElencoCittaPartenza();
 
 		while (true) {
 			do {
-				System.out.println("\nInserisci il codice della città di cui vuoi conoscere le fermate, altrimenti 0 per uscire");
-				codiceCitta = sc.nextInt();
+				codiceCitta = -1;
+				do {
+					System.out.println("\nInserisci il codice della città di cui vuoi conoscere le fermate, altrimenti 0 per uscire");
+					sc = new Scanner(System.in);
 
-				if (codiceCitta == 0)
+					try {
+						codiceCitta = sc.nextInt();
+						successo = true;
+					} catch (InputMismatchException e) {
+						System.out.println("Inserisci un valore numerico.");
+						continue;
+					}
+				} while(!successo);
+
+				if (codiceCitta == 0) {
 					return;
-				
+				} else if(codiceCitta == -1) {
+					continue;
+				}
+
+				successo = false;
+
 				try {
 					pickYourLine.visualizzaFermate(codiceCitta);
 					successo = true;
@@ -580,19 +780,17 @@ public class Main {
 	@SuppressWarnings("resource")
 	public static void invioSegnalazione(Scanner sc) {
 		PickYourLine pickYourLine = PickYourLine.getInstance();
+		sc = new Scanner(System.in);
 
-		int scelta;
 		String oggettoSegnalazione;
 		String contenutoSegnalazione;
 
-		do {
+		while(true) {
 			Segnalazione segnalazione = null;
 			do {
 				System.out.println("Inserisci oggetto della segnalazione:");
-				sc = new Scanner(System.in);
 				oggettoSegnalazione = sc.nextLine();
 				System.out.println("\nInserisci contenuto della segnalazione: ");
-				sc = new Scanner(System.in);
 				contenutoSegnalazione = sc.nextLine();
 
 				try {
@@ -601,18 +799,21 @@ public class Main {
 					System.out.println(e.getMessage());
 				}
 
-				System.out.println(segnalazione);
+				segnalazione.visualizzaDettaglio();
 
 				System.out.println("\nInserisci 0 per annullare l'invio della segnalazione, altrimenti qualsiasi per confermare l'invio");
 
-				if(sc.nextInt() != 0) {
+				if(!sc.nextLine().equals("0")) {
 					pickYourLine.invioSegnalazione(segnalazione);
 				}
 			}while (segnalazione == null);
 
 			System.out.println("Inserisci 0 per terminare l'operazione, altrimenti qualsiasi per continuare");
-			scelta = sc.nextInt();
-		}while (scelta!=0);
+
+			if(sc.nextLine().equals("0")) {
+				return;
+			}
+		}
 	}
 
 	@SuppressWarnings("resource")
@@ -655,9 +856,21 @@ public class Main {
 	public static void gestisciAvvisi(Scanner sc) {
 		PickYourLine pickYourLine = PickYourLine.getInstance();
 		String codice, oggetto, contenuto;
-		
-		System.out.println("Inserisci 1 per inserire, 2 per modificare, 3 per eliminare, qualsiasi per uscire:");
-		int operazioneScelta = sc.nextInt();
+		int operazioneScelta = 0;
+		boolean successo = false;
+
+		do {
+			System.out.println("Inserisci 1 per inserire, 2 per modificare, 3 per eliminare, qualsiasi per uscire:");
+			sc = new Scanner(System.in);
+
+			try {
+				operazioneScelta = sc.nextInt();
+				successo = true;
+			} catch (InputMismatchException e) {
+				System.out.println("Inserisci un valore numerico.");
+				continue;
+			}
+		} while(!successo);
 		
 		sc = new Scanner(System.in);
 		
@@ -778,15 +991,28 @@ public class Main {
 		}
 	}
 
-
+	@SuppressWarnings("resource")
 	public static void gestisciControllori(Scanner sc) {
 		PickYourLine pickYourLine = PickYourLine.getInstance();
 
 		String codice;
+		int operazioneScelta = 0;
+		boolean successo = false;
 
-		System.out.println("Inserisci 1 per visualizzare, 2 per inserire, 3 per eliminare, qualsiasi per uscire:");
-		int operazioneScelta = sc.nextInt();
-		sc.nextLine();
+		do {
+			System.out.println("Inserisci 1 per visualizzare, 2 per inserire, 3 per eliminare, qualsiasi per uscire:");
+			sc = new Scanner(System.in);
+
+			try {
+				operazioneScelta = sc.nextInt();
+				successo = true;
+			} catch (InputMismatchException e) {
+				System.out.println("Inserisci un valore numerico.");
+				continue;
+			}
+		} while(!successo);
+
+		sc = new Scanner(System.in);
 
 		switch (operazioneScelta) {
 			case 1:

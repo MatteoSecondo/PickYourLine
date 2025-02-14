@@ -59,6 +59,11 @@ class PickYourLineTest {
 		this.pickYourLine.loadClienti();
 	}
 
+	@AfterEach
+	void clean() {
+		this.pickYourLine.getElencoAutomezzi().clear();
+	}
+
 	@AfterAll
 	void tearDownAll() throws Exception {
 	}
@@ -171,12 +176,7 @@ class PickYourLineTest {
 
 		Controllore co = new Controllore("f5b3","bello");
 		co.setAutomezzoSupervisionato(a);
-		this.pickYourLine.getElencoControllori().put("f5b3", co);
-
-		this.pickYourLine.getElencoControllori().put("n7j5", new Controllore("n7j5","bello"));
-		this.pickYourLine.getElencoControllori().put("h1ig", new Controllore("h1ig","bello"));
-		this.pickYourLine.getElencoControllori().put("ba56", new Controllore("ba56","bello"));
-		this.pickYourLine.getElencoControllori().put("zy31", new Controllore("zy31","bello"));
+		this.pickYourLine.getElencoUtenti().put("n7j5", co);
 
 		Map<String, Automezzo> elencoAutomezziInTransitoAtteso = new HashMap<String, Automezzo>();
 
@@ -677,10 +677,12 @@ class PickYourLineTest {
 	@Test
 	@DisplayName("Test creazione segnalazione")
 	public void testCreaSegnalazioneCorretto() {
-		pickYourLine.setUtenteCorrente(pickYourLine.getElencoClienti().get("c74i"));
+		pickYourLine.setUtenteCorrente(pickYourLine.getElencoUtenti().get("c74i"));
 		
 		Segnalazione sExpected = new Segnalazione("Critica Servizio","Servizio automezzi in ritardo");
-		sExpected.setCliente(pickYourLine.getElencoClienti().get("c74i"));
+
+		Cliente c = (Cliente) pickYourLine.getElencoUtenti().get("c74i");
+		sExpected.setCliente(c);
 		
 		String oggettoActual = "Critica Servizio";
 		String contenutoActual = "Servizio automezzi in ritardo";
@@ -786,7 +788,7 @@ class PickYourLineTest {
 	@DisplayName("Test visualizza automezzi non in transito, nel caso in cui ho un elenco vuoto")
 	public void testVisualizzaElencoAutomezziNonInTransitoElencoVuoto() {
 		Map<String, Automezzo> elencoAutomezzi = pickYourLine.getElencoAutomezzi();
-		pickYourLine.setUtenteCorrente(pickYourLine.getElencoControllori().get("n7j5"));
+		pickYourLine.setUtenteCorrente(pickYourLine.getElencoUtenti().get("n7j5"));
 
 		elencoAutomezzi.forEach((k,a) ->
 				a.setItinerarioAssegnato(pickYourLine.getElencoItinerari().get("Catania-Adrano Rapido")));
@@ -802,7 +804,7 @@ class PickYourLineTest {
 	@Test
 	@DisplayName("Test supervisione automezzo con successo")
 	public void testSupervisionaAutomezzoConSuccesso()  {
-		Controllore controllore = pickYourLine.getElencoControllori().get("f5b3");
+		Controllore controllore = (Controllore) pickYourLine.getElencoUtenti().get("f5b3");
 		String codiceAutomezzo = "C98";
 		Map<String, Automezzo> automezziDisponibili = pickYourLine.getElencoAutomezzi();
 		pickYourLine.setUtenteCorrente(controllore);
@@ -822,7 +824,7 @@ class PickYourLineTest {
 	@Test
 	@DisplayName("Test supervisiona automezzo nel caso di codice automezzo non valido")
 	public void testSupervisionaAutomezzoCodiceNonValido() {
-		Controllore controllore = pickYourLine.getElencoControllori().get("f5b3");
+		Controllore controllore = (Controllore) pickYourLine.getElencoUtenti().get("f5b3");
 		String automezzoNonEsistente = "H99";
 		Map<String, Automezzo> automezziDisponibili = pickYourLine.getElencoAutomezzi();
 		pickYourLine.setUtenteCorrente(controllore);
@@ -838,7 +840,7 @@ class PickYourLineTest {
 	@Test
 	@DisplayName("Test supervisiona automezzo nel caso di itinerario non assegnato all'automezzo")
 	public void testSupervisionaAutomezzoItinerarioNonAssegnato() {
-		Controllore controllore = pickYourLine.getElencoControllori().get("f5b3");
+		Controllore controllore = (Controllore) pickYourLine.getElencoUtenti().get("f5b3");
 		String automezzoSenzaItinerario = "C98";
 		Map<String, Automezzo> automezziDisponibili = pickYourLine.getElencoAutomezzi();
 		pickYourLine.setUtenteCorrente(controllore);
@@ -851,7 +853,7 @@ class PickYourLineTest {
 	@Test
 	@DisplayName("Test fine corsa in caso di successo")
 	public void testFineCorsaConSuccesso() {
-		Controllore controllore = pickYourLine.getElencoControllori().get("f5b3");
+		Controllore controllore = (Controllore) pickYourLine.getElencoUtenti().get("f5b3");
 		pickYourLine.setUtenteCorrente(controllore);
 		Automezzo automezzoSupervisionato = pickYourLine.getElencoAutomezzi().get("C98");
 		automezzoSupervisionato.setItinerarioAssegnato(pickYourLine.getElencoItinerari().get("Catania-Adrano Rapido"));
@@ -865,7 +867,7 @@ class PickYourLineTest {
 	@Test
 	@DisplayName("Test fine corsa nel caso controllore non supervisiona automezzo")
 	public void testFineCorsaControlloreNonSupervisionaAutomezzo() {
-		Controllore controllore = pickYourLine.getElencoControllori().get("f5b3");
+		Controllore controllore = (Controllore) pickYourLine.getElencoUtenti().get("f5b3");
 		pickYourLine.setUtenteCorrente(controllore);
 		controllore.setAutomezzoSupervisionato(null);
 
@@ -875,12 +877,11 @@ class PickYourLineTest {
 	}
 
 
-
 	@Test
 	@DisplayName("Test inserimento controllore con successo")
 	public void testInserisciControllore_successo() throws Exception {
 		pickYourLine.inserisciControllore("aaaa");
-		assertTrue(pickYourLine.getElencoControllori().containsKey("aaaa"));
+		assertTrue(pickYourLine.getElencoUtenti().containsKey("aaaa"));
 	}
 
 	@Test
@@ -896,22 +897,27 @@ class PickYourLineTest {
 	@DisplayName("Test elimina controllore con successo")
 	public void testEliminaControllore_successo() throws Exception {
 		pickYourLine.eliminaControllore("n7j5");
-		assertFalse(pickYourLine.getElencoControllori().containsKey("n7j5"));
+		assertFalse(pickYourLine.getElencoUtenti().containsKey("n7j5"));
 	}
 
 	@Test
 	@DisplayName("Test elimina controllore controllore non esistente")
 	public void testEliminaControllore_nonEsistente() throws Exception {
-		Exception exception = assertThrows(Exception.class, () -> {
+		Exception exceptionNotExisting = assertThrows(Exception.class, () -> {
 			pickYourLine.eliminaControllore("ce2c3");
 		});
-		assertEquals("Controllore non esistente.", exception.getMessage());
+		assertEquals("Controllore non esistente.", exceptionNotExisting.getMessage());
+
+		Exception exceptionNotControllore = assertThrows(Exception.class, () -> {
+			pickYourLine.eliminaControllore("a7b7");
+		});
+		assertEquals("Controllore non esistente.", exceptionNotControllore.getMessage());
 	}
 
 	@Test
 	@DisplayName("Test elimina controllore controllore con automezzo supervisionato")
 	public void testEliminaControllore_conAutomezzoSupervisionato() throws Exception {
-		Controllore co = pickYourLine.getElencoControllori().get("f5b3");
+		Controllore co = (Controllore) pickYourLine.getElencoUtenti().get("f5b3");
 		co.setAutomezzoSupervisionato(pickYourLine.getElencoAutomezzi().get("H23"));
 
 		Exception exception = assertThrows(Exception.class, () -> {

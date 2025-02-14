@@ -15,18 +15,14 @@ public class PickYourLine {
 	private Map<String, Automezzo> elencoAutomezzi;
 	private Map<String,Segnalazione> elencoSegnalazioni;
 	private Map<String, Avviso> elencoAvvisi;
-	private Map<String, Amministratore> elencoAmministratori;
-	private Map<String, Controllore> elencoControllori;
-	private Map<String, Cliente> elencoClienti;
+	private Map<String, Utente> elencoUtenti;
 
 	private PickYourLine() {
 		this.elencoItinerari = new HashMap<String, Itinerario>();
 		this.elencoCitta = new HashMap<Integer, Citta>();
-		this.elencoControllori = new HashMap<String, Controllore>();
+		this.elencoUtenti = new HashMap<String, Utente>();
 		this.elencoAutomezzi = new HashMap<String, Automezzo>();
 		this.elencoSegnalazioni = new HashMap<String, Segnalazione>();
-		this.elencoAmministratori = new HashMap<String, Amministratore>();
-		this.elencoClienti = new HashMap<String,Cliente>();
 		this.elencoAvvisi = new HashMap<String, Avviso>();
 	}
 	
@@ -58,10 +54,6 @@ public class PickYourLine {
 		this.elencoItinerari = elencoItinerari;
 	}
 
-	public Map<String, Controllore> getElencoControllori() {
-		return elencoControllori;
-	}
-
 	public Map<String, Automezzo> getElencoAutomezzi() {
 		return elencoAutomezzi;
 	}
@@ -74,13 +66,9 @@ public class PickYourLine {
 		return elencoSegnalazioni;
 	}
 
-	public Map<String, Amministratore> getElencoAmministratori() {
-		return elencoAmministratori;
+	public Map<String, Utente> getElencoUtenti() {
+		return elencoUtenti;
 	}
-	public Map<String, Cliente> getElencoClienti() {
-		return elencoClienti;
-	}
-
 
 	public void loadItinerari() {
 		List<Citta> p = new ArrayList<Citta>();
@@ -274,27 +262,27 @@ public class PickYourLine {
 	}
 
 	public void loadControllori() {
-		this.elencoControllori.put("f5b3", new Controllore("f5b3"));
-		this.elencoControllori.put("n7j5", new Controllore("n7j5"));
-		this.elencoControllori.put("h1ig", new Controllore("h1ig"));
-		this.elencoControllori.put("ba56", new Controllore("ba56"));
-		this.elencoControllori.put("zy31", new Controllore("zy31"));
+		this.elencoUtenti.put("f5b3", new Controllore("f5b3"));
+		this.elencoUtenti.put("n7j5", new Controllore("n7j5"));
+		this.elencoUtenti.put("h1ig", new Controllore("h1ig"));
+		this.elencoUtenti.put("ba56", new Controllore("ba56"));
+		this.elencoUtenti.put("zy31", new Controllore("zy31"));
 	}
 
 	public void loadAmministratori() {
-		this.elencoAmministratori.put("a7b7", new Amministratore("a7b7"));
-		this.elencoAmministratori.put("a34j", new Amministratore("a34j"));
-		this.elencoAmministratori.put("a35j", new Amministratore("a35j"));
-		this.elencoAmministratori.put("a36j", new Amministratore("a36j"));
-		this.elencoAmministratori.put("a37j", new Amministratore("a37j"));
+		this.elencoUtenti.put("a7b7", new Amministratore("a7b7"));
+		this.elencoUtenti.put("a34j", new Amministratore("a34j"));
+		this.elencoUtenti.put("a35j", new Amministratore("a35j"));
+		this.elencoUtenti.put("a36j", new Amministratore("a36j"));
+		this.elencoUtenti.put("a37j", new Amministratore("a37j"));
 	}
 
 	public void laodClienti(){
-		this.elencoClienti.put("c74i", new Cliente("c74i", "Franco", "Tredita"));
-		this.elencoClienti.put("c2312", new Cliente("c2312", "Franco", "Bianchi"));
-		this.elencoClienti.put("c34rf", new Cliente("c34rf", "Giorgio", "Bianchi"));
-		this.elencoClienti.put("21dd", new Cliente("21dd", "Franco", "Rossi"));
-		this.elencoClienti.put("asda", new Cliente("asda", "Franco", "Marroni"));
+		this.elencoUtenti.put("c74i", new Cliente("c74i", "Franco", "Tredita"));
+		this.elencoUtenti.put("c2312", new Cliente("c2312", "Franco", "Bianchi"));
+		this.elencoUtenti.put("c34rf", new Cliente("c34rf", "Giorgio", "Bianchi"));
+		this.elencoUtenti.put("21dd", new Cliente("21dd", "Franco", "Rossi"));
+		this.elencoUtenti.put("asda", new Cliente("asda", "Franco", "Marroni"));
 	}
 
 	public void loadAutomezzi() {
@@ -303,7 +291,8 @@ public class PickYourLine {
 		b1.put("ypc8jf", new Biglietto("ypc8jf", elencoCitta.get(1), elencoCitta.get(4)));
 		
 		Automezzo a = new Automezzo("H23", 25, this.getElencoItinerari().get("Catania-Randazzo"), b1);
-		pickYourLine.getElencoControllori().get("f5b3").setAutomezzoSupervisionato(a);
+		Controllore co = (Controllore) pickYourLine.getElencoUtenti().get("f5b3");
+		co.setAutomezzoSupervisionato(a);
 		this.elencoAutomezzi.put("H23", a);
 		
 		this.elencoAutomezzi.put("B51", new Automezzo("B51", 20));
@@ -446,12 +435,9 @@ public class PickYourLine {
 	
 	public Map<String, Automezzo> visualizzaAutomezziInTransito(){
 		Map<String, Automezzo> elencoAutomezziInTransito = new HashMap<String, Automezzo>();
-		Automezzo a;
 		
-		for (Controllore co : this.elencoControllori.values()) {
-			a = co.getAutomezzoSupervisionato();
-			
-			if(a != null) {
+		for (Automezzo a : this.elencoAutomezzi.values()) {
+			if(a.getStato() instanceof InTransito) {
 				elencoAutomezziInTransito.put(a.getCodice(), a);
 				System.out.println(a);
 			}
@@ -486,7 +472,7 @@ public class PickYourLine {
 	}
 
 	public void invioSegnalazione(Segnalazione segnalazione) {
-		this.elencoSegnalazioni.put(segnalazione.getCodice(),segnalazione);
+		this.elencoSegnalazioni.put(segnalazione.getCodice(), segnalazione);
 	}
 
 	public void visualizzaElencoSegnalazioni() throws Exception {
@@ -498,7 +484,7 @@ public class PickYourLine {
 		
 		for (Map.Entry<String, Segnalazione> entry : elencoSegnalazioni.entrySet()) {
 			Segnalazione s = entry.getValue();
-			System.out.println(s);;
+			System.out.println(s);
 		}
 	}
 
@@ -740,7 +726,7 @@ public class PickYourLine {
 		}
 
 		this.elencoAutomezzi.forEach((k,a) -> {
-			if (a.getStato() instanceof NonInTransito){
+			if (a.getStato() instanceof NonInTransito && a.getItinerarioAssegnato() != null){
 				automezziNonInTransito.put(a.getCodice(),a);
 			}
 		});
@@ -762,9 +748,6 @@ public class PickYourLine {
 		if (automezzo == null) {
 			throw new Exception("Codice automezzo non valido");
 		}
-		if (automezzo.getItinerarioAssegnato() == null) {
-			throw new Exception("Non puoi supervisionare un automezzo senza un itinerario assegnato.");
-		}
 
 		controllore.setAutomezzoSupervisionato(automezzo);
 		automezzo.inSupervisione();
@@ -783,27 +766,36 @@ public class PickYourLine {
 	}
 
 	public void visualizzaElencoControllori() {
-		this.elencoControllori.forEach((k, a) -> System.out.println(a));
+		this.elencoUtenti.forEach((k, u) -> {
+			if(u instanceof Controllore) {
+				System.out.println(u);
+			}
+		});
 	}
 
 	public void inserisciControllore(String codice) throws Exception {
-
-		if(this.elencoControllori.containsKey(codice)){
+		if(this.elencoUtenti.containsKey(codice)){
 			throw new Exception("Controllore già esistente.");
 		}
+		
 		Controllore c = new Controllore(codice);
-		this.elencoControllori.put(codice, c);
+		this.elencoUtenti.put(codice, c);
 	}
 
 	public void eliminaControllore(String codice) throws Exception {
-		Controllore co = this.elencoControllori.get(codice);
-		if (co == null){
+		Utente u = this.elencoUtenti.get(codice);
+		
+		if (u == null || !(u instanceof Controllore)){
 			throw new Exception("Controllore non esistente.");
 		}
+		
+		Controllore co = (Controllore) u;
 
 		if (co.getAutomezzoSupervisionato() != null){
 			throw new Exception("Il controllore sta supervisionando un automezzo.");
 		}
-			this.elencoControllori.remove(codice);
-		}
+		
+		this.elencoUtenti.remove(codice);
+	}
+
 }

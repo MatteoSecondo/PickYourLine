@@ -1048,7 +1048,7 @@ public class Main {
 		String password;
 
 		if (!pickYourLine.verificaAutenticazione()) {
-			System.out.println("C'è già un utente loggato. Effettua il logout prima di tentare il login.");
+			System.out.println("Hai già effettuato l'accesso. Effettua il logout prima di tentare il login.");
 			return;
 		}
 

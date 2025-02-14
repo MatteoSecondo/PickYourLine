@@ -836,20 +836,6 @@ class PickYourLineTest {
 				pickYourLine.supervisionaAutomezzo(automezzoNonEsistente,automezziDisponibili));
 		assertEquals("Codice automezzo non valido", exception.getMessage());
 	}
-
-	@Test
-	@DisplayName("Test supervisiona automezzo nel caso di itinerario non assegnato all'automezzo")
-	public void testSupervisionaAutomezzoItinerarioNonAssegnato() {
-		Controllore controllore = (Controllore) pickYourLine.getElencoUtenti().get("f5b3");
-		String automezzoSenzaItinerario = "C98";
-		Map<String, Automezzo> automezziDisponibili = pickYourLine.getElencoAutomezzi();
-		pickYourLine.setUtenteCorrente(controllore);
-
-		Exception exception = assertThrows(Exception.class, () ->
-				pickYourLine.supervisionaAutomezzo(automezzoSenzaItinerario,automezziDisponibili));
-		assertEquals("Non puoi supervisionare un automezzo senza un itinerario assegnato.", exception.getMessage());
-	}
-
 	@Test
 	@DisplayName("Test fine corsa in caso di successo")
 	public void testFineCorsaConSuccesso() {

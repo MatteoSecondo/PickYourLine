@@ -45,6 +45,7 @@ public class Main {
 					+ "13- Fine Corsa\n"
 					+ "14- Login Utente\n"
 					+ "15- Logout Utente\n"
+					+ "16- Registrazione Cliente\n"
 					);
 			
 
@@ -151,6 +152,9 @@ public class Main {
 					break;
 				case 15:
 					logoutUtente();
+					break;
+				case 16:
+					registrazioneCliente(sc);
 					break;
 			}
 
@@ -1124,5 +1128,36 @@ public class Main {
 		} catch (Exception e) {
 			System.out.println("\n" + e.getMessage());
 		}
+	}
+
+	public static void registrazioneCliente(Scanner sc) {
+		PickYourLine pickYourLine = PickYourLine.getInstance();
+
+		if (pickYourLine.verificaAutenticazione()) {
+			System.out.println("Non puoi effettuare la registrazione, bisogna effettuare logout");
+			return;
+		}
+
+		sc.nextLine();
+
+		System.out.println("Inserisci il codice utente (min:2  max:6):");
+		String codice = sc.nextLine();
+		System.out.println("Inserisci la password (min:8  max:16  almeno una maiuscola, una minuscola, un numero e un carattere speciale):");
+		String password = sc.nextLine();
+		System.out.println("Inserisci il nome:");
+		String nome = sc.nextLine();
+		System.out.println("Inserisci il cognome:");
+		String cognome = sc.nextLine();
+
+		try{
+			pickYourLine.registrazioneCliente(codice, password, nome, cognome);
+			System.out.println("Registrazione avvenuta con successo.");
+		}
+		catch (Exception e){
+			System.out.println("\n" + e.getMessage());
+		}
+
+
+
 	}
 }

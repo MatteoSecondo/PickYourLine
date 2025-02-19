@@ -996,4 +996,67 @@ class PickYourLineTest {
 		assertEquals("Non puoi effettuare il logout se stai supervisionando un automezzo.", exception.getMessage());
 	}
 
+	@Test
+	@DisplayName("Test per registrazione cliente con successo")
+	public void testRegistrazioneCliente_Successo() throws Exception {
+		String codice = "abc1";
+		String password = "ProvaPassw1!";
+		String nome = "Mario";
+		String cognome = "Rossi";
+
+		pickYourLine.setUtenteCorrente(null);
+		pickYourLine.registrazioneCliente(codice, password, nome, cognome);
+		assertTrue(pickYourLine.getElencoUtenti().containsKey(codice));
+	}
+
+	@Test
+	@DisplayName("Test di registrazione per un utente già registrato")
+	public void testRegistrazioneCliente_ClienteAutenticato() throws Exception {
+
+		pickYourLine.setUtenteCorrente(pickYourLine.getElencoUtenti().get("a7b7"));
+		String codice = "c74i";
+		String password = "$2a$12$5JuKw/dujA2gj98AuxSkoeURrP3n6E2IOOIKXin8z8HbioXJNrGa2";
+		String nome = "Franco";
+		String cognome = "Tredita";
+
+		Exception exception = assertThrows(Exception.class, () -> {
+			pickYourLine.registrazioneCliente(codice, password, nome, cognome);
+		}, "Non puoi effettuare la registrazione, bisogna effettuare logout");
+
+		assertEquals("Non puoi effettuare la registrazione, bisogna effettuare logout", exception.getMessage());
+	}
+
+	@Test
+	@DisplayName("Test di registrazione per un utente già registrato")
+	public void testRegistrazioneCliente_GiaRegistrato() throws Exception {
+		pickYourLine.setUtenteCorrente(null);
+		String codice = "c74i";
+		String password = "$2a$12$5JuKw/dujA2gj98AuxSkoeURrP3n6E2IOOIKXin8z8HbioXJNrGa2";
+		String nome = "Franco";
+		String cognome = "Tredita";
+
+		Exception exception = assertThrows(Exception.class, () -> {
+			pickYourLine.registrazioneCliente(codice, password, nome, cognome);
+		}, "Il cliente è gia registrato");
+
+		assertEquals("Il cliente è gia registrato", exception.getMessage());
+	}
+
+	@Test
+	@DisplayName("Test registrazione cliente con password non conforme ai criteri")
+	public void testRegistrazioneCliente_PasswordNonValida() {
+		pickYourLine.setUtenteCorrente(null);
+		String codice = "c74iP";
+		String password = "password"; // Password senza maiuscole o caratteri speciali
+		String nome = "Franco";
+		String cognome = "Tredita";
+
+
+		Exception exception = assertThrows(Exception.class, () -> {
+			pickYourLine.registrazioneCliente(codice, password, nome, cognome);
+		}, "Codice o Password inseriti non validi");
+
+		assertEquals("Codice o Password inseriti non validi", exception.getMessage());
+	}
+
 }

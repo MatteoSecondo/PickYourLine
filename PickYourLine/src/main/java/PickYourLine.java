@@ -850,4 +850,49 @@ public class PickYourLine {
 		
 		setUtenteCorrente(null);
 	}
+
+	private boolean verificaCredenziali(String codice, String password){
+
+		if (codice.length() < 2 || codice.length() > 6) {
+			return false;
+		}
+
+		if (password.length() < 8 || password.length() > 16) {
+			return false;
+		}
+
+		boolean hasUpperCase = password.matches(".*[A-Z].*");
+
+		boolean hasLowerCase = password.matches(".*[a-z].*");
+
+		boolean hasSpecialChar = password.matches(".*[!?£$@#*%].*");
+
+		boolean hasNumber = password.matches(".*[0-9].*");
+
+		return hasLowerCase && hasUpperCase && hasSpecialChar && hasNumber;
+	}
+
+	public void registrazioneCliente(String codice, String password, String nome, String cognome) throws Exception {
+
+		boolean esistente = elencoUtenti.containsKey(codice);
+		boolean autenticato = verificaAutenticazione();
+
+		if (autenticato){
+			throw new Exception("Non puoi effettuare la registrazione, bisogna effettuare logout");
+		}
+
+		if (esistente) {
+			throw new Exception("Il cliente è gia registrato");
+		}
+
+		boolean bool = verificaCredenziali(codice, password);
+		if (!bool) {
+			throw new Exception("Codice o Password inseriti non validi");
+		}
+
+		String passwordHash = BCrypt.withDefaults().hashToString(12, password.toCharArray());
+		Utente u = new Cliente(codice, passwordHash, nome, cognome);
+		elencoUtenti.put(codice, u);
+		setUtenteCorrente(u);
+	}
 }

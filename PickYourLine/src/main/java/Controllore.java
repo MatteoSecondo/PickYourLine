@@ -5,8 +5,8 @@ import java.util.List;
 public class Controllore extends Utente {
     private Automezzo automezzoSupervisionato;
 
-    public Controllore(String codice) {
-        super(codice);
+    public Controllore(String codice,String password) {
+        super(codice,password);
     }
 
     public Automezzo getAutomezzoSupervisionato() {

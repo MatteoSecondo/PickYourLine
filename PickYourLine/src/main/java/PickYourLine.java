@@ -1,3 +1,4 @@
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -262,27 +263,30 @@ public class PickYourLine {
 	}
 
 	public void loadControllori() {
-		this.elencoUtenti.put("f5b3", new Controllore("f5b3"));
-		this.elencoUtenti.put("n7j5", new Controllore("n7j5"));
-		this.elencoUtenti.put("h1ig", new Controllore("h1ig"));
-		this.elencoUtenti.put("ba56", new Controllore("ba56"));
-		this.elencoUtenti.put("zy31", new Controllore("zy31"));
+		String password = "$2a$12$mM.vND0a6ncereEv6uzo0O3dPtLjRen8IIbi85EsJ1ZY0M8lrKHAy"; // bello
+		this.elencoUtenti.put("f5b3", new Controllore("f5b3", password));
+		this.elencoUtenti.put("n7j5", new Controllore("n7j5", password));
+		this.elencoUtenti.put("h1ig", new Controllore("h1ig", password));
+		this.elencoUtenti.put("ba56", new Controllore("ba56", password));
+		this.elencoUtenti.put("zy31", new Controllore("zy31", password));
 	}
 
 	public void loadAmministratori() {
-		this.elencoUtenti.put("a7b7", new Amministratore("a7b7"));
-		this.elencoUtenti.put("a34j", new Amministratore("a34j"));
-		this.elencoUtenti.put("a35j", new Amministratore("a35j"));
-		this.elencoUtenti.put("a36j", new Amministratore("a36j"));
-		this.elencoUtenti.put("a37j", new Amministratore("a37j"));
+		String password = "$2a$12$rbKK0Fduv2qtmzkt1TJkQeM.mcyPHrdU3WAvvRiY3w/gEGPLkRF0q"; // ciao
+		this.elencoUtenti.put("a7b7", new Amministratore("a7b7",password));
+		this.elencoUtenti.put("a34j", new Amministratore("a34j",password));
+		this.elencoUtenti.put("a35j", new Amministratore("a35j",password));
+		this.elencoUtenti.put("a36j", new Amministratore("a36j",password));
+		this.elencoUtenti.put("a37j", new Amministratore("a37j",password));
 	}
 
-	public void laodClienti(){
-		this.elencoUtenti.put("c74i", new Cliente("c74i", "Franco", "Tredita"));
-		this.elencoUtenti.put("c2312", new Cliente("c2312", "Franco", "Bianchi"));
-		this.elencoUtenti.put("c34rf", new Cliente("c34rf", "Giorgio", "Bianchi"));
-		this.elencoUtenti.put("21dd", new Cliente("21dd", "Franco", "Rossi"));
-		this.elencoUtenti.put("asda", new Cliente("asda", "Franco", "Marroni"));
+	public void loadClienti(){
+		String password = "$2a$12$5JuKw/dujA2gj98AuxSkoeURrP3n6E2IOOIKXin8z8HbioXJNrGa2"; // franco
+		this.elencoUtenti.put("c74i", new Cliente("c74i", password ,"Franco", "Tredita"));
+		this.elencoUtenti.put("c2312", new Cliente("c2312", password, "Franco", "Bianchi"));
+		this.elencoUtenti.put("c34rf", new Cliente("c34rf", password, "Giorgio", "Bianchi"));
+		this.elencoUtenti.put("21dd", new Cliente("21dd", password, "Franco", "Rossi"));
+		this.elencoUtenti.put("asda", new Cliente("asda", password, "Franco", "Marroni"));
 	}
 
 	public void loadAutomezzi() {
@@ -302,14 +306,15 @@ public class PickYourLine {
 	}
 
 	public void loadElencoSegnalazioni(){
-		this.elencoSegnalazioni.put("s001", new Segnalazione("s001","Critica Personale", "Insulto verbale", LocalDateTime.of(2025, 1, 10, 10, 50), new Cliente("0001","Tizio", "Bello")));
-		this.elencoSegnalazioni.put("s002", new Segnalazione("s002","Critica Servizio", "Servizio in ritardo nella mattina", LocalDateTime.of(2025, 1, 10, 11, 00), new Cliente("0002","Mara","Meo")));
-		this.elencoSegnalazioni.put("s003", new Segnalazione("s003","Critica Automezzo", "Sedili senza cintura di sicurezza", LocalDateTime.of(2025, 1, 12, 16, 30), new Cliente("0003","Ponzio","Pelato")));
+		String password = "$2a$12$KKC5pJp/JoonpfWMV56wGOv1YhOBRqQRoEJ6GD/4BRLE2ZdlyNpza";
+		this.elencoSegnalazioni.put("s001", new Segnalazione("s001","Critica Personale", "Insulto verbale", LocalDateTime.of(2025, 1, 10, 10, 50), new Cliente("0001",password, "Tizio", "Bello")));
+		this.elencoSegnalazioni.put("s002", new Segnalazione("s002","Critica Servizio", "Servizio in ritardo nella mattina", LocalDateTime.of(2025, 1, 10, 11, 00), new Cliente("0001",password, "Tizio", "Bello")));
+		this.elencoSegnalazioni.put("s003", new Segnalazione("s003","Critica Automezzo", "Sedili senza cintura di sicurezza", LocalDateTime.of(2025, 1, 12, 16, 30), new Cliente("0001",password, "Tizio", "Bello")));
 	}
 	
 	public void loadAvvisi() {
-		this.elencoAvvisi.put("a001", new Avviso("a001","Possibili ritardi", "Possibili ritardi nella giornata odierna", LocalDateTime.of(2025, 1, 10, 10, 50), new Amministratore("0001")));
-		this.elencoAvvisi.put("a002", new Avviso("a002","Incidente", "Grave incidente blocca alcune strade", LocalDateTime.of(2025, 1, 25, 9, 10), new Amministratore("0002")));
+		this.elencoAvvisi.put("a001", new Avviso("a001","Possibili ritardi", "Possibili ritardi nella giornata odierna", LocalDateTime.of(2025, 1, 10, 10, 50), (Amministratore) this.getElencoUtenti().get("a7b7")));
+		this.elencoAvvisi.put("a002", new Avviso("a002","Incidente", "Grave incidente blocca alcune strade", LocalDateTime.of(2025, 1, 25, 9, 10), (Amministratore) this.getElencoUtenti().get("a34j")));
 	}
 
 	public void visualizzaElencoCittaPartenza() {
@@ -336,9 +341,7 @@ public class PickYourLine {
 	public Map<String, Itinerario> inserisciCittaDestinazione(int codiceCittaPartenza, int codiceCittaDestinazione, Map<Integer, Citta> elencoDestinazioniDisponibili) throws Exception{
 		Citta cittaDestinazione = elencoDestinazioniDisponibili.get(codiceCittaDestinazione);
 		
-		if(this.getElencoCitta().get(codiceCittaPartenza).equals(this.getElencoCitta().get(codiceCittaDestinazione))) {
-			throw new Exception("La città di partenza e quella di destinazione sono la stessa città.");
-		} else if(cittaDestinazione == null) {
+		if(cittaDestinazione == null) {
 			throw new Exception("Codice città non non idoneo alla ricerca effettuata.");
 		}
 		
@@ -709,12 +712,22 @@ public class PickYourLine {
 		
 		av.visualizzaDettaglio();
 	}
+	
 	private boolean verificaSupervisione() throws Exception {
-		Controllore controllore = (Controllore) pickYourLine.getUtenteCorrente();
+		Utente u = pickYourLine.getUtenteCorrente();
+	
+		if(!(u instanceof Controllore)) {
+			return true;
+		}
+		
+		Controllore controllore = (Controllore) u;
+		
 		Automezzo automezzoSupervisionato = controllore.getAutomezzoSupervisionato();
+		
 		if (automezzoSupervisionato != null) {
 			return false;
 		}
+		
 		return true;
 	}
 
@@ -777,25 +790,109 @@ public class PickYourLine {
 		if(this.elencoUtenti.containsKey(codice)){
 			throw new Exception("Controllore già esistente.");
 		}
-		
-		Controllore c = new Controllore(codice);
-		this.elencoUtenti.put(codice, c);
+
+		Controllore c = new Controllore(codice,"Bellissimo");
+        this.elencoUtenti.put(codice, c);
 	}
 
 	public void eliminaControllore(String codice) throws Exception {
 		Utente u = this.elencoUtenti.get(codice);
-		
+
 		if (u == null || !(u instanceof Controllore)){
 			throw new Exception("Controllore non esistente.");
 		}
-		
+
 		Controllore co = (Controllore) u;
 
 		if (co.getAutomezzoSupervisionato() != null){
 			throw new Exception("Il controllore sta supervisionando un automezzo.");
 		}
-		
+
 		this.elencoUtenti.remove(codice);
 	}
 
+	public boolean verificaAutenticazione() {
+		return getUtenteCorrente() != null;
+	}
+
+	public void login(String codice, String password) throws Exception {
+		
+		if(verificaAutenticazione()) {
+			throw new Exception("Hai già effettuato l'accesso. Effettua il logout prima di tentare il login.");
+		}
+		
+		Utente utente = this.elencoUtenti.get(codice);
+		
+		if (utente == null) {
+			throw new Exception("Codice utente non esistente");
+		}
+
+		String passwordUtente = utente.getPassword();
+		BCrypt.Result result = BCrypt.verifyer().verify(password.toCharArray(), passwordUtente);
+
+		if (!result.verified) {
+			throw new Exception("Password inserita non corretta");
+		}
+		
+		setUtenteCorrente(utente);
+		System.out.println("L'Utente: " + utente.getCodice() + " ha eseguito correttamente l'accesso");
+	}
+
+	public void logout() throws Exception {
+		
+		if(!verificaAutenticazione()) {
+			throw new Exception("Non hai effettuato l'accesso. Effettua il login prima di tentare il logout.");
+		}
+		
+		if(!verificaSupervisione()) {
+			throw new Exception("Non puoi effettuare il logout se stai supervisionando un automezzo.");
+		}
+		
+		setUtenteCorrente(null);
+	}
+
+	private boolean verificaCredenziali(String codice, String password){
+
+		if (codice.length() < 2 || codice.length() > 6) {
+			return false;
+		}
+
+		if (password.length() < 8 || password.length() > 16) {
+			return false;
+		}
+
+		boolean hasUpperCase = password.matches(".*[A-Z].*");
+
+		boolean hasLowerCase = password.matches(".*[a-z].*");
+
+		boolean hasSpecialChar = password.matches(".*[!?£$@#*%].*");
+
+		boolean hasNumber = password.matches(".*[0-9].*");
+
+		return hasLowerCase && hasUpperCase && hasSpecialChar && hasNumber;
+	}
+
+	public void registrazioneCliente(String codice, String password, String nome, String cognome) throws Exception {
+
+		boolean esistente = elencoUtenti.containsKey(codice);
+		boolean autenticato = verificaAutenticazione();
+
+		if (autenticato){
+			throw new Exception("Non puoi effettuare la registrazione, bisogna effettuare logout");
+		}
+
+		if (esistente) {
+			throw new Exception("Il cliente è gia registrato");
+		}
+
+		boolean bool = verificaCredenziali(codice, password);
+		if (!bool) {
+			throw new Exception("Codice o Password inseriti non validi");
+		}
+
+		String passwordHash = BCrypt.withDefaults().hashToString(12, password.toCharArray());
+		Utente u = new Cliente(codice, passwordHash, nome, cognome);
+		elencoUtenti.put(codice, u);
+		setUtenteCorrente(u);
+	}
 }

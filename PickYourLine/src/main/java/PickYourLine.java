@@ -263,7 +263,7 @@ public class PickYourLine {
 	}
 
 	public void loadControllori() {
-		String password = "$2a$12$mM.vND0a6ncereEv6uzo0O3dPtLjRen8IIbi85EsJ1ZY0M8lrKHAy"; // bello
+		String password = "$2a$12$SRI80WH/ocyRD17lq.cYTeu2pH2VsMPelGqw2vjEi/VmsuoT4qEGu"; // Cioccolato1!
 		this.elencoUtenti.put("f5b3", new Controllore("f5b3", password));
 		this.elencoUtenti.put("n7j5", new Controllore("n7j5", password));
 		this.elencoUtenti.put("h1ig", new Controllore("h1ig", password));
@@ -290,19 +290,31 @@ public class PickYourLine {
 	}
 
 	public void loadAutomezzi() {
-		Map<String, Biglietto> b1 = new HashMap<String, Biglietto>();
-		b1.put("g7rbc8", new Biglietto("g7rbc8", elencoCitta.get(1), elencoCitta.get(3)));
-		b1.put("ypc8jf", new Biglietto("ypc8jf", elencoCitta.get(1), elencoCitta.get(4)));
-		
-		Automezzo a = new Automezzo("H23", 25, this.getElencoItinerari().get("Catania-Randazzo"), b1);
+		Map<String, Biglietto> elencoBigliettiA1 = new HashMap<String, Biglietto>();
+		elencoBigliettiA1.put("g7rbc8", new Biglietto("g7rbc8", elencoCitta.get(1), elencoCitta.get(3)));
+		elencoBigliettiA1.put("ypc8jf", new Biglietto("ypc8jf", elencoCitta.get(1), elencoCitta.get(4)));
+
+		Automezzo a1 = new Automezzo("H23", 25, this.getElencoItinerari().get("Catania-Randazzo"), elencoBigliettiA1);
 		Controllore co = (Controllore) pickYourLine.getElencoUtenti().get("f5b3");
-		co.setAutomezzoSupervisionato(a);
-		this.elencoAutomezzi.put("H23", a);
-		
-		this.elencoAutomezzi.put("B51", new Automezzo("B51", 20));
-		this.elencoAutomezzi.put("Z22", new Automezzo("Z22", 25));
-		this.elencoAutomezzi.put("Y77", new Automezzo("Y77", 30));
-		this.elencoAutomezzi.put("C98", new Automezzo("C98", 25));
+		co.setAutomezzoSupervisionato(a1);
+		this.elencoAutomezzi.put("H23", a1);
+
+		Automezzo a2 = new Automezzo("B51", 20);
+		a2.setItinerarioAssegnato(this.getElencoItinerari().get("Catania-Caltagirone"));
+		this.elencoAutomezzi.put("B51", a2);
+
+		Automezzo a3 = new Automezzo("Z22", 22);
+		a3.setItinerarioAssegnato( this.getElencoItinerari().get("Catania-Adrano Rapido"));
+		this.elencoAutomezzi.put("Z22", a3);
+
+		Automezzo a4 = new Automezzo("Y77", 30);
+		a4.setItinerarioAssegnato(this.getElencoItinerari().get("Catania-Paterno"));
+		this.elencoAutomezzi.put("Y77", a4);
+
+		Automezzo a5 = new Automezzo("C98", 25);
+		a5.setItinerarioAssegnato(this.getElencoItinerari().get("Catania-Randazzo"));
+		this.elencoAutomezzi.put("C98", a5);
+
 	}
 
 	public void loadElencoSegnalazioni(){
@@ -594,7 +606,11 @@ public class PickYourLine {
 	}
 	
 	public void inserisciAutomezzo(String codice, int posti, String codiceItinerario) throws Exception {
-		
+
+		if (posti == 0) {
+			throw new Exception("Inserisci un numero di posti superiore a 0");
+		}
+
 		if(this.elencoAutomezzi.containsKey(codice)) {
 			throw new Exception("Codice automezzo già esistente.");
 		}
@@ -793,12 +809,18 @@ public class PickYourLine {
 		});
 	}
 
-	public void inserisciControllore(String codice) throws Exception {
+	public void inserisciControllore(String codice, String password) throws Exception {
 		if(this.elencoUtenti.containsKey(codice)){
 			throw new Exception("Controllore già esistente.");
 		}
 
-		Controllore c = new Controllore(codice,"Bellissimo");
+		if (!verificaCredenziali(codice,password))
+		{
+			throw new Exception("Credeziali Controllore inserite non valide");
+		}
+
+		String hashedPassword = BCrypt.withDefaults().hashToString(12, password.toCharArray());
+		Controllore c = new Controllore(codice,hashedPassword);
         this.elencoUtenti.put(codice, c);
 	}
 

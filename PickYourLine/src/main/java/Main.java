@@ -146,6 +146,7 @@ public class Main {
 					}
 					
 					fineCorsa();
+					ultimaCitta = false;
 					break;
 				case 14:
 					loginUtente(sc);
@@ -691,6 +692,7 @@ public class Main {
 				if(!success) {
 					System.out.println("\nCodice automezzo già esistente.");
 					codice.setLength(0);
+					continue;
 				}
 			}
 			
@@ -769,7 +771,12 @@ public class Main {
 				sc = new Scanner(System.in);
 
 				try {
-					posti.set(sc.nextInt());
+					int postiInserimento = sc.nextInt();
+					if (postiInserimento == 0) {
+						System.out.println("Inserisci un valore numerico superiore a 0");
+						continue;
+					}
+					posti.set(postiInserimento);
 					success = true;
 				} catch (InputMismatchException e) {
 					System.out.println("Inserisci un valore numerico.");
@@ -1043,6 +1050,7 @@ public class Main {
 		PickYourLine pickYourLine = PickYourLine.getInstance();
 
 		String codice;
+		String password;
 		int operazioneScelta = 0;
 		boolean successo = false;
 
@@ -1068,8 +1076,10 @@ public class Main {
 			case 2:
 				System.out.println("Inserisci il codice del controllore:");
 				codice = sc.nextLine();
+				System.out.println("Inserisci la password del controllore");
+				password = sc.nextLine();
 				try {
-					pickYourLine.inserisciControllore(codice);
+					pickYourLine.inserisciControllore(codice,password);
 					System.out.println("Controllore inserito correttamente.");
 				} catch (Exception e) {
 					System.out.println("\n" + e.getMessage());

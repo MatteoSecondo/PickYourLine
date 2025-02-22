@@ -866,15 +866,24 @@ class PickYourLineTest {
 	@Test
 	@DisplayName("Test inserimento controllore con successo")
 	public void testInserisciControllore_successo() throws Exception {
-		pickYourLine.inserisciControllore("aaaa");
+		pickYourLine.inserisciControllore("aaaa","Patatino1!");
 		assertTrue(pickYourLine.getElencoUtenti().containsKey("aaaa"));
 	}
-
+	@Test
+	@DisplayName("Test inserimento controllore con crediali non conformi ai criteri di validità")
+	public void testInserisciControllore_CredenzialiNonValide() throws Exception{
+		String codice = "Ciarlatano";
+		String password = "Aldino10!";
+		Exception exception = assertThrows(Exception.class, () -> {
+			pickYourLine.inserisciControllore(codice,password);
+		});
+		assertEquals("Credeziali Controllore inserite non valide", exception.getMessage());
+	}
 	@Test
 	@DisplayName("Test inserimento controllore con duplicato")
 	public void testInserisciControllore_duplicato() throws Exception {
 		Exception exception = assertThrows(Exception.class, () -> {
-			pickYourLine.inserisciControllore("f5b3");
+			pickYourLine.inserisciControllore("f5b3","Cioccolato1!");
 		});
 		assertEquals("Controllore già esistente.", exception.getMessage());
 	}

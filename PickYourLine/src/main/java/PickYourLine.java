@@ -739,7 +739,7 @@ public class PickYourLine {
 	}
 
 	public Map<String, Automezzo> visualizzaElencoAutomezziNonInTransito() throws Exception {
-		Map<String, Automezzo> automezziNonInTransito = new HashMap<String, Automezzo>();
+		Map<String, Automezzo> automezziDisponibili = new HashMap<String, Automezzo>();
 
 		if (!verificaSupervisione()) {
 			throw new Exception("Stai già supervisionando un automezzo");
@@ -747,18 +747,18 @@ public class PickYourLine {
 
 		this.elencoAutomezzi.forEach((k,a) -> {
 			if (a.getStato() instanceof NonInTransito && a.getItinerarioAssegnato() != null){
-				automezziNonInTransito.put(a.getCodice(),a);
+				automezziDisponibili.put(a.getCodice(),a);
 			}
 		});
 
-		if (automezziNonInTransito.isEmpty()) {
+		if (automezziDisponibili.isEmpty()) {
 			throw new Exception("Nessun automezzo disponibile per la supervisione.");
 		}
 
 		System.out.println("Automezzi disponibili:");
-		automezziNonInTransito.forEach((codice, automezzo) -> System.out.println("- " + codice + " posti: " + automezzo.getPosti()));
+		automezziDisponibili.forEach((codice, automezzo) -> System.out.println("- " + codice + " posti: " + automezzo.getPosti()));
 
-		return automezziNonInTransito;
+		return automezziDisponibili;
 	}
 
 	public void supervisionaAutomezzo(String codiceAutomezzo,Map<String, Automezzo> automezziDisponibili) throws Exception {

@@ -69,7 +69,7 @@ class AutomezzoTest {
 		elencoBiglietti.put("2", new Biglietto("2", pickYourLine.getElencoCitta().get(1), pickYourLine.getElencoCitta().get(49)));
 		
 		Automezzo a = new Automezzo("PROVA", 20, i, elencoBiglietti);
-		a.setPosizioneAttuale(pickYourLine.getElencoCitta().get(49).getElencoFermate().getFirst());
+		a.setPosizioneAttuale(pickYourLine.getElencoCitta().get(49).getElencoFermate().getLast());
 		
 		assertTrue(a.consentiTimbratura());	
 	}

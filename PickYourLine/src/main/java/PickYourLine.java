@@ -339,16 +339,18 @@ public class PickYourLine {
 	}
 
 	public Map<String, Itinerario> inserisciCittaDestinazione(int codiceCittaPartenza, int codiceCittaDestinazione, Map<Integer, Citta> elencoDestinazioniDisponibili) throws Exception{
+		
+		Citta cittaPartenza = this.getElencoCitta().get(codiceCittaPartenza);
 		Citta cittaDestinazione = elencoDestinazioniDisponibili.get(codiceCittaDestinazione);
 		
-		if(cittaDestinazione == null) {
+		if(cittaPartenza == null || cittaDestinazione == null) {
 			throw new Exception("Codice città non non idoneo alla ricerca effettuata.");
 		}
 		
 		Map<String, Itinerario> itinerariDaVisualizare = new HashMap<String, Itinerario>();
 		
 		for (Itinerario itinerario : this.elencoItinerari.values()) {
-			Itinerario i = itinerario.getSeDisponibile(this.getElencoCitta().get(codiceCittaPartenza), cittaDestinazione);
+			Itinerario i = itinerario.getSeDisponibile(cittaPartenza, cittaDestinazione);
 			
 			if(i != null) {
 				itinerariDaVisualizare.put(i.getCodice(), i);
@@ -399,7 +401,7 @@ public class PickYourLine {
 			throw new Exception("Città di partenza e destinazione non possono essere uguali.");
 		}
 		
-		Itinerario i = co.getAutomezzoSupervisionato().getItinerarioAssegnato().getSeDisponibile(this.getElencoCitta().get(codiceCittaPartenza), cittaDestinazione);
+		Itinerario i = co.getAutomezzoSupervisionato().getItinerarioAssegnato().getSeDisponibile(cittaPartenza, cittaDestinazione);
 		
 		if(i == null) {
 			throw new Exception("Città di destinazione non presente nel percorso.");
@@ -610,19 +612,19 @@ public class PickYourLine {
 	}
 	
 	public void modificaAutomezzo(String codice, int codiceStato, String codiceItinerario) throws Exception {
-		Map<String, Automezzo> automezziNonInTransito = new HashMap<String, Automezzo>();
+		Map<String, Automezzo> automezziModificabili = new HashMap<String, Automezzo>();
 		
 		this.elencoAutomezzi.forEach((k, a) -> {
 			if(a.getStato() instanceof NonInTransito || a.getStato() instanceof InManutenzione) {
-				automezziNonInTransito.put(a.getCodice(), a);
+				automezziModificabili.put(a.getCodice(), a);
 			}
 		});
 		
-		if(automezziNonInTransito.isEmpty()) {
+		if(automezziModificabili.isEmpty()) {
 			throw new Exception("Nessun automezzo modificabile.");
 		}
 		
-		Automezzo a = automezziNonInTransito.get(codice);
+		Automezzo a = automezziModificabili.get(codice);
 		
 		if(a == null) {
 			throw new Exception("Automezzo non modificabile perchè in transito o dismesso.");
@@ -642,6 +644,11 @@ public class PickYourLine {
 		
 		if(a.getStato() instanceof NonInTransito && codiceItinerario != null && !codiceItinerario.equals("0")) {
 			Itinerario i = pickYourLine.elencoItinerari.get(codiceItinerario);
+			
+			if(i == null) {
+				throw new Exception("Itinerario non esistente.");
+			}
+			
 			a.setItinerarioAssegnato(i);
 			inserisciAvviso("Cambio itinerario per l'automezzo " + a.getCodice(), "L'automezzo " + a.getCodice() + " ha subito un cambio di itinerario, da adesso percorrerà l'itinerario " + i);
 		}

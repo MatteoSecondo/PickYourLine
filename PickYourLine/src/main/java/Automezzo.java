@@ -149,6 +149,7 @@ public class Automezzo {
     	if(cittaAttuale.equals(penultimaCitta)) {
     		return true;
     	}
+    	
     	return false;
     }
     

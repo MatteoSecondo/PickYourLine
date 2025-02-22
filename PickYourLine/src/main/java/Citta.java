@@ -54,8 +54,6 @@ public class Citta {
     
     @Override
     public boolean equals(Object o) {
-        //if (this == o) return true;
-        //if (o == null || getClass() != o.getClass()) return false;
         Citta citta = (Citta) o;
         return this.codice == citta.codice && this.nome.equals(citta.nome);
     }

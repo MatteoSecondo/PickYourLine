@@ -754,7 +754,7 @@ public class Main {
 			if(!codiceItinerario.toString().equals("0")) {
 				success = pickYourLine.getElencoItinerari().containsKey(codiceItinerario.toString());
 				
-				if(operazioneScelta == 2 && !success) {
+				if(!success) {
 					System.out.println("\nCodice itinerario non esistente.");
 					codiceItinerario.setLength(0);
 				}

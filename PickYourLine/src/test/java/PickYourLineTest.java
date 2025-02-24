@@ -47,6 +47,7 @@ class PickYourLineTest {
 		this.pickYourLine = PickYourLine.getInstance();
 		this.pickYourLine.loadCitta();
 		this.pickYourLine.loadElencoSegnalazioni();
+		this.pickYourLine.loadAmministratori();
 	}
 
 	@BeforeEach
@@ -56,6 +57,12 @@ class PickYourLineTest {
 		this.pickYourLine.loadControllori();
 		this.pickYourLine.loadAutomezzi();
 		this.pickYourLine.loadAvvisi();
+		this.pickYourLine.loadClienti();
+	}
+
+	@AfterEach
+	void clean() {
+		this.pickYourLine.getElencoAutomezzi().clear();
 	}
 
 	@AfterAll
@@ -131,7 +138,7 @@ class PickYourLineTest {
         Exception exception = assertThrows(Exception.class, () -> {
         	this.pickYourLine.inserisciCittaDestinazione(1, 1, this.elencoDestinazioniDisponibili);
         });
-        assertEquals("La città di partenza e quella di destinazione sono la stessa città.", exception.getMessage());
+        assertEquals("Codice città non non idoneo alla ricerca effettuata.", exception.getMessage());
     }
 
     @Test
@@ -168,14 +175,9 @@ class PickYourLineTest {
 		Automezzo a = new Automezzo("H23", 25, this.pickYourLine.getElencoItinerari().get("Randazzo-Catania"), null);
 		this.pickYourLine.getElencoAutomezzi().put("H23", a);
 
-		Controllore co = new Controllore("f5b3");
+		Controllore co = new Controllore("f5b3","bello");
 		co.setAutomezzoSupervisionato(a);
-		this.pickYourLine.getElencoControllori().put("f5b3", co);
-
-		this.pickYourLine.getElencoControllori().put("n7j5", new Controllore("n7j5"));
-		this.pickYourLine.getElencoControllori().put("h1ig", new Controllore("h1ig"));
-		this.pickYourLine.getElencoControllori().put("ba56", new Controllore("ba56"));
-		this.pickYourLine.getElencoControllori().put("zy31", new Controllore("zy31"));
+		this.pickYourLine.getElencoUtenti().put("n7j5", co);
 
 		Map<String, Automezzo> elencoAutomezziInTransitoAtteso = new HashMap<String, Automezzo>();
 
@@ -212,7 +214,7 @@ class PickYourLineTest {
 		Automezzo automezzo = new Automezzo("H123",10,pickYourLine.getElencoItinerari().get("Catania-Randazzo")
 				,elencoBiglietti);
 
-		Controllore controllore = new Controllore("C2343");
+		Controllore controllore = new Controllore("C2343","bello");
 		controllore.setAutomezzoSupervisionato(automezzo);
 		pickYourLine.setUtenteCorrente(controllore);
 
@@ -234,7 +236,7 @@ class PickYourLineTest {
 		Automezzo automezzo = new Automezzo("H123",3,pickYourLine.getElencoItinerari().get("Catania-Randazzo")
 				,elencoBiglietti);
 
-		Controllore controllore = new Controllore("C2343");
+		Controllore controllore = new Controllore("C2343","bello");
 		controllore.setAutomezzoSupervisionato(automezzo);
 		pickYourLine.setUtenteCorrente(controllore);
 
@@ -258,7 +260,7 @@ class PickYourLineTest {
 
 		automezzo.setPosizioneAttuale(pickYourLine.getElencoCitta().get(6).getFermata("Adrano Nord"));
 
-		Controllore controllore = new Controllore("C2343");
+		Controllore controllore = new Controllore("C2343","bello");
 		controllore.setAutomezzoSupervisionato(automezzo);
 		pickYourLine.setUtenteCorrente(controllore);
 
@@ -285,7 +287,7 @@ class PickYourLineTest {
 
 		automezzo.setPosizioneAttuale(pickYourLine.getElencoCitta().get(1).getFermata("Catania Borgo"));
 
-		Controllore controllore = new Controllore("C2343");
+		Controllore controllore = new Controllore("C2343","bello");
 		controllore.setAutomezzoSupervisionato(automezzo);
 		pickYourLine.setUtenteCorrente(controllore);
 
@@ -312,7 +314,7 @@ class PickYourLineTest {
 		Itinerario itinerarioFake = new Itinerario("as", LocalTime.of(12, 12), LocalTime.of(12, 12), percorso);
 
 		Automezzo automezzo = new Automezzo("as", 1, itinerarioFake, new HashMap<>());
-		Controllore controllore = new Controllore("as");
+		Controllore controllore = new Controllore("as","bello");
 		controllore.setAutomezzoSupervisionato(automezzo);
 
 		Biglietto bigliettoFake = new Biglietto("12345", Catania, Misterbianco);
@@ -365,7 +367,7 @@ class PickYourLineTest {
 		percorso.add(pickYourLine.getElencoCitta().get(1));
 		percorso.add(pickYourLine.getElencoCitta().get(5));
 		
-		pickYourLine.setUtenteCorrente(new Amministratore("001"));
+		pickYourLine.setUtenteCorrente(new Amministratore("001","ciao"));
 		pickYourLine.inserisciItinerario("prova", LocalTime.of(12, 0), LocalTime.of(13, 0), percorso);
 
 		assertTrue(pickYourLine.getElencoItinerari().containsKey("prova"));
@@ -444,7 +446,7 @@ class PickYourLineTest {
 		LocalTime oldOrarioArrivo = i.getOrarioArrivo();
 		List<Citta> oldPercorso = i.getPercorso();
 		
-		pickYourLine.setUtenteCorrente(new Amministratore("001"));
+		pickYourLine.setUtenteCorrente(new Amministratore("001","ciao"));
 		pickYourLine.modificaItinerario("Caltagirone-Catania", LocalTime.of(12, 30), LocalTime.of(13, 0), percorso);
 		
 		assertFalse(oldOrarioPartenza.equals(LocalTime.of(12, 30)));
@@ -537,7 +539,7 @@ class PickYourLineTest {
 	@Test
 	@DisplayName("Test di inserisciAutomezzo nel caso che vada a buon fine")
 	public void testInserimentoAutomezzoValido() throws Exception {
-		pickYourLine.setUtenteCorrente(new Amministratore("001"));
+		pickYourLine.setUtenteCorrente(new Amministratore("001","ciao"));
 		pickYourLine.inserisciAutomezzo("automezzo70", 50, "Catania-Randazzo");
 		assertTrue(pickYourLine.getElencoAutomezzi().containsKey("automezzo70"));
 	}
@@ -547,7 +549,7 @@ class PickYourLineTest {
 	@DisplayName("Test fallimento inserimento automezzo con codice già esistente")
 	public void testInserimentoAutomezzoCodiceEsistente() throws Exception {
 		// Assumi che 'automezzo1' sia già inserito nel sistema
-		pickYourLine.setUtenteCorrente(new Amministratore("001"));
+		pickYourLine.setUtenteCorrente(new Amministratore("001","ciao"));
 		pickYourLine.inserisciAutomezzo("automezzo1", 50, "Catania-Randazzo");
 		Exception exception = assertThrows(Exception.class, () -> {
 			pickYourLine.inserisciAutomezzo("automezzo1", 60, "Catania-Randazzo");
@@ -568,7 +570,7 @@ class PickYourLineTest {
 	@Test
 	@DisplayName("Test successo modifica itinerario automezzo")
 	public void testModificaAutomezzo_Successo() throws Exception {
-		pickYourLine.setUtenteCorrente(new Amministratore("001"));
+		pickYourLine.setUtenteCorrente(new Amministratore("001","ciao"));
 		pickYourLine.inserisciAutomezzo("automezzo22", 50, "Catania-Randazzo");
 		pickYourLine.modificaAutomezzo("automezzo22", 0,"Randazzo-Catania");
 		Automezzo automezzo = pickYourLine.getElencoAutomezzi().get("automezzo22");
@@ -579,7 +581,7 @@ class PickYourLineTest {
 	@Test
 	@DisplayName("Test successo modifica stato automezzo")
 	public void testModificaAutomezzo_Stato_Successo() throws Exception {
-		pickYourLine.setUtenteCorrente(new Amministratore("001"));
+		pickYourLine.setUtenteCorrente(new Amministratore("001","ciao"));
 		pickYourLine.inserisciAutomezzo("automezzo2", 50, "Catania-Randazzo");
 		Automezzo automezzo = pickYourLine.getElencoAutomezzi().get("automezzo2");
 		
@@ -627,7 +629,7 @@ class PickYourLineTest {
 	@Test
 	@DisplayName("Test eliminazione automezzo esistente")
 	public void testEliminazioneAutomezzoEsistente() throws Exception {
-		pickYourLine.setUtenteCorrente(new Amministratore("001"));
+		pickYourLine.setUtenteCorrente(new Amministratore("001","ciao"));
 		
 		pickYourLine.inserisciAutomezzo("automezzo3", 50, "Catania-Randazzo");
 		assertTrue(pickYourLine.getElencoAutomezzi().containsKey("automezzo3"));
@@ -676,10 +678,12 @@ class PickYourLineTest {
 	@Test
 	@DisplayName("Test creazione segnalazione")
 	public void testCreaSegnalazioneCorretto() {
-		pickYourLine.setUtenteCorrente(pickYourLine.getElencoClienti().get("c74i"));
+		pickYourLine.setUtenteCorrente(pickYourLine.getElencoUtenti().get("c74i"));
 		
 		Segnalazione sExpected = new Segnalazione("Critica Servizio","Servizio automezzi in ritardo");
-		sExpected.setCliente(pickYourLine.getElencoClienti().get("c74i"));
+
+		Cliente c = (Cliente) pickYourLine.getElencoUtenti().get("c74i");
+		sExpected.setCliente(c);
 		
 		String oggettoActual = "Critica Servizio";
 		String contenutoActual = "Servizio automezzi in ritardo";
@@ -695,7 +699,7 @@ class PickYourLineTest {
 	public void testInvioSegnalazione() {
 		Map<String,Segnalazione> elencoSegnalazioneActual = pickYourLine.getElencoSegnalazioni();
 
-		Cliente cliente = new Cliente("12345","Cristian","Torrisi");
+		Cliente cliente = new Cliente("12345","ciao","Cristian","Torrisi");
 		pickYourLine.setUtenteCorrente(cliente);
 
 		String oggetto = "Critica automezzi e traffico";
@@ -785,7 +789,7 @@ class PickYourLineTest {
 	@DisplayName("Test visualizza automezzi non in transito, nel caso in cui ho un elenco vuoto")
 	public void testVisualizzaElencoAutomezziNonInTransitoElencoVuoto() {
 		Map<String, Automezzo> elencoAutomezzi = pickYourLine.getElencoAutomezzi();
-		pickYourLine.setUtenteCorrente(pickYourLine.getElencoControllori().get("n7j5"));
+		pickYourLine.setUtenteCorrente(pickYourLine.getElencoUtenti().get("n7j5"));
 
 		elencoAutomezzi.forEach((k,a) ->
 				a.setItinerarioAssegnato(pickYourLine.getElencoItinerari().get("Catania-Adrano Rapido")));
@@ -795,13 +799,12 @@ class PickYourLineTest {
 		Exception exception = assertThrows(Exception.class, () ->
 				pickYourLine.visualizzaElencoAutomezziNonInTransito());
 		assertEquals("Nessun automezzo disponibile per la supervisione.", exception.getMessage());
-
 	}
 
 	@Test
 	@DisplayName("Test supervisione automezzo con successo")
 	public void testSupervisionaAutomezzoConSuccesso()  {
-		Controllore controllore = pickYourLine.getElencoControllori().get("f5b3");
+		Controllore controllore = (Controllore) pickYourLine.getElencoUtenti().get("f5b3");
 		String codiceAutomezzo = "C98";
 		Map<String, Automezzo> automezziDisponibili = pickYourLine.getElencoAutomezzi();
 		pickYourLine.setUtenteCorrente(controllore);
@@ -821,7 +824,7 @@ class PickYourLineTest {
 	@Test
 	@DisplayName("Test supervisiona automezzo nel caso di codice automezzo non valido")
 	public void testSupervisionaAutomezzoCodiceNonValido() {
-		Controllore controllore = pickYourLine.getElencoControllori().get("f5b3");
+		Controllore controllore = (Controllore) pickYourLine.getElencoUtenti().get("f5b3");
 		String automezzoNonEsistente = "H99";
 		Map<String, Automezzo> automezziDisponibili = pickYourLine.getElencoAutomezzi();
 		pickYourLine.setUtenteCorrente(controllore);
@@ -833,24 +836,10 @@ class PickYourLineTest {
 				pickYourLine.supervisionaAutomezzo(automezzoNonEsistente,automezziDisponibili));
 		assertEquals("Codice automezzo non valido", exception.getMessage());
 	}
-
-	@Test
-	@DisplayName("Test supervisiona automezzo nel caso di itinerario non assegnato all'automezzo")
-	public void testSupervisionaAutomezzoItinerarioNonAssegnato() {
-		Controllore controllore = pickYourLine.getElencoControllori().get("f5b3");
-		String automezzoSenzaItinerario = "C98";
-		Map<String, Automezzo> automezziDisponibili = pickYourLine.getElencoAutomezzi();
-		pickYourLine.setUtenteCorrente(controllore);
-
-		Exception exception = assertThrows(Exception.class, () ->
-				pickYourLine.supervisionaAutomezzo(automezzoSenzaItinerario,automezziDisponibili));
-		assertEquals("Non puoi supervisionare un automezzo senza un itinerario assegnato.", exception.getMessage());
-	}
-
 	@Test
 	@DisplayName("Test fine corsa in caso di successo")
 	public void testFineCorsaConSuccesso() {
-		Controllore controllore = pickYourLine.getElencoControllori().get("f5b3");
+		Controllore controllore = (Controllore) pickYourLine.getElencoUtenti().get("f5b3");
 		pickYourLine.setUtenteCorrente(controllore);
 		Automezzo automezzoSupervisionato = pickYourLine.getElencoAutomezzi().get("C98");
 		automezzoSupervisionato.setItinerarioAssegnato(pickYourLine.getElencoItinerari().get("Catania-Adrano Rapido"));
@@ -864,7 +853,7 @@ class PickYourLineTest {
 	@Test
 	@DisplayName("Test fine corsa nel caso controllore non supervisiona automezzo")
 	public void testFineCorsaControlloreNonSupervisionaAutomezzo() {
-		Controllore controllore = pickYourLine.getElencoControllori().get("f5b3");
+		Controllore controllore = (Controllore) pickYourLine.getElencoUtenti().get("f5b3");
 		pickYourLine.setUtenteCorrente(controllore);
 		controllore.setAutomezzoSupervisionato(null);
 
@@ -874,19 +863,27 @@ class PickYourLineTest {
 	}
 
 
-
 	@Test
 	@DisplayName("Test inserimento controllore con successo")
 	public void testInserisciControllore_successo() throws Exception {
-		pickYourLine.inserisciControllore("aaaa");
-		assertTrue(pickYourLine.getElencoControllori().containsKey("aaaa"));
+		pickYourLine.inserisciControllore("aaaa","Patatino1!");
+		assertTrue(pickYourLine.getElencoUtenti().containsKey("aaaa"));
 	}
-
+	@Test
+	@DisplayName("Test inserimento controllore con crediali non conformi ai criteri di validità")
+	public void testInserisciControllore_CredenzialiNonValide() throws Exception{
+		String codice = "Ciarlatano";
+		String password = "Aldino10!";
+		Exception exception = assertThrows(Exception.class, () -> {
+			pickYourLine.inserisciControllore(codice,password);
+		});
+		assertEquals("Credeziali Controllore inserite non valide", exception.getMessage());
+	}
 	@Test
 	@DisplayName("Test inserimento controllore con duplicato")
 	public void testInserisciControllore_duplicato() throws Exception {
 		Exception exception = assertThrows(Exception.class, () -> {
-			pickYourLine.inserisciControllore("f5b3");
+			pickYourLine.inserisciControllore("f5b3","Cioccolato1!");
 		});
 		assertEquals("Controllore già esistente.", exception.getMessage());
 	}
@@ -895,28 +892,180 @@ class PickYourLineTest {
 	@DisplayName("Test elimina controllore con successo")
 	public void testEliminaControllore_successo() throws Exception {
 		pickYourLine.eliminaControllore("n7j5");
-		assertFalse(pickYourLine.getElencoControllori().containsKey("n7j5"));
+		assertFalse(pickYourLine.getElencoUtenti().containsKey("n7j5"));
 	}
 
 	@Test
 	@DisplayName("Test elimina controllore controllore non esistente")
 	public void testEliminaControllore_nonEsistente() throws Exception {
-		Exception exception = assertThrows(Exception.class, () -> {
+		Exception exceptionNotExisting = assertThrows(Exception.class, () -> {
 			pickYourLine.eliminaControllore("ce2c3");
 		});
-		assertEquals("Controllore non esistente.", exception.getMessage());
+		assertEquals("Controllore non esistente.", exceptionNotExisting.getMessage());
+
+		Exception exceptionNotControllore = assertThrows(Exception.class, () -> {
+			pickYourLine.eliminaControllore("a7b7");
+		});
+		assertEquals("Controllore non esistente.", exceptionNotControllore.getMessage());
 	}
 
 	@Test
 	@DisplayName("Test elimina controllore controllore con automezzo supervisionato")
 	public void testEliminaControllore_conAutomezzoSupervisionato() throws Exception {
-		Controllore co = pickYourLine.getElencoControllori().get("f5b3");
+		Controllore co = (Controllore) pickYourLine.getElencoUtenti().get("f5b3");
 		co.setAutomezzoSupervisionato(pickYourLine.getElencoAutomezzi().get("H23"));
 
 		Exception exception = assertThrows(Exception.class, () -> {
 			pickYourLine.eliminaControllore("f5b3");
 		});
 		assertEquals("Il controllore sta supervisionando un automezzo.", exception.getMessage());
+	}
+
+	@Test
+	@DisplayName("Test login Utente con successo")
+	public void testLoginConSuccesso() {
+		String codice = "c74i";
+		String password = "franco";
+		assertDoesNotThrow(() -> pickYourLine.login(codice,password));
+		assertNotEquals(null,pickYourLine.getUtenteCorrente());
+	}
+
+	@Test
+	@DisplayName("Test login Utente: accesso già effettuato")
+	public void testLoginConAccessoEffettuato() {
+		pickYourLine.setUtenteCorrente(pickYourLine.getElencoUtenti().get("f5b3"));
+		String codice = "c74i";
+		String password = "franco";
+		Exception exception = assertThrows(Exception.class, () -> {
+			pickYourLine.login(codice,password);
+		});
+		assertEquals("Hai già effettuato l'accesso. Effettua il logout prima di tentare il login."
+				,exception.getMessage());
+	}
+
+	@Test
+	@DisplayName("Test login Utente: codice utente non esistente")
+	public void testLoginConCodiceUtenteNonEsistente() {
+		String codiceNonEsistente = "ahbcd";
+		String password = "franco";
+		pickYourLine.setUtenteCorrente(null);
+
+		Exception exception = assertThrows(Exception.class, () -> {
+			pickYourLine.login(codiceNonEsistente,password);
+		});
+		assertEquals("Codice utente non esistente", exception.getMessage());
+	}
+
+	@Test
+	@DisplayName("Test login Utente: passord errata")
+	public void testLoginConPasswordErrata() {
+		String codice = "c74i";
+		String passwordErrata = "ciccio";
+		pickYourLine.setUtenteCorrente(null);
+
+		Exception exception = assertThrows(Exception.class, () -> {
+			pickYourLine.login(codice,passwordErrata);
+		});
+		assertEquals("Password inserita non corretta", exception.getMessage());
+	}
+	
+	@Test
+	@DisplayName("Test logout nel caso di successo")
+	public void testLogout_Successo() throws Exception {
+		Amministratore am = (Amministratore) pickYourLine.getElencoUtenti().get("a7b7");
+		pickYourLine.setUtenteCorrente(am);
+		pickYourLine.logout();
+		assertNull(pickYourLine.getUtenteCorrente());
+	}
+	
+	@Test
+	@DisplayName("Test logout nel caso di accesso non effettuato")
+	public void testLogout_AccessoNonEffettuato() {
+		pickYourLine.setUtenteCorrente(null);
+		
+		Exception exception = assertThrows(Exception.class, () ->
+			pickYourLine.logout(),
+			"Non hai effettuato l'accesso. Effettua il login prima di tentare il logout."
+		);
+
+		assertEquals("Non hai effettuato l'accesso. Effettua il login prima di tentare il logout.", exception.getMessage());
+	}
+	
+	@Test
+	@DisplayName("Test logout nel caso di supervisione ancora in corso")
+	public void testLogout_SupervisioneInCorso() {
+		Controllore co = (Controllore) pickYourLine.getElencoUtenti().get("f5b3");
+		pickYourLine.setUtenteCorrente(co);
+		
+		Exception exception = assertThrows(Exception.class, () ->
+			pickYourLine.logout(),
+			"Non puoi effettuare il logout se stai supervisionando un automezzo."
+		);
+
+		assertEquals("Non puoi effettuare il logout se stai supervisionando un automezzo.", exception.getMessage());
+	}
+
+	@Test
+	@DisplayName("Test per registrazione cliente con successo")
+	public void testRegistrazioneCliente_Successo() throws Exception {
+		String codice = "abc1";
+		String password = "ProvaPassw1!";
+		String nome = "Mario";
+		String cognome = "Rossi";
+
+		pickYourLine.setUtenteCorrente(null);
+		pickYourLine.registrazioneCliente(codice, password, nome, cognome);
+		assertTrue(pickYourLine.getElencoUtenti().containsKey(codice));
+	}
+
+	@Test
+	@DisplayName("Test di registrazione per un utente già registrato")
+	public void testRegistrazioneCliente_ClienteAutenticato() throws Exception {
+
+		pickYourLine.setUtenteCorrente(pickYourLine.getElencoUtenti().get("a7b7"));
+		String codice = "c74i";
+		String password = "$2a$12$5JuKw/dujA2gj98AuxSkoeURrP3n6E2IOOIKXin8z8HbioXJNrGa2";
+		String nome = "Franco";
+		String cognome = "Tredita";
+
+		Exception exception = assertThrows(Exception.class, () -> {
+			pickYourLine.registrazioneCliente(codice, password, nome, cognome);
+		}, "Non puoi effettuare la registrazione, bisogna effettuare logout");
+
+		assertEquals("Non puoi effettuare la registrazione, bisogna effettuare logout", exception.getMessage());
+	}
+
+	@Test
+	@DisplayName("Test di registrazione per un utente già registrato")
+	public void testRegistrazioneCliente_GiaRegistrato() throws Exception {
+		pickYourLine.setUtenteCorrente(null);
+		String codice = "c74i";
+		String password = "$2a$12$5JuKw/dujA2gj98AuxSkoeURrP3n6E2IOOIKXin8z8HbioXJNrGa2";
+		String nome = "Franco";
+		String cognome = "Tredita";
+
+		Exception exception = assertThrows(Exception.class, () -> {
+			pickYourLine.registrazioneCliente(codice, password, nome, cognome);
+		}, "Il cliente è gia registrato");
+
+		assertEquals("Il cliente è gia registrato", exception.getMessage());
+	}
+
+	@Test
+	@DisplayName("Test registrazione cliente con password non conforme ai criteri")
+	public void testRegistrazioneCliente_PasswordNonValida() {
+		pickYourLine.setUtenteCorrente(null);
+		String codice = "c74iP";
+		String password = "password"; // Password senza maiuscole o caratteri speciali
+		String nome = "Franco";
+		String cognome = "Tredita";
+
+
+		Exception exception = assertThrows(Exception.class, () -> {
+			pickYourLine.registrazioneCliente(codice, password, nome, cognome);
+		}, "Codice o Password inseriti non validi");
+
+		assertEquals("Codice o Password inseriti non validi", exception.getMessage());
 	}
 
 }

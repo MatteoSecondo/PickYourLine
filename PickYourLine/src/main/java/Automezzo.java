@@ -145,10 +145,11 @@ public class Automezzo {
     public boolean consentiTimbratura() {
     	Citta cittaAttuale = this.posizioneAttuale.getCittaDiAppartenenza();
     	Citta penultimaCitta = this.itinerarioAssegnato.getPercorso().get(this.itinerarioAssegnato.getPercorso().size() - 2);
-    
-    	if(cittaAttuale.equals(penultimaCitta)) {
+
+    	if(cittaAttuale.equals(penultimaCitta) && (posizioneAttuale.equals(penultimaCitta.getElencoFermate().getLast()))) {
     		return true;
     	}
+    	
     	return false;
     }
     

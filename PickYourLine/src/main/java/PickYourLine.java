@@ -1,3 +1,4 @@
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -15,18 +16,14 @@ public class PickYourLine {
 	private Map<String, Automezzo> elencoAutomezzi;
 	private Map<String,Segnalazione> elencoSegnalazioni;
 	private Map<String, Avviso> elencoAvvisi;
-	private Map<String, Amministratore> elencoAmministratori;
-	private Map<String, Controllore> elencoControllori;
-	private Map<String, Cliente> elencoClienti;
+	private Map<String, Utente> elencoUtenti;
 
 	private PickYourLine() {
 		this.elencoItinerari = new HashMap<String, Itinerario>();
 		this.elencoCitta = new HashMap<Integer, Citta>();
-		this.elencoControllori = new HashMap<String, Controllore>();
+		this.elencoUtenti = new HashMap<String, Utente>();
 		this.elencoAutomezzi = new HashMap<String, Automezzo>();
 		this.elencoSegnalazioni = new HashMap<String, Segnalazione>();
-		this.elencoAmministratori = new HashMap<String, Amministratore>();
-		this.elencoClienti = new HashMap<String,Cliente>();
 		this.elencoAvvisi = new HashMap<String, Avviso>();
 	}
 	
@@ -58,10 +55,6 @@ public class PickYourLine {
 		this.elencoItinerari = elencoItinerari;
 	}
 
-	public Map<String, Controllore> getElencoControllori() {
-		return elencoControllori;
-	}
-
 	public Map<String, Automezzo> getElencoAutomezzi() {
 		return elencoAutomezzi;
 	}
@@ -74,13 +67,9 @@ public class PickYourLine {
 		return elencoSegnalazioni;
 	}
 
-	public Map<String, Amministratore> getElencoAmministratori() {
-		return elencoAmministratori;
+	public Map<String, Utente> getElencoUtenti() {
+		return elencoUtenti;
 	}
-	public Map<String, Cliente> getElencoClienti() {
-		return elencoClienti;
-	}
-
 
 	public void loadItinerari() {
 		List<Citta> p = new ArrayList<Citta>();
@@ -274,53 +263,70 @@ public class PickYourLine {
 	}
 
 	public void loadControllori() {
-		this.elencoControllori.put("f5b3", new Controllore("f5b3"));
-		this.elencoControllori.put("n7j5", new Controllore("n7j5"));
-		this.elencoControllori.put("h1ig", new Controllore("h1ig"));
-		this.elencoControllori.put("ba56", new Controllore("ba56"));
-		this.elencoControllori.put("zy31", new Controllore("zy31"));
+		String password = "$2a$12$SRI80WH/ocyRD17lq.cYTeu2pH2VsMPelGqw2vjEi/VmsuoT4qEGu"; // Cioccolato1!
+		this.elencoUtenti.put("f5b3", new Controllore("f5b3", password));
+		this.elencoUtenti.put("n7j5", new Controllore("n7j5", password));
+		this.elencoUtenti.put("h1ig", new Controllore("h1ig", password));
+		this.elencoUtenti.put("ba56", new Controllore("ba56", password));
+		this.elencoUtenti.put("zy31", new Controllore("zy31", password));
 	}
 
 	public void loadAmministratori() {
-		this.elencoAmministratori.put("a7b7", new Amministratore("a7b7"));
-		this.elencoAmministratori.put("a34j", new Amministratore("a34j"));
-		this.elencoAmministratori.put("a35j", new Amministratore("a35j"));
-		this.elencoAmministratori.put("a36j", new Amministratore("a36j"));
-		this.elencoAmministratori.put("a37j", new Amministratore("a37j"));
+		String password = "$2a$12$rbKK0Fduv2qtmzkt1TJkQeM.mcyPHrdU3WAvvRiY3w/gEGPLkRF0q"; // ciao
+		this.elencoUtenti.put("a7b7", new Amministratore("a7b7",password));
+		this.elencoUtenti.put("a34j", new Amministratore("a34j",password));
+		this.elencoUtenti.put("a35j", new Amministratore("a35j",password));
+		this.elencoUtenti.put("a36j", new Amministratore("a36j",password));
+		this.elencoUtenti.put("a37j", new Amministratore("a37j",password));
 	}
 
-	public void laodClienti(){
-		this.elencoClienti.put("c74i", new Cliente("c74i", "Franco", "Tredita"));
-		this.elencoClienti.put("c2312", new Cliente("c2312", "Franco", "Bianchi"));
-		this.elencoClienti.put("c34rf", new Cliente("c34rf", "Giorgio", "Bianchi"));
-		this.elencoClienti.put("21dd", new Cliente("21dd", "Franco", "Rossi"));
-		this.elencoClienti.put("asda", new Cliente("asda", "Franco", "Marroni"));
+	public void loadClienti(){
+		String password = "$2a$12$5JuKw/dujA2gj98AuxSkoeURrP3n6E2IOOIKXin8z8HbioXJNrGa2"; // franco
+		this.elencoUtenti.put("c74i", new Cliente("c74i", password ,"Franco", "Tredita"));
+		this.elencoUtenti.put("c2312", new Cliente("c2312", password, "Franco", "Bianchi"));
+		this.elencoUtenti.put("c34rf", new Cliente("c34rf", password, "Giorgio", "Bianchi"));
+		this.elencoUtenti.put("21dd", new Cliente("21dd", password, "Franco", "Rossi"));
+		this.elencoUtenti.put("asda", new Cliente("asda", password, "Franco", "Marroni"));
 	}
 
 	public void loadAutomezzi() {
-		Map<String, Biglietto> b1 = new HashMap<String, Biglietto>();
-		b1.put("g7rbc8", new Biglietto("g7rbc8", elencoCitta.get(1), elencoCitta.get(3)));
-		b1.put("ypc8jf", new Biglietto("ypc8jf", elencoCitta.get(1), elencoCitta.get(4)));
-		
-		Automezzo a = new Automezzo("H23", 25, this.getElencoItinerari().get("Catania-Randazzo"), b1);
-		pickYourLine.getElencoControllori().get("f5b3").setAutomezzoSupervisionato(a);
-		this.elencoAutomezzi.put("H23", a);
-		
-		this.elencoAutomezzi.put("B51", new Automezzo("B51", 20));
-		this.elencoAutomezzi.put("Z22", new Automezzo("Z22", 25));
-		this.elencoAutomezzi.put("Y77", new Automezzo("Y77", 30));
-		this.elencoAutomezzi.put("C98", new Automezzo("C98", 25));
+		Map<String, Biglietto> elencoBigliettiA1 = new HashMap<String, Biglietto>();
+		elencoBigliettiA1.put("g7rbc8", new Biglietto("g7rbc8", elencoCitta.get(1), elencoCitta.get(3)));
+		elencoBigliettiA1.put("ypc8jf", new Biglietto("ypc8jf", elencoCitta.get(1), elencoCitta.get(4)));
+
+		Automezzo a1 = new Automezzo("H23", 25, this.getElencoItinerari().get("Catania-Randazzo"), elencoBigliettiA1);
+		Controllore co = (Controllore) pickYourLine.getElencoUtenti().get("f5b3");
+		co.setAutomezzoSupervisionato(a1);
+		this.elencoAutomezzi.put("H23", a1);
+
+		Automezzo a2 = new Automezzo("B51", 20);
+		a2.setItinerarioAssegnato(this.getElencoItinerari().get("Catania-Caltagirone"));
+		this.elencoAutomezzi.put("B51", a2);
+
+		Automezzo a3 = new Automezzo("Z22", 22);
+		a3.setItinerarioAssegnato( this.getElencoItinerari().get("Catania-Adrano Rapido"));
+		this.elencoAutomezzi.put("Z22", a3);
+
+		Automezzo a4 = new Automezzo("Y77", 30);
+		a4.setItinerarioAssegnato(this.getElencoItinerari().get("Catania-Paterno"));
+		this.elencoAutomezzi.put("Y77", a4);
+
+		Automezzo a5 = new Automezzo("C98", 25);
+		a5.setItinerarioAssegnato(this.getElencoItinerari().get("Catania-Randazzo"));
+		this.elencoAutomezzi.put("C98", a5);
+
 	}
 
 	public void loadElencoSegnalazioni(){
-		this.elencoSegnalazioni.put("s001", new Segnalazione("s001","Critica Personale", "Insulto verbale", LocalDateTime.of(2025, 1, 10, 10, 50), new Cliente("0001","Tizio", "Bello")));
-		this.elencoSegnalazioni.put("s002", new Segnalazione("s002","Critica Servizio", "Servizio in ritardo nella mattina", LocalDateTime.of(2025, 1, 10, 11, 00), new Cliente("0002","Mara","Meo")));
-		this.elencoSegnalazioni.put("s003", new Segnalazione("s003","Critica Automezzo", "Sedili senza cintura di sicurezza", LocalDateTime.of(2025, 1, 12, 16, 30), new Cliente("0003","Ponzio","Pelato")));
+		String password = "$2a$12$KKC5pJp/JoonpfWMV56wGOv1YhOBRqQRoEJ6GD/4BRLE2ZdlyNpza";
+		this.elencoSegnalazioni.put("s001", new Segnalazione("s001","Critica Personale", "Insulto verbale", LocalDateTime.of(2025, 1, 10, 10, 50), new Cliente("0001",password, "Tizio", "Bello")));
+		this.elencoSegnalazioni.put("s002", new Segnalazione("s002","Critica Servizio", "Servizio in ritardo nella mattina", LocalDateTime.of(2025, 1, 10, 11, 00), new Cliente("0001",password, "Tizio", "Bello")));
+		this.elencoSegnalazioni.put("s003", new Segnalazione("s003","Critica Automezzo", "Sedili senza cintura di sicurezza", LocalDateTime.of(2025, 1, 12, 16, 30), new Cliente("0001",password, "Tizio", "Bello")));
 	}
 	
 	public void loadAvvisi() {
-		this.elencoAvvisi.put("a001", new Avviso("a001","Possibili ritardi", "Possibili ritardi nella giornata odierna", LocalDateTime.of(2025, 1, 10, 10, 50), new Amministratore("0001")));
-		this.elencoAvvisi.put("a002", new Avviso("a002","Incidente", "Grave incidente blocca alcune strade", LocalDateTime.of(2025, 1, 25, 9, 10), new Amministratore("0002")));
+		this.elencoAvvisi.put("a001", new Avviso("a001","Possibili ritardi", "Possibili ritardi nella giornata odierna", LocalDateTime.of(2025, 1, 10, 10, 50), (Amministratore) this.getElencoUtenti().get("a7b7")));
+		this.elencoAvvisi.put("a002", new Avviso("a002","Incidente", "Grave incidente blocca alcune strade", LocalDateTime.of(2025, 1, 25, 9, 10), (Amministratore) this.getElencoUtenti().get("a34j")));
 	}
 
 	public void visualizzaElencoCittaPartenza() {
@@ -345,18 +351,18 @@ public class PickYourLine {
 	}
 
 	public Map<String, Itinerario> inserisciCittaDestinazione(int codiceCittaPartenza, int codiceCittaDestinazione, Map<Integer, Citta> elencoDestinazioniDisponibili) throws Exception{
+		
+		Citta cittaPartenza = this.getElencoCitta().get(codiceCittaPartenza);
 		Citta cittaDestinazione = elencoDestinazioniDisponibili.get(codiceCittaDestinazione);
 		
-		if(this.getElencoCitta().get(codiceCittaPartenza).equals(this.getElencoCitta().get(codiceCittaDestinazione))) {
-			throw new Exception("La città di partenza e quella di destinazione sono la stessa città.");
-		} else if(cittaDestinazione == null) {
+		if(cittaPartenza == null || cittaDestinazione == null) {
 			throw new Exception("Codice città non non idoneo alla ricerca effettuata.");
 		}
 		
 		Map<String, Itinerario> itinerariDaVisualizare = new HashMap<String, Itinerario>();
 		
 		for (Itinerario itinerario : this.elencoItinerari.values()) {
-			Itinerario i = itinerario.getSeDisponibile(this.getElencoCitta().get(codiceCittaPartenza), cittaDestinazione);
+			Itinerario i = itinerario.getSeDisponibile(cittaPartenza, cittaDestinazione);
 			
 			if(i != null) {
 				itinerariDaVisualizare.put(i.getCodice(), i);
@@ -407,7 +413,7 @@ public class PickYourLine {
 			throw new Exception("Città di partenza e destinazione non possono essere uguali.");
 		}
 		
-		Itinerario i = co.getAutomezzoSupervisionato().getItinerarioAssegnato().getSeDisponibile(this.getElencoCitta().get(codiceCittaPartenza), cittaDestinazione);
+		Itinerario i = co.getAutomezzoSupervisionato().getItinerarioAssegnato().getSeDisponibile(cittaPartenza, cittaDestinazione);
 		
 		if(i == null) {
 			throw new Exception("Città di destinazione non presente nel percorso.");
@@ -446,12 +452,9 @@ public class PickYourLine {
 	
 	public Map<String, Automezzo> visualizzaAutomezziInTransito(){
 		Map<String, Automezzo> elencoAutomezziInTransito = new HashMap<String, Automezzo>();
-		Automezzo a;
 		
-		for (Controllore co : this.elencoControllori.values()) {
-			a = co.getAutomezzoSupervisionato();
-			
-			if(a != null) {
+		for (Automezzo a : this.elencoAutomezzi.values()) {
+			if(a.getStato() instanceof InTransito) {
 				elencoAutomezziInTransito.put(a.getCodice(), a);
 				System.out.println(a);
 			}
@@ -486,7 +489,7 @@ public class PickYourLine {
 	}
 
 	public void invioSegnalazione(Segnalazione segnalazione) {
-		this.elencoSegnalazioni.put(segnalazione.getCodice(),segnalazione);
+		this.elencoSegnalazioni.put(segnalazione.getCodice(), segnalazione);
 	}
 
 	public void visualizzaElencoSegnalazioni() throws Exception {
@@ -498,7 +501,7 @@ public class PickYourLine {
 		
 		for (Map.Entry<String, Segnalazione> entry : elencoSegnalazioni.entrySet()) {
 			Segnalazione s = entry.getValue();
-			System.out.println(s);;
+			System.out.println(s);
 		}
 	}
 
@@ -603,7 +606,11 @@ public class PickYourLine {
 	}
 	
 	public void inserisciAutomezzo(String codice, int posti, String codiceItinerario) throws Exception {
-		
+
+		if (posti == 0) {
+			throw new Exception("Inserisci un numero di posti superiore a 0");
+		}
+
 		if(this.elencoAutomezzi.containsKey(codice)) {
 			throw new Exception("Codice automezzo già esistente.");
 		}
@@ -621,19 +628,19 @@ public class PickYourLine {
 	}
 	
 	public void modificaAutomezzo(String codice, int codiceStato, String codiceItinerario) throws Exception {
-		Map<String, Automezzo> automezziNonInTransito = new HashMap<String, Automezzo>();
+		Map<String, Automezzo> automezziModificabili = new HashMap<String, Automezzo>();
 		
 		this.elencoAutomezzi.forEach((k, a) -> {
 			if(a.getStato() instanceof NonInTransito || a.getStato() instanceof InManutenzione) {
-				automezziNonInTransito.put(a.getCodice(), a);
+				automezziModificabili.put(a.getCodice(), a);
 			}
 		});
 		
-		if(automezziNonInTransito.isEmpty()) {
+		if(automezziModificabili.isEmpty()) {
 			throw new Exception("Nessun automezzo modificabile.");
 		}
 		
-		Automezzo a = automezziNonInTransito.get(codice);
+		Automezzo a = automezziModificabili.get(codice);
 		
 		if(a == null) {
 			throw new Exception("Automezzo non modificabile perchè in transito o dismesso.");
@@ -653,6 +660,11 @@ public class PickYourLine {
 		
 		if(a.getStato() instanceof NonInTransito && codiceItinerario != null && !codiceItinerario.equals("0")) {
 			Itinerario i = pickYourLine.elencoItinerari.get(codiceItinerario);
+			
+			if(i == null) {
+				throw new Exception("Itinerario non esistente.");
+			}
+			
 			a.setItinerarioAssegnato(i);
 			inserisciAvviso("Cambio itinerario per l'automezzo " + a.getCodice(), "L'automezzo " + a.getCodice() + " ha subito un cambio di itinerario, da adesso percorrerà l'itinerario " + i);
 		}
@@ -723,36 +735,46 @@ public class PickYourLine {
 		
 		av.visualizzaDettaglio();
 	}
+	
 	private boolean verificaSupervisione() throws Exception {
-		Controllore controllore = (Controllore) pickYourLine.getUtenteCorrente();
+		Utente u = pickYourLine.getUtenteCorrente();
+	
+		if(!(u instanceof Controllore)) {
+			return true;
+		}
+		
+		Controllore controllore = (Controllore) u;
+		
 		Automezzo automezzoSupervisionato = controllore.getAutomezzoSupervisionato();
+		
 		if (automezzoSupervisionato != null) {
 			return false;
 		}
+		
 		return true;
 	}
 
 	public Map<String, Automezzo> visualizzaElencoAutomezziNonInTransito() throws Exception {
-		Map<String, Automezzo> automezziNonInTransito = new HashMap<String, Automezzo>();
+		Map<String, Automezzo> automezziDisponibili = new HashMap<String, Automezzo>();
 
 		if (!verificaSupervisione()) {
 			throw new Exception("Stai già supervisionando un automezzo");
 		}
 
 		this.elencoAutomezzi.forEach((k,a) -> {
-			if (a.getStato() instanceof NonInTransito){
-				automezziNonInTransito.put(a.getCodice(),a);
+			if (a.getStato() instanceof NonInTransito && a.getItinerarioAssegnato() != null){
+				automezziDisponibili.put(a.getCodice(),a);
 			}
 		});
 
-		if (automezziNonInTransito.isEmpty()) {
+		if (automezziDisponibili.isEmpty()) {
 			throw new Exception("Nessun automezzo disponibile per la supervisione.");
 		}
 
 		System.out.println("Automezzi disponibili:");
-		automezziNonInTransito.forEach((codice, automezzo) -> System.out.println("- " + codice + " posti: " + automezzo.getPosti()));
+		automezziDisponibili.forEach((codice, automezzo) -> System.out.println("- " + codice + " posti: " + automezzo.getPosti()));
 
-		return automezziNonInTransito;
+		return automezziDisponibili;
 	}
 
 	public void supervisionaAutomezzo(String codiceAutomezzo,Map<String, Automezzo> automezziDisponibili) throws Exception {
@@ -761,9 +783,6 @@ public class PickYourLine {
 
 		if (automezzo == null) {
 			throw new Exception("Codice automezzo non valido");
-		}
-		if (automezzo.getItinerarioAssegnato() == null) {
-			throw new Exception("Non puoi supervisionare un automezzo senza un itinerario assegnato.");
 		}
 
 		controllore.setAutomezzoSupervisionato(automezzo);
@@ -783,27 +802,126 @@ public class PickYourLine {
 	}
 
 	public void visualizzaElencoControllori() {
-		this.elencoControllori.forEach((k, a) -> System.out.println(a));
+		this.elencoUtenti.forEach((k, u) -> {
+			if(u instanceof Controllore) {
+				System.out.println(u);
+			}
+		});
 	}
 
-	public void inserisciControllore(String codice) throws Exception {
-
-		if(this.elencoControllori.containsKey(codice)){
+	public void inserisciControllore(String codice, String password) throws Exception {
+		if(this.elencoUtenti.containsKey(codice)){
 			throw new Exception("Controllore già esistente.");
 		}
-		Controllore c = new Controllore(codice);
-		this.elencoControllori.put(codice, c);
+
+		if (!verificaCredenziali(codice,password))
+		{
+			throw new Exception("Credeziali Controllore inserite non valide");
+		}
+
+		String hashedPassword = BCrypt.withDefaults().hashToString(12, password.toCharArray());
+		Controllore c = new Controllore(codice,hashedPassword);
+        this.elencoUtenti.put(codice, c);
 	}
 
 	public void eliminaControllore(String codice) throws Exception {
-		Controllore co = this.elencoControllori.get(codice);
-		if (co == null){
+		Utente u = this.elencoUtenti.get(codice);
+
+		if (u == null || !(u instanceof Controllore)){
 			throw new Exception("Controllore non esistente.");
 		}
+
+		Controllore co = (Controllore) u;
 
 		if (co.getAutomezzoSupervisionato() != null){
 			throw new Exception("Il controllore sta supervisionando un automezzo.");
 		}
-			this.elencoControllori.remove(codice);
+
+		this.elencoUtenti.remove(codice);
+	}
+
+	public boolean verificaAutenticazione() {
+		return getUtenteCorrente() != null;
+	}
+
+	public void login(String codice, String password) throws Exception {
+		
+		if(verificaAutenticazione()) {
+			throw new Exception("Hai già effettuato l'accesso. Effettua il logout prima di tentare il login.");
 		}
+		
+		Utente utente = this.elencoUtenti.get(codice);
+		
+		if (utente == null) {
+			throw new Exception("Codice utente non esistente");
+		}
+
+		String passwordUtente = utente.getPassword();
+		BCrypt.Result result = BCrypt.verifyer().verify(password.toCharArray(), passwordUtente);
+
+		if (!result.verified) {
+			throw new Exception("Password inserita non corretta");
+		}
+		
+		setUtenteCorrente(utente);
+		System.out.println("L'Utente: " + utente.getCodice() + " ha eseguito correttamente l'accesso");
+	}
+
+	public void logout() throws Exception {
+		
+		if(!verificaAutenticazione()) {
+			throw new Exception("Non hai effettuato l'accesso. Effettua il login prima di tentare il logout.");
+		}
+		
+		if(!verificaSupervisione()) {
+			throw new Exception("Non puoi effettuare il logout se stai supervisionando un automezzo.");
+		}
+		
+		setUtenteCorrente(null);
+	}
+
+	private boolean verificaCredenziali(String codice, String password){
+
+		if (codice.length() < 2 || codice.length() > 6) {
+			return false;
+		}
+
+		if (password.length() < 8 || password.length() > 16) {
+			return false;
+		}
+
+		boolean hasUpperCase = password.matches(".*[A-Z].*");
+
+		boolean hasLowerCase = password.matches(".*[a-z].*");
+
+		boolean hasSpecialChar = password.matches(".*[!?£$@#*%].*");
+
+		boolean hasNumber = password.matches(".*[0-9].*");
+
+		return hasLowerCase && hasUpperCase && hasSpecialChar && hasNumber;
+	}
+
+	public void registrazioneCliente(String codice, String password, String nome, String cognome) throws Exception {
+
+		boolean esistente = elencoUtenti.containsKey(codice);
+		boolean autenticato = verificaAutenticazione();
+
+		if (autenticato){
+			throw new Exception("Non puoi effettuare la registrazione, bisogna effettuare logout");
+		}
+
+		if (esistente) {
+			throw new Exception("Il cliente è gia registrato");
+		}
+
+		boolean bool = verificaCredenziali(codice, password);
+		if (!bool) {
+			throw new Exception("Codice o Password inseriti non validi");
+		}
+
+		String passwordHash = BCrypt.withDefaults().hashToString(12, password.toCharArray());
+		Utente u = new Cliente(codice, passwordHash, nome, cognome);
+		elencoUtenti.put(codice, u);
+		setUtenteCorrente(u);
+	}
 }
